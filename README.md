@@ -1,6 +1,6 @@
 # muse-game-jam-2026
 
-Gioco realizzato durante la **Muse Game Jam 2026**, in **Unity 6.3 LTS** (`6000.3.6f1`), destinato a build **WebGL**.
+Gioco realizzato durante la **Muse Game Jam 2026**, in **Unity 6.3 LTS** (`6000.3.6f1`), build **Windows standalone** (`.exe`).
 
 Progetto **Pigna Labs**. Tracking task su Plane (progetto **Muse Game Jam**).
 
@@ -20,11 +20,10 @@ Progetto **Pigna Labs**. Tracking task su Plane (progetto **Muse Game Jam**).
 
 > ⚠️ L'init del progetto Unity (cartelle `ProjectSettings/`, `Packages/`, file `.meta`) viene generato da Unity al primo open e committato a parte. Questo scaffold contiene solo i placeholder non-Unity (`.gitignore`, `.gitattributes`, `README`).
 
-## Come buildare per WebGL
+## Come buildare (Windows)
 
-1. `File → Build Profiles` → piattaforma **Web** → *Switch Platform*.
-2. Configura compressione (Brotli/Gzip) e template.
-3. *Build* → output in `Builds/WebGL/` (cartella ignorata da git).
+1. `File → Build Profiles` → piattaforma **Windows** → *Switch Platform*.
+2. *Build* → output in `Builds/Windows/` (cartella ignorata da git).
 
 ## Convenzioni
 
