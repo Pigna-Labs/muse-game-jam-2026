@@ -1,6 +1,6 @@
 # muse-game-jam-2026
 
-Gioco realizzato per la **Museum Game Jam @ MUSE** (5–6 giugno 2026, Trento), in **Unity 6.3 LTS** (`6000.3.6f1`), pipeline **URP**, build **Android** (app mobile).
+Gioco realizzato per la **Museum Game Jam @ MUSE** (5–6 giugno 2026, Trento), in **Unity 6.3 LTS** (`6000.3.6f1`), pipeline **URP**, build **Android + Windows** (mobile per la consegna, desktop per la demo).
 
 Progetto **Pigna Labs**. Team: Andrea, Amerigo, Ovidiu, Davide. Tracking task su Plane (progetto **MGJ — Muse Game Jam**).
 
@@ -16,7 +16,7 @@ Progetto **Pigna Labs**. Team: Andrea, Amerigo, Ovidiu, Davide. Tracking task su
 | **Dove** | MUSE — Museo delle Scienze, Trento |
 | **Durata** | 24 ore, premiazione pubblica finale sabato |
 | **Cosa** | Realizzare un **videogioco app** partendo *dall'atmosfera e da ciò che è custodito tra le mura del MUSE* |
-| **Target build** | **Android** (app mobile, input touch) |
+| **Target build** | **Android** (consegna jam) **+ Windows** (demo premiazione) — input **touch + mouse/tastiera** |
 
 > ⚠️ **Niente "tema segreto" rivelato all'ora X** (non è la Global Game Jam): il tema *è il MUSE stesso* — la sua atmosfera, i suoi exhibit, i suoi contenuti scientifici. L'angolo preciso lo scegliamo all'inizio, sul posto, ispirandoci al museo.
 
@@ -58,16 +58,23 @@ Brainstorm di partenza — *non vincolante*, serve solo a non partire da foglio 
 1. Unity Hub → **Add** → seleziona la cartella di questa repo (`muse-game-jam-2026`).
 2. Apri con la versione `6000.3.6f1` (evita upgrade involontari).
 
-### Buildare per Android
-1. `File → Build Profiles` → piattaforma **Android** → **Switch Platform**.
+Il gioco va buildato per **entrambi** i target. Tienili in mente da subito: input **touch + mouse/tastiera**, UI leggibile sia su telefono (verticale) sia su monitor.
+
+**Android (consegna jam)**
+1. `File → Build Profiles` → **Android** → **Switch Platform**.
 2. `Project Settings → Player`:
    - **Package name** univoco (es. `it.pignalabs.musejam`).
-   - **Orientation** coerente col gioco (portrait per la maggior parte degli spunti mobile sopra).
+   - **Orientation** coerente col gioco (portrait per la maggior parte degli spunti mobile).
    - **Minimum API Level** ragionevole (Android 7.0+).
-3. **Build** → APK in `Builds/Android/` (cartella ignorata da git).
-4. Per consegna/premiazione: testa l'APK su un device reale prima del deadline.
+3. **Build** → APK in `Builds/Android/` (ignorata da git). Testa su un device reale prima del deadline.
 
-> ⚠️ **Nota URP su mobile**: il progetto è nato con template **Universal 3D (URP)**. Su Android va benissimo, ma tieni d'occhio **performance e peso**: usa il render pipeline asset *Mobile* (già incluso in `Assets/Settings/`), evita post-processing pesante, batcha e usa texture compresse. Se il gioco è 2D puro, valuta in jam se semplificare.
+**Windows (demo premiazione)**
+1. `File → Build Profiles` → **Windows** → **Switch Platform** (oppure tieni due Build Profile salvati e cambia al volo).
+2. **Build** → `.exe` in `Builds/Windows/` (ignorata da git).
+
+> 💡 Lavora di solito su un target e fai lo **switch platform** solo per buildare l'altro (la reimportazione asset può richiedere qualche minuto). Per non perdere tempo a fine jam, fai un build di prova su **entrambi** già nelle prime ore.
+
+> ⚠️ **Nota URP su mobile**: il progetto è nato con template **Universal 3D (URP)**. Su Android va benissimo ma tieni d'occhio **performance e peso**: usa il render pipeline asset *Mobile* (già in `Assets/Settings/`), evita post-processing pesante, batcha e usa texture compresse. Su Windows non hai questi vincoli, quindi progetta per il device più debole (il telefono).
 
 ## 📐 Convenzioni
 
@@ -88,7 +95,7 @@ Brainstorm di partenza — *non vincolante*, serve solo a non partire da foglio 
 ## ⏱️ Checklist primo giorno (ven 5/6, 14:00)
 
 - [ ] Tutti hanno clonato + `git lfs install` + aperto il progetto in `6000.3.6f1`
-- [ ] Modulo Android installato, `Switch Platform` ad Android fatto, APK di prova builda
+- [ ] Modulo Android installato; build di prova **APK (Android)** e **.exe (Windows)** funzionanti entrambe
 - [ ] Tema/angolo museale scelto e scritto in fondo a questo README
 - [ ] Ruoli assegnati (code / design / art / audio) e cartelle `Assets/` divise per owner
 - [ ] Primo commit del "vertical slice" entro sera
