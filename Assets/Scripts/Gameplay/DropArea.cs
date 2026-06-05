@@ -16,6 +16,12 @@ namespace MuseGameJam.Gameplay
         // Quanto progresso (su 1) aggiunge ogni secondo passato dentro l'area. Tienilo piccolo.
         [SerializeField] float fillPerSecond = 0.02f;
 
+        [Header("Animazioni musetto")]
+        // Animator del musetto (CharacterAnimController). Quando un cibo (Droppable)
+        // viene rilasciato dentro l'area, fa partire il trigger "Eating".
+        // Se lasciato vuoto, nessuna animazione (resta solo il log).
+        [SerializeField] Animator musettoAnimator;
+
         readonly HashSet<Item> tracked = new HashSet<Item>();
         readonly Dictionary<Item, Vector3> lastPos = new Dictionary<Item, Vector3>();
         readonly Dictionary<Item, float> progress = new Dictionary<Item, float>();
@@ -35,6 +41,14 @@ namespace MuseGameJam.Gameplay
 
             if (item is Draggable)
                 progress[item] = 0f;
+
+            // Azioni "continue" (bool): restano attive finché l'item è dentro l'area.
+            // Coccole e pulizia partono già mentre trascini, non al rilascio.
+            switch (item.Action)
+            {
+                case CareAction.Pet:   SetAnimBool("IsPetting", true);  break;
+                case CareAction.Clean: SetAnimBool("IsCleaning", true); break;
+            }
         }
 
         void OnTriggerStay2D(Collider2D other)
@@ -58,12 +72,16 @@ namespace MuseGameJam.Gameplay
             if (item != null) Forget(item);
         }
 
-        // Chiamato quando un item tracciato viene rilasciato: se è un Droppable, lo riconosciamo.
+        // Chiamato quando un item tracciato viene rilasciato dentro l'area.
         void OnItemDropped(Item item)
         {
-            if (item is Droppable)
-                Debug.Log($"Droppato dentro l'area: {CleanName(item)}");
-            Forget(item);
+            Debug.Log($"Droppato dentro l'area: {CleanName(item)} (azione={item.Action})");
+
+            // Azione "istantanea" (trigger): il cibo fa partire l'anim "mangia" al rilascio.
+            if (item.Action == CareAction.Eat)
+                SetAnimTrigger("Eating");
+
+            Forget(item); // Forget azzera anche gli eventuali bool continui (vedi sotto)
         }
 
         void Forget(Item item)
@@ -72,6 +90,38 @@ namespace MuseGameJam.Gameplay
             item.Dropped -= OnItemDropped;
             lastPos.Remove(item);
             progress.Remove(item);
+
+            // Uscendo/rilasciando, spegni le azioni continue accese all'ingresso.
+            switch (item.Action)
+            {
+                case CareAction.Pet:   SetAnimBool("IsPetting", false);  break;
+                case CareAction.Clean: SetAnimBool("IsCleaning", false); break;
+            }
+        }
+
+        // ---- Helper Animator (con log diagnostico) --------------------------
+
+        void SetAnimTrigger(string param)
+        {
+            if (musettoAnimator == null)
+            {
+                Debug.LogWarning($"[Anim] musettoAnimator NON assegnato nel DropArea (trigger '{param}'): trascina il musetto nel campo in Inspector.");
+                return;
+            }
+            var st = musettoAnimator.GetCurrentAnimatorStateInfo(0);
+            Debug.Log($"[Anim] SetTrigger({param}). statoHash={st.fullPathHash} normalizedTime={st.normalizedTime:F2}");
+            musettoAnimator.SetTrigger(param);
+        }
+
+        void SetAnimBool(string param, bool value)
+        {
+            if (musettoAnimator == null)
+            {
+                Debug.LogWarning($"[Anim] musettoAnimator NON assegnato nel DropArea (bool '{param}'): trascina il musetto nel campo in Inspector.");
+                return;
+            }
+            Debug.Log($"[Anim] SetBool({param}, {value})");
+            musettoAnimator.SetBool(param, value);
         }
 
         static string CleanName(Item item) => item.name.Replace("(Clone)", "").Trim();
