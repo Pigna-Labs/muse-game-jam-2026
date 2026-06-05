@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <!-- Stile della UI: collegare QrScanner.uss in editor (oppure aggiungerlo al PanelSettings).
+         I 'name' degli elementi DEVONO combaciare con quelli cercati da QrScannerController. -->
+    <Style src="QrScanner.uss" />
+
+    <ui:VisualElement name="root" class="root">
+
+        <!-- Feed camera fullscreen: il controller gli assegna la RenderTexture come
+             background e lo ruota/dimensiona per coprire lo schermo. -->
+        <ui:VisualElement name="camera-view" class="camera-view" />
+
+        <!-- Overlay di mira: mostrato durante la scansione. -->
+        <ui:VisualElement name="overlay" class="overlay">
+            <ui:VisualElement name="reticle" class="reticle" />
+            <ui:Label text="Inquadra il QR" name="hint-label" class="hint-label" />
+            <ui:Button text="Chiudi" name="close-button" class="close-button" />
+        </ui:VisualElement>
+
+        <!-- Pulsante iniziale per avviare la scansione (visibile quando non si scansiona). -->
+        <ui:Button text="Scansiona" name="scan-button" class="scan-button" />
+
+        <!-- Pannello risultato: nascosto all'avvio, mostrato col link letto. -->
+        <ui:VisualElement name="result-panel" class="result-panel">
+            <ui:Label text="Risultato" name="result-title" class="result-title" />
+            <ui:Label text="" name="result-label" class="result-label" />
+            <ui:Button text="Scansiona di nuovo" name="rescan-button" class="rescan-button" />
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>
