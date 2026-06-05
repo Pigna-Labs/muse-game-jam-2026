@@ -271,6 +271,8 @@ MonoBehaviour:
   requestedHeight: 480
   requestedFps: 30
   decodeInterval: 0.4
+  cameraBackgroundClip: {fileID: 8300000, guid: 3c246c3db49adee419868b0651553d55, type: 3}
+  cameraBackgroundVolume: 1
 --- !u!114 &96746553
 MonoBehaviour:
   m_ObjectHideFlags: 0
