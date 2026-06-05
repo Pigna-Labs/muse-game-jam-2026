@@ -1,6 +1,7 @@
 .root {
     flex-grow: 1;
     justify-content: space-between;
+    background-color: rgb(42, 118, 66);
 }
 
 .top-bar {
@@ -20,16 +21,56 @@
     padding: 16px 16px 24px 16px;
 }
 
+/* Pulsanti: legno levigato con bordo morbido e una sottile base più scura per dare profondità. */
 .round-button {
-    width: 72px;
-    height: 72px;
-    border-radius: 36px;
+    width: 42%;
+    min-width: 160px;
+    max-width: 360px;
+    height: 96px;
+    border-radius: 24px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 5px;
+    border-left-color: rgb(150, 101, 58);
+    border-right-color: rgb(150, 101, 58);
+    border-top-color: rgb(168, 116, 70);
+    border-bottom-color: rgb(99, 62, 33);
+    background-color: rgb(138, 90, 51);
+    color: rgb(255, 247, 233);
+    font-size: 28px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    transition-property: background-color, scale, translate;
+    transition-duration: 0.12s;
+}
+
+.round-button:hover {
+    background-color: rgb(160, 107, 62);
+    border-top-color: rgb(190, 135, 86);
+    scale: 1.04 1.04;
+}
+
+.round-button:active {
+    background-color: rgb(112, 71, 39);
+    border-bottom-width: 2px;
+    translate: 0 3px;
+    scale: 1 1;
+}
+
+.round-button:disabled {
+    opacity: 0.5;
 }
 
 .round-button--large {
-    width: 88px;
-    height: 88px;
-    border-radius: 44px;
+    width: 30%;
+    min-width: 180px;
+    max-width: 320px;
+    height: 112px;
+    border-radius: 28px;
+    border-bottom-width: 6px;
+    font-size: 32px;
 }
 
 .item-tray {
@@ -37,7 +78,9 @@
     flex-direction: row;
     align-items: center;
     padding: 12px;
-    background-color: rgb(160, 10, 25);
+    border-top-width: 6px;
+    border-top-color: rgb(89, 53, 28);
+    background-color: rgb(33, 92, 52);
     display: none;
 }
 
@@ -64,11 +107,21 @@
 .tray-item__icon {
     width: 64px;
     height: 64px;
-    border-radius: 12px;
+    border-radius: 18px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 4px;
+    border-left-color: rgb(150, 101, 58);
+    border-right-color: rgb(150, 101, 58);
+    border-top-color: rgb(168, 116, 70);
+    border-bottom-color: rgb(99, 62, 33);
+    background-color: rgb(138, 90, 51);
 }
 
 .tray-item__label {
     margin-top: 4px;
     color: rgb(255, 255, 255);
+    -unity-font-style: bold;
     -unity-text-align: middle-center;
 }

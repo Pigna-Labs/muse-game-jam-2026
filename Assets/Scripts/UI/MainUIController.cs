@@ -1,179 +1,222 @@
 using System.Collections.Generic;
+using MuseGameJam.Gameplay;
+using MuseGameJam.States;
+using MuseGameJam.StateSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[RequireComponent(typeof(UIDocument))]
-public class MainUIController : MonoBehaviour
+namespace MuseGameJam.UI
 {
-    // Una voce della tray: l'etichetta mostrata + il prefab Item assegnato a quell'item.
-    [System.Serializable]
-    public class TrayItemDef
+    [RequireComponent(typeof(UIDocument))]
+    public class MainUIController : MonoBehaviour
     {
-        public string label = "Item";
-        public GameObject itemPrefab;
-    }
-
-    [Header("Tray")]
-    // Template UXML dell'oggetto-item (TrayItem.uxml).
-    [SerializeField] VisualTreeAsset trayItemTemplate;
-    // Una lista di item per ciascun pulsante della bottom-bar.
-    [SerializeField] List<TrayItemDef> foodItems = new List<TrayItemDef>();
-    [SerializeField] List<TrayItemDef> cleanItems = new List<TrayItemDef>();
-    [SerializeField] List<TrayItemDef> petItems = new List<TrayItemDef>();
-
-    [Header("Drag & drop")]
-    [SerializeField] Camera targetCamera;
-    // Distanza dalla camera del piano su cui galleggia l'item mentre segue il cursore.
-    [SerializeField] float dragDepth = 10f;
-    // Se vero, la tray si nasconde durante il drag (l'item resta visibile nello stage).
-    [SerializeField] bool hideTrayWhileDragging = false;
-
-    Button shopButton;
-    Button cameraButton;
-    Button foodButton;
-    Button cleanButton;
-    Button petButton;
-
-    VisualElement rootElement;
-    VisualElement itemTray;
-    VisualElement trayContent;
-
-    string openCategory;
-
-    // Stato del drag in corso (uno alla volta).
-    GameObject spawnedObject;
-    Item spawnedItem;
-    VisualElement capturedTrayItem;
-    int activePointerId;
-
-    void OnEnable()
-    {
-        rootElement = GetComponent<UIDocument>().rootVisualElement;
-
-        shopButton = rootElement.Q<Button>("shop-button");
-        cameraButton = rootElement.Q<Button>("camera-button");
-        foodButton = rootElement.Q<Button>("food-button");
-        cleanButton = rootElement.Q<Button>("clean-button");
-        petButton = rootElement.Q<Button>("pet-button");
-
-        itemTray = rootElement.Q<VisualElement>("item-tray");
-        trayContent = rootElement.Q<VisualElement>("tray-content");
-
-        foodButton.clicked += OnFoodClicked;
-        cleanButton.clicked += OnCleanClicked;
-        petButton.clicked += OnPetClicked;
-
-        if (targetCamera == null)
-            targetCamera = Camera.main;
-    }
-
-    void OnDisable()
-    {
-        if (foodButton != null) foodButton.clicked -= OnFoodClicked;
-        if (cleanButton != null) cleanButton.clicked -= OnCleanClicked;
-        if (petButton != null) petButton.clicked -= OnPetClicked;
-    }
-
-    void OnFoodClicked() => ToggleTray("FOOD", foodItems);
-    void OnCleanClicked() => ToggleTray("CLEAN", cleanItems);
-    void OnPetClicked() => ToggleTray("PET", petItems);
-
-    void ToggleTray(string category, List<TrayItemDef> items)
-    {
-        if (openCategory == category)
+        // Una voce della tray: l'etichetta mostrata + il prefab Item assegnato a quell'item.
+        [System.Serializable]
+        public class TrayItemDef
         {
-            HideTray();
-            return;
+            public string label = "Item";
+            public GameObject itemPrefab;
         }
 
-        openCategory = category;
-        itemTray.style.display = DisplayStyle.Flex;
-        PopulateTray(items);
-    }
+        [Header("Tray")]
+        // Template UXML dell'oggetto-item (TrayItem.uxml).
+        [SerializeField] VisualTreeAsset trayItemTemplate;
+        // Una lista di item per ciascun pulsante della bottom-bar.
+        [SerializeField] List<TrayItemDef> foodItems = new List<TrayItemDef>();
+        [SerializeField] List<TrayItemDef> cleanItems = new List<TrayItemDef>();
+        [SerializeField] List<TrayItemDef> petItems = new List<TrayItemDef>();
 
-    void HideTray()
-    {
-        openCategory = null;
-        itemTray.style.display = DisplayStyle.None;
-        trayContent.Clear();
-    }
+        [Header("Drag & drop")]
+        [SerializeField] Camera targetCamera;
+        // Distanza dalla camera del piano su cui galleggia l'item mentre segue il cursore.
+        [SerializeField] float dragDepth = 10f;
+        // Se vero, la tray si nasconde durante il drag (l'item resta visibile nello stage).
+        [SerializeField] bool hideTrayWhileDragging = false;
 
-    // Riempie la banda clonando il template, un item per ogni TrayItemDef della lista scelta.
-    void PopulateTray(List<TrayItemDef> items)
-    {
-        trayContent.Clear();
+        [Header("QR Scanner")]
+        // GameObject del QR scanner (con QrScannerController). Parte DISATTIVATO:
+        // il pulsante camera lo attiva, "Chiudi"/scan-ok lo ridisattiva.
+        [SerializeField] GameObject qrScannerObject;
 
-        if (trayItemTemplate == null)
+        Button shopButton;
+        Button cameraButton;
+        Button foodButton;
+        Button cleanButton;
+        Button petButton;
+
+        VisualElement rootElement;
+        VisualElement itemTray;
+        VisualElement trayContent;
+
+        string openCategory;
+
+        // Stato del drag in corso (uno alla volta).
+        GameObject spawnedObject;
+        Item spawnedItem;
+        VisualElement capturedTrayItem;
+        int activePointerId;
+
+        void OnEnable()
         {
-            Debug.LogWarning("MainUIController: trayItemTemplate non assegnato in Inspector.");
-            return;
+            rootElement = GetComponent<UIDocument>().rootVisualElement;
+
+            shopButton = rootElement.Q<Button>("shop-button");
+            cameraButton = rootElement.Q<Button>("camera-button");
+            foodButton = rootElement.Q<Button>("food-button");
+            cleanButton = rootElement.Q<Button>("clean-button");
+            petButton = rootElement.Q<Button>("pet-button");
+
+            itemTray = rootElement.Q<VisualElement>("item-tray");
+            trayContent = rootElement.Q<VisualElement>("tray-content");
+
+            foodButton.clicked += OnFoodClicked;
+            cleanButton.clicked += OnCleanClicked;
+            petButton.clicked += OnPetClicked;
+            if (cameraButton != null) cameraButton.clicked += OnCameraClicked;
+
+            // Lo scanner parte chiuso (disattivato).
+            if (qrScannerObject != null) qrScannerObject.SetActive(false);
+
+            if (targetCamera == null)
+                targetCamera = Camera.main;
         }
 
-        foreach (var def in items)
+        void OnDisable()
         {
-            var instance = trayItemTemplate.Instantiate();
-            var itemRoot = instance.Q<VisualElement>("item") ?? instance;
-
-            var label = instance.Q<Label>("item-label");
-            if (label != null) label.text = def.label;
-
-            // Gli elementi interni non devono intercettare i pointer event: li gestisce il root dell'item.
-            var icon = instance.Q<Button>("item-icon");
-            if (icon != null) icon.pickingMode = PickingMode.Ignore;
-            if (label != null) label.pickingMode = PickingMode.Ignore;
-
-            var prefab = def.itemPrefab;
-            itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab));
-            itemRoot.RegisterCallback<PointerUpEvent>(OnItemPointerUp);
-
-            trayContent.Add(instance);
-        }
-    }
-
-    void OnItemPointerDown(PointerDownEvent evt, VisualElement trayItem, GameObject prefab)
-    {
-        if (spawnedObject != null) return; // un drag alla volta
-
-        if (prefab == null)
-        {
-            Debug.LogWarning("MainUIController: questo TrayItem non ha un itemPrefab assegnato.");
-            return;
+            if (foodButton != null) foodButton.clicked -= OnFoodClicked;
+            if (cleanButton != null) cleanButton.clicked -= OnCleanClicked;
+            if (petButton != null) petButton.clicked -= OnPetClicked;
+            if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
         }
 
-        capturedTrayItem = trayItem;
-        activePointerId = evt.pointerId;
-        trayItem.CapturePointer(evt.pointerId); // così i PointerUp arrivano qui anche fuori dall'item
+        // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
+        // CameraState nasconde la main UI, mette in pausa la main e attiva lo scanner;
+        // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
+        void OnCameraClicked()
+        {
+            if (qrScannerObject == null) return;
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: nessuna GameStateMachine in scena per aprire la camera.");
+                return;
+            }
 
-        spawnedObject = Instantiate(prefab);
-        spawnedItem = spawnedObject.GetComponent<Item>();
-        if (spawnedItem != null)
-            spawnedItem.BeginDrag(targetCamera != null ? targetCamera : Camera.main, dragDepth);
-        else
-            Debug.LogWarning("MainUIController: il prefab spawnato non ha un componente Item.");
+            // Guardia anti-spam: se c'è già un CameraState aperto, non pusharne altri.
+            if (GameStateMachine.Instance.HasOverlay<CameraState>()) return;
 
-        if (hideTrayWhileDragging) itemTray.style.display = DisplayStyle.None;
+            // Passa anche QUESTA UI così il CameraState la nasconde mentre la camera è aperta.
+            var cameraState = new CameraState(qrScannerObject, gameObject);
+            cameraState.OnUrlScanned += HandleUrlScanned;
+            GameStateMachine.Instance.PushState(cameraState);
+        }
 
-        evt.StopPropagation();
-    }
+        // L'URL letto dal QR arriva qui: per ora lo logghiamo; lo passeremo poi a un altro script.
+        void HandleUrlScanned(string url)
+        {
+            Debug.Log($"[MainUI] URL dal QR: {url}");
+        }
 
-    void OnItemPointerUp(PointerUpEvent evt)
-    {
-        if (spawnedObject == null || evt.pointerId != activePointerId) return;
+        void OnFoodClicked() => ToggleTray("FOOD", foodItems);
+        void OnCleanClicked() => ToggleTray("CLEAN", cleanItems);
+        void OnPetClicked() => ToggleTray("PET", petItems);
 
-        // L'Item gestisce il proprio rilascio (di base sparisce); la DropArea ha già reagito via trigger.
-        if (spawnedItem != null) spawnedItem.Drop();
-        else Destroy(spawnedObject);
+        void ToggleTray(string category, List<TrayItemDef> items)
+        {
+            if (openCategory == category)
+            {
+                HideTray();
+                return;
+            }
 
-        spawnedObject = null;
-        spawnedItem = null;
-
-        if (hideTrayWhileDragging && openCategory != null)
+            openCategory = category;
             itemTray.style.display = DisplayStyle.Flex;
+            PopulateTray(items);
+        }
 
-        if (capturedTrayItem != null)
+        void HideTray()
         {
-            capturedTrayItem.ReleasePointer(activePointerId);
-            capturedTrayItem = null;
+            openCategory = null;
+            itemTray.style.display = DisplayStyle.None;
+            trayContent.Clear();
+        }
+
+        // Riempie la banda clonando il template, un item per ogni TrayItemDef della lista scelta.
+        void PopulateTray(List<TrayItemDef> items)
+        {
+            trayContent.Clear();
+
+            if (trayItemTemplate == null)
+            {
+                Debug.LogWarning("MainUIController: trayItemTemplate non assegnato in Inspector.");
+                return;
+            }
+
+            foreach (var def in items)
+            {
+                var instance = trayItemTemplate.Instantiate();
+                var itemRoot = instance.Q<VisualElement>("item") ?? instance;
+
+                var label = instance.Q<Label>("item-label");
+                if (label != null) label.text = def.label;
+
+                // Gli elementi interni non devono intercettare i pointer event: li gestisce il root dell'item.
+                var icon = instance.Q<Button>("item-icon");
+                if (icon != null) icon.pickingMode = PickingMode.Ignore;
+                if (label != null) label.pickingMode = PickingMode.Ignore;
+
+                var prefab = def.itemPrefab;
+                itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab));
+                itemRoot.RegisterCallback<PointerUpEvent>(OnItemPointerUp);
+
+                trayContent.Add(instance);
+            }
+        }
+
+        void OnItemPointerDown(PointerDownEvent evt, VisualElement trayItem, GameObject prefab)
+        {
+            if (spawnedObject != null) return; // un drag alla volta
+
+            if (prefab == null)
+            {
+                Debug.LogWarning("MainUIController: questo TrayItem non ha un itemPrefab assegnato.");
+                return;
+            }
+
+            capturedTrayItem = trayItem;
+            activePointerId = evt.pointerId;
+            trayItem.CapturePointer(evt.pointerId); // così i PointerUp arrivano qui anche fuori dall'item
+
+            spawnedObject = Instantiate(prefab);
+            spawnedItem = spawnedObject.GetComponent<Item>();
+            if (spawnedItem != null)
+                spawnedItem.BeginDrag(targetCamera != null ? targetCamera : Camera.main, dragDepth);
+            else
+                Debug.LogWarning("MainUIController: il prefab spawnato non ha un componente Item.");
+
+            if (hideTrayWhileDragging) itemTray.style.display = DisplayStyle.None;
+
+            evt.StopPropagation();
+        }
+
+        void OnItemPointerUp(PointerUpEvent evt)
+        {
+            if (spawnedObject == null || evt.pointerId != activePointerId) return;
+
+            // L'Item gestisce il proprio rilascio (di base sparisce); la DropArea ha già reagito via trigger.
+            if (spawnedItem != null) spawnedItem.Drop();
+            else Destroy(spawnedObject);
+
+            spawnedObject = null;
+            spawnedItem = null;
+
+            if (hideTrayWhileDragging && openCategory != null)
+                itemTray.style.display = DisplayStyle.Flex;
+
+            if (capturedTrayItem != null)
+            {
+                capturedTrayItem.ReleasePointer(activePointerId);
+                capturedTrayItem = null;
+            }
         }
     }
 }
