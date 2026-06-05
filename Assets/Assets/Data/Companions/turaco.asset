@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: turaco
   m_EditorClassIdentifier: Assembly-CSharp::CompanionSO
   displayName: Turaco di Livingstone
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: 0e171847f844945e68932e4fd2b6109f, type: 3}
   unlocked: 0
