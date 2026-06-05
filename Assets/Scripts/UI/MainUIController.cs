@@ -32,7 +32,6 @@ namespace MuseGameJam.UI
         // Se vero, la tray si nasconde durante il drag (l'oggetto resta visibile nello stage).
         [SerializeField] bool hideTrayWhileDragging = false;
 
-        Button shopButton;
         Button cameraButton;
         Button foodButton;
         Button cleanButton;
@@ -54,7 +53,6 @@ namespace MuseGameJam.UI
         {
             rootElement = GetComponent<UIDocument>().rootVisualElement;
 
-            shopButton = rootElement.Q<Button>("shop-button");
             cameraButton = rootElement.Q<Button>("camera-button");
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
