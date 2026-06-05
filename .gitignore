@@ -24,6 +24,9 @@
 # Visual Studio cache directory
 .vs/
 
+# JetBrains IDE workspace settings
+.idea/
+
 # VS Code workspace settings (per-utente, non condivise)
 .vscode/
 
