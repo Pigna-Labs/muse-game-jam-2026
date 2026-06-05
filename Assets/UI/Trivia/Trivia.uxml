@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Trivia/Trivia.uss?fileID=7433441132597879392&amp;guid=304c96a08396467ca429a9c5a9a8a4e4&amp;type=3#Trivia" />
+    <ui:VisualElement name="trivia-root" class="trivia-root">
+        <ui:VisualElement name="trivia-screen" class="trivia-screen">
+            <ui:VisualElement name="trivia-content" class="trivia-content">
+                <ui:Label name="trivia-question" class="trivia-question" text="Which floor of MUSE tells the story of glaciers and high-altitude environments?" />
+                <ui:VisualElement name="trivia-answers" class="trivia-answers">
+                    <ui:Button name="trivia-answer-1" class="trivia-answer" text="Top floor" />
+                    <ui:Button name="trivia-answer-2" class="trivia-answer" text="Underground level" />
+                    <ui:Button name="trivia-answer-3" class="trivia-answer" text="Tropical greenhouse" />
+                    <ui:Button name="trivia-answer-4" class="trivia-answer trivia-answer-last" text="Museum cafe" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

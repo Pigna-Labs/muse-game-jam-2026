@@ -1,0 +1,105 @@
+.trivia-root {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.trivia-screen {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    align-items: stretch;
+    padding-left: 28px;
+    padding-right: 28px;
+    padding-top: 48px;
+    padding-bottom: 40px;
+    background-color: rgb(20, 46, 61);
+}
+
+.trivia-content {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+}
+
+.trivia-question {
+    flex-grow: 1;
+    min-height: 0;
+    margin-bottom: 28px;
+    padding-left: 32px;
+    padding-right: 32px;
+    padding-top: 34px;
+    padding-bottom: 34px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background-color: rgb(245, 242, 219);
+    color: rgb(28, 41, 46);
+    font-size: 46px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.trivia-answers {
+    flex-grow: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: stretch;
+}
+
+.trivia-answer {
+    width: 100%;
+    min-height: 128px;
+    margin-bottom: 18px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background-color: rgb(252, 184, 64);
+    color: rgb(23, 28, 31);
+    font-size: 36px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.trivia-answer:hover {
+    background-color: rgb(255, 202, 96);
+}
+
+.trivia-answer:active {
+    background-color: rgb(236, 154, 45);
+}
+
+.trivia-answer:disabled {
+    opacity: 0.65;
+}
+
+.trivia-answer-last {
+    margin-bottom: 0;
+}
+
+.answer-selected {
+    background-color: rgb(51, 145, 219);
+    color: rgb(255, 255, 255);
+}
+
+.answer-correct {
+    background-color: rgb(92, 199, 99);
+    color: rgb(255, 255, 255);
+}
+
+.answer-wrong {
+    background-color: rgb(230, 66, 56);
+    color: rgb(255, 255, 255);
+}
