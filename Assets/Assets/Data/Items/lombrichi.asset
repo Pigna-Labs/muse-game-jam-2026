@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a25bd63ed412993f9889a5bcc4f38269, type: 3}
-  m_Name: rana
-  m_EditorClassIdentifier: Assembly-CSharp::CompanionSO
+  m_Script: {fileID: 11500000, guid: 64c02681e45dbc22e899c4d3433194ae, type: 3}
+  m_Name: lombrichi
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSO
   displayName: 
+  itemType: 0
+  quantity: 0
+  gain: 0
   image: {fileID: 0}
-  unlocked: 0
