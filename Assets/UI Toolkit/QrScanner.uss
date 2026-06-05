@@ -1,0 +1,138 @@
+/* Stile del QR scanner (UI Toolkit). Pilotato da QrScannerController.
+   Le misure in % rendono il layout adattabile a schermi mobile diversi. */
+
+.root {
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+}
+
+/* Feed camera: posizione/dimensione/rotazione le imposta il controller da codice
+   (ApplyFeedOrientation). Qui solo lo sfondo e il modo di riempimento del background. */
+.camera-view {
+    position: absolute;
+    background-color: rgb(0, 0, 0);
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* Overlay di mira (mostrato in scansione). display gestito da codice. */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+/* Riquadro di inquadratura del QR: cornice al centro.
+   Misure grandi in px su Reference Resolution 1080x1920 (impostala nel PanelSettings)
+   così resta ben visibile sul telefono. */
+.reticle {
+    width: 620px;
+    height: 620px;
+    border-left-width: 4px;
+    border-right-width: 4px;
+    border-top-width: 4px;
+    border-bottom-width: 4px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* Testo "Inquadra il QR" sotto al mirino. */
+.hint-label {
+    margin-top: 48px;
+    font-size: 48px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Bottone chiudi, in alto a destra dell'overlay. */
+.close-button {
+    position: absolute;
+    top: 48px;
+    right: 48px;
+    padding-left: 32px;
+    padding-right: 32px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    font-size: 32px;
+    color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0.5);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Bottone iniziale "Scansiona", in basso al centro. */
+.scan-button {
+    position: absolute;
+    bottom: 96px;
+    align-self: center;
+    padding-left: 64px;
+    padding-right: 64px;
+    padding-top: 28px;
+    padding-bottom: 28px;
+    font-size: 40px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    background-color: rgb(40, 120, 200);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* Pannello risultato (mostrato a QR letto). display gestito da codice. */
+.result-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: none;
+}
+
+.result-title {
+    font-size: 36px;
+    color: rgb(180, 180, 180);
+    margin-bottom: 24px;
+}
+
+.result-label {
+    max-width: 85%;
+    font-size: 40px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 64px;
+}
+
+.rescan-button {
+    padding-left: 56px;
+    padding-right: 56px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    font-size: 36px;
+    color: rgb(255, 255, 255);
+    background-color: rgb(40, 120, 200);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
