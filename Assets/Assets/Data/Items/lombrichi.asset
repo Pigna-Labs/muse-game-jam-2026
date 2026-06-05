@@ -16,4 +16,4 @@ MonoBehaviour:
   itemType: 0
   quantity: 0
   gain: 0
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: 86405e17b31b93540bd6053f5eff7b54, type: 3}

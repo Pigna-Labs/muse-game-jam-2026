@@ -16,7 +16,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0539a09f00ea47eb81b6de2f947722ce, type: 2}
   - {fileID: 11400000, guid: 4f7c545ebca849debd80c594637fec53, type: 2}
   - {fileID: 11400000, guid: 9e95fc0722d24458aaaa7ab1a4844e28, type: 2}
+  soaps: []
+  toys: []
   companions:
-  - {fileID: 11400000, guid: ca25e5341bf64a908ef211f4fcc358a8, type: 2}
-  - {fileID: 11400000, guid: 78bde7ccb736426e801b8761ea262f43, type: 2}
-  - {fileID: 11400000, guid: 0c8f2ae831fc4c58a9ae6db9c3c0753d, type: 2}
+  - {fileID: 11400000, guid: 115dfdc3b35e327cf8664ab768c5a4bc, type: 2}
+  - {fileID: 11400000, guid: d7231a6a5a7f6c0a1b92497a0e20e708, type: 2}
+  - {fileID: 11400000, guid: d404290a2e08a231e90d9178180b4508, type: 2}
