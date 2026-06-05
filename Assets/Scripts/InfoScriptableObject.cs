@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using MuseGameJam.Trivia;
 
 [CreateAssetMenu(fileName = "Data", menuName = "Scriptable Objects/Unlockable")]
 public class InfoScriptableObject : ScriptableObject

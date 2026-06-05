@@ -44,7 +44,7 @@ namespace MuseGameJam.UI
         {
             question = RequireReference(nextQuestion, "TriviaUIController needs a TriviaQuestion asset assigned.");
 
-            SetQuestionText(question.Question);
+            SetQuestionText(question.question);
 
             for (int i = 0; i < AnswerCount; i++)
             {
@@ -141,7 +141,7 @@ namespace MuseGameJam.UI
             }
 
             hasAnswered = true;
-            ShowAnswerFeedback(answerIndex, question.CorrectAnswerIndex);
+            ShowAnswerFeedback(answerIndex, question.correctAnswerIndex);
             AnswerSelected?.Invoke(answerIndex);
         }
 
