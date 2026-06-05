@@ -113,17 +113,18 @@ namespace MuseGameJam.XR
         }
 
         /// <summary>
-        /// Chiude lo scanner: ferma la camera e DISATTIVA il GameObject (così il
-        /// MainUI torna visibile). Lo chiama il pulsante "Chiudi" e lo scan riuscito.
+        /// Richiesta di chiusura (pulsante "Chiudi"). NON disattiva il GameObject
+        /// da solo: emette OnClosed e lascia che a governarlo sia chi possiede lo
+        /// stato (CameraState fa PopOverlay -> Exit -> SetActive(false)).
+        /// La camera viene comunque fermata subito.
         /// </summary>
         public void Close()
         {
             StopScan();
             OnClosed?.Invoke();
-            gameObject.SetActive(false);
         }
 
-        /// <summary>Invocato quando lo scanner si chiude (per Chiudi o scan riuscito).</summary>
+        /// <summary>Invocato quando l'utente chiede di chiudere lo scanner (pulsante "Chiudi").</summary>
         public event Action OnClosed;
 
         // ---- Avvio camera ----------------------------------------------------
@@ -250,11 +251,10 @@ namespace MuseGameJam.XR
         {
             Debug.Log($"[QrScanner] QR letto: {text}");
 
-            // 1. Passa l'URL letto a chi ascolta (un altro script userà OnQrDecoded).
+            // Ferma la camera ed emette SOLO OnQrDecoded (non OnClosed): chi governa
+            // lo stato (CameraState) fa un unico PopOverlay reagendo a OnQrDecoded.
+            StopScan();
             OnQrDecoded?.Invoke(text);
-
-            // 2. Chiude lo scanner e torna alla UI normale (come premere "Chiudi").
-            Close();
         }
 
         // ---- RenderTexture ---------------------------------------------------

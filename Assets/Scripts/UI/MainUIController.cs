@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using MuseGameJam.Gameplay;
+using MuseGameJam.States;
+using MuseGameJam.StateSystem;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -88,12 +90,27 @@ namespace MuseGameJam.UI
             if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
         }
 
-        // Pulsante camera: apre il QR scanner in fullscreen attivando il suo GameObject.
-        // Lo scanner si auto-avvia (OnEnable -> StartScan) e si chiude da solo su
-        // "Chiudi" o su scan riuscito (QrScannerController.Close()).
+        // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
+        // CameraState mette in pausa la main e attiva il GameObject dello scanner;
+        // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
         void OnCameraClicked()
         {
-            if (qrScannerObject != null) qrScannerObject.SetActive(true);
+            if (qrScannerObject == null) return;
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: nessuna GameStateMachine in scena per aprire la camera.");
+                return;
+            }
+
+            var cameraState = new CameraState(qrScannerObject);
+            cameraState.OnUrlScanned += HandleUrlScanned;
+            GameStateMachine.Instance.PushState(cameraState);
+        }
+
+        // L'URL letto dal QR arriva qui: per ora lo logghiamo; lo passeremo poi a un altro script.
+        void HandleUrlScanned(string url)
+        {
+            Debug.Log($"[MainUI] URL dal QR: {url}");
         }
 
         void Update()
