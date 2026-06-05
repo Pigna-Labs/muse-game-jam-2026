@@ -102,18 +102,6 @@ namespace MuseGameJam.StateSystem
             nextState.Enter();
         }
 
-        // Replaces the main app mode after closing any active states.
-        public void ChangeState(IGameState nextState)
-        {
-            TransitionToState(nextState);
-        }
-
-        // Opens a temporary state above the current top state, such as pause or settings.
-        public void PushOverlay(IGameState overlay)
-        {
-            PushState(overlay);
-        }
-
         // Removes the top state and resumes the state underneath it.
         public void PopState()
         {
@@ -122,9 +110,7 @@ namespace MuseGameJam.StateSystem
                 return;
             }
 
-            IGameState poppedState = stateStack[^1];
-            stateStack.RemoveAt(stateStack.Count - 1);
-            poppedState.Exit();
+            IGameState poppedState = PopTop();
             TopState?.Resume();
             LogStateStack($"Popped state {GetStateName(poppedState)}");
         }
@@ -153,9 +139,7 @@ namespace MuseGameJam.StateSystem
 
             while (HasOverlayOpen)
             {
-                IGameState poppedOverlay = stateStack[^1];
-                stateStack.RemoveAt(stateStack.Count - 1);
-                poppedOverlay.Exit();
+                IGameState poppedOverlay = PopTop();
                 LogStateStack($"Popped overlay {GetStateName(poppedOverlay)}");
             }
 
@@ -248,10 +232,17 @@ namespace MuseGameJam.StateSystem
         {
             while (stateStack.Count > 0)
             {
-                IGameState poppedState = stateStack[^1];
-                stateStack.RemoveAt(stateStack.Count - 1);
-                poppedState.Exit();
+                PopTop();
             }
+        }
+
+        // Removes the top state and runs its Exit cleanup, returning it for logging.
+        private IGameState PopTop()
+        {
+            IGameState poppedState = stateStack[^1];
+            stateStack.RemoveAt(stateStack.Count - 1);
+            poppedState.Exit();
+            return poppedState;
         }
     }
 }

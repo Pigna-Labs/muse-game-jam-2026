@@ -7,17 +7,8 @@ namespace MuseGameJam.StateSystem
     [RequireComponent(typeof(GameStateMachine))]
     public class StateManager : MonoBehaviour
     {
-        [SerializeField] private GameStateMachine stateMachine;
         [SerializeField] private string entrySceneName = "00_Entry";
         [SerializeField] private string mainSceneName = "01_Main";
-
-        private void Awake()
-        {
-            if (stateMachine == null)
-            {
-                stateMachine = GetComponent<GameStateMachine>();
-            }
-        }
 
         private void OnEnable()
         {
@@ -50,22 +41,22 @@ namespace MuseGameJam.StateSystem
 
         private void PushSplashScreen()
         {
-            if (stateMachine.TopState is StateSplashScreen)
+            if (GameStateMachine.Instance.TopState is StateSplashScreen)
             {
                 return;
             }
 
-            stateMachine.PushState(new StateSplashScreen(mainSceneName));
+            GameStateMachine.Instance.PushState(new StateSplashScreen(mainSceneName));
         }
 
         private void TransitionToMainGame()
         {
-            if (stateMachine.TopState is StateMainGame)
+            if (GameStateMachine.Instance.TopState is StateMainGame)
             {
                 return;
             }
 
-            stateMachine.TransitionToState(new StateMainGame(stateMachine));
+            GameStateMachine.Instance.TransitionToState(new StateMainGame());
         }
     }
 }

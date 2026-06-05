@@ -8,7 +8,7 @@ using ZXing;
 using UnityEngine.Android;
 #endif
 
-namespace MuseJam.XR
+namespace MuseGameJam.XR
 {
     /// <summary>
     /// QR scanner per il museo: apre la camera del telefono, mostra il feed a

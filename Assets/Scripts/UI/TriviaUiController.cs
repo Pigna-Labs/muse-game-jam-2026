@@ -17,7 +17,6 @@ namespace MuseGameJam.UI
         private UIDocument document;
         private Label questionLabel;
         private bool hasAnswered;
-        private int correctAnswerIndex;
 
         public event Action<int> AnswerSelected;
 
@@ -52,8 +51,6 @@ namespace MuseGameJam.UI
                 SetAnswer(i, question.GetAnswer(i));
             }
 
-            SetCorrectAnswer(question.CorrectAnswerIndex);
-
             ClearAnswerFeedback();
             hasAnswered = false;
             SetInteractable(true);
@@ -67,7 +64,7 @@ namespace MuseGameJam.UI
                 throw new ArgumentOutOfRangeException(nameof(index), index, $"Trivia answer index must be between 0 and {AnswerCount - 1}.");
             }
 
-            answerButtons[index].text = string.IsNullOrWhiteSpace(answer) ? $"Answer {index + 1}" : answer;
+            answerButtons[index].text = answer;
         }
 
         // Enables or disables answer taps while feedback or transitions are playing.
@@ -77,17 +74,6 @@ namespace MuseGameJam.UI
             {
                 button.SetEnabled(interactable);
             }
-        }
-
-        // Sets which of the four authored answer buttons should count as correct.
-        public void SetCorrectAnswer(int index)
-        {
-            if (index < 0 || index >= AnswerCount)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index), index, $"Trivia correct answer index must be between 0 and {AnswerCount - 1}.");
-            }
-
-            correctAnswerIndex = index;
         }
 
         // Highlights the chosen answer and, when provided, the correct one.
@@ -155,7 +141,7 @@ namespace MuseGameJam.UI
             }
 
             hasAnswered = true;
-            ShowAnswerFeedback(answerIndex, correctAnswerIndex);
+            ShowAnswerFeedback(answerIndex, question.CorrectAnswerIndex);
             AnswerSelected?.Invoke(answerIndex);
         }
 

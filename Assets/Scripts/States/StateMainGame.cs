@@ -6,26 +6,23 @@ namespace MuseGameJam.States
 {
     public class StateMainGame : GameState
     {
-        private readonly GameStateMachine stateMachine;
         private readonly GameObject triviaUiPrefab;
         private readonly TriviaQuestion startingTriviaQuestion;
         private readonly Transform overlayRoot;
         private readonly bool openTriviaOnEnter;
         private bool openedStartingTrivia;
 
-        public StateMainGame(GameStateMachine stateMachine)
-            : this(stateMachine, null, null, null, false)
+        public StateMainGame()
+            : this(null, null, null, false)
         {
         }
 
         public StateMainGame(
-            GameStateMachine stateMachine,
             GameObject triviaUiPrefab,
             TriviaQuestion startingTriviaQuestion,
             Transform overlayRoot,
             bool openTriviaOnEnter)
         {
-            this.stateMachine = stateMachine;
             this.triviaUiPrefab = triviaUiPrefab;
             this.startingTriviaQuestion = startingTriviaQuestion;
             this.overlayRoot = overlayRoot;
@@ -47,7 +44,7 @@ namespace MuseGameJam.States
         // Opens a trivia question above the main game without replacing the main game state.
         public void OpenTriviaQuestion(TriviaQuestion question)
         {
-            if (stateMachine == null)
+            if (GameStateMachine.Instance == null)
             {
                 Debug.LogError("StateMainGame needs a GameStateMachine before it can open trivia.");
                 return;
@@ -59,7 +56,7 @@ namespace MuseGameJam.States
                 return;
             }
 
-            stateMachine.PushOverlay(new TriviaQuestionOverlayState(stateMachine, triviaUiPrefab, question, overlayRoot));
+            GameStateMachine.Instance.PushState(new TriviaQuestionOverlayState(triviaUiPrefab, question, overlayRoot));
         }
     }
 }

@@ -7,7 +7,6 @@ namespace MuseGameJam.States
 {
     public class TriviaQuestionOverlayState : GameState
     {
-        private readonly GameStateMachine stateMachine;
         private readonly GameObject triviaUiPrefab;
         private readonly TriviaQuestion question;
         private readonly Transform parent;
@@ -15,12 +14,10 @@ namespace MuseGameJam.States
         private TriviaUiController triviaUi;
 
         public TriviaQuestionOverlayState(
-            GameStateMachine stateMachine,
             GameObject triviaUiPrefab,
             TriviaQuestion question,
             Transform parent)
         {
-            this.stateMachine = stateMachine;
             this.triviaUiPrefab = triviaUiPrefab;
             this.question = question;
             this.parent = parent;
@@ -51,7 +48,7 @@ namespace MuseGameJam.States
         // Closes the trivia overlay when the mobile back action reaches this state.
         public override bool HandleBack()
         {
-            stateMachine.PopOverlay();
+            GameStateMachine.Instance.PopOverlay();
             return true;
         }
 
