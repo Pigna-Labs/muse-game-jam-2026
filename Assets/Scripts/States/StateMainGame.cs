@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MuseGameJam.States
 {
-    public class MainGameState : GameState
+    public class StateMainGame : GameState
     {
         private readonly GameStateMachine stateMachine;
         private readonly GameObject triviaUiPrefab;
@@ -13,7 +13,12 @@ namespace MuseGameJam.States
         private readonly bool openTriviaOnEnter;
         private bool openedStartingTrivia;
 
-        public MainGameState(
+        public StateMainGame(GameStateMachine stateMachine)
+            : this(stateMachine, null, null, null, false)
+        {
+        }
+
+        public StateMainGame(
             GameStateMachine stateMachine,
             GameObject triviaUiPrefab,
             TriviaQuestion startingTriviaQuestion,
@@ -42,6 +47,18 @@ namespace MuseGameJam.States
         // Opens a trivia question above the main game without replacing the main game state.
         public void OpenTriviaQuestion(TriviaQuestion question)
         {
+            if (stateMachine == null)
+            {
+                Debug.LogError("StateMainGame needs a GameStateMachine before it can open trivia.");
+                return;
+            }
+
+            if (triviaUiPrefab == null || question == null)
+            {
+                Debug.LogWarning("StateMainGame cannot open trivia until a TriviaUI prefab and question are assigned.");
+                return;
+            }
+
             stateMachine.PushOverlay(new TriviaQuestionOverlayState(stateMachine, triviaUiPrefab, question, overlayRoot));
         }
     }

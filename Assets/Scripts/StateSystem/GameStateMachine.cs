@@ -1,23 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace MuseGameJam.StateSystem
 {
     public class GameStateMachine : MonoBehaviour
     {
-        private readonly Stack<IGameState> overlays = new();
-        private IGameState currentState;
+        private readonly List<IGameState> stateStack = new();
 
         [SerializeField] private bool persistAcrossScenes = true;
 
         public static GameStateMachine Instance { get; private set; }
 
-        public IGameState CurrentState => currentState;
-        public IGameState TopState => overlays.Count > 0 ? overlays.Peek() : currentState;
-        public IEnumerable<IGameState> Overlays => overlays;
-        public int OverlayCount => overlays.Count;
-        public bool HasOverlayOpen => overlays.Count > 0;
+        public IGameState CurrentState => stateStack.Count > 0 ? stateStack[0] : null;
+        public IGameState TopState => stateStack.Count > 0 ? stateStack[^1] : null;
+        public IEnumerable<IGameState> States => stateStack;
+        public IEnumerable<IGameState> Overlays => GetOverlays();
+        public int StateCount => stateStack.Count;
+        public int OverlayCount => Mathf.Max(0, stateStack.Count - 1);
+        public bool HasOverlayOpen => OverlayCount > 0;
 
         public event Action BackUnhandled;
         public event Action<bool> ApplicationPauseChanged;
@@ -54,9 +56,7 @@ namespace MuseGameJam.StateSystem
                 return;
             }
 
-            PopAllOverlays(resumeCurrentState: false);
-            currentState?.Exit();
-            currentState = null;
+            ClearStack();
             Instance = null;
         }
 
@@ -72,45 +72,72 @@ namespace MuseGameJam.StateSystem
             ApplicationFocusChanged?.Invoke(hasFocus);
         }
 
-        // Replaces the main app mode after closing any active overlays.
-        public void ChangeState(IGameState nextState)
+        // Pushes a state above the current top state.
+        public void PushState(IGameState nextState)
         {
             if (nextState == null)
             {
-                Debug.LogError("Cannot change to a null game state.");
+                Debug.LogError("Cannot push a null game state.");
                 return;
             }
 
-            PopAllOverlays(resumeCurrentState: false);
-            currentState?.Exit();
-            currentState = nextState;
-            currentState.Enter();
+            TopState?.Pause();
+            stateStack.Add(nextState);
+            LogStateStack($"Pushed state {GetStateName(nextState)}");
+            nextState.Enter();
+        }
+
+        // Replaces the whole stack with a new state.
+        public void TransitionToState(IGameState nextState)
+        {
+            if (nextState == null)
+            {
+                Debug.LogError("Cannot transition to a null game state.");
+                return;
+            }
+
+            ClearStack();
+            stateStack.Add(nextState);
+            LogStateStack($"Transitioned to {GetStateName(nextState)}");
+            nextState.Enter();
+        }
+
+        // Replaces the main app mode after closing any active states.
+        public void ChangeState(IGameState nextState)
+        {
+            TransitionToState(nextState);
         }
 
         // Opens a temporary state above the current top state, such as pause or settings.
         public void PushOverlay(IGameState overlay)
         {
-            if (overlay == null)
+            PushState(overlay);
+        }
+
+        // Removes the top state and resumes the state underneath it.
+        public void PopState()
+        {
+            if (stateStack.Count == 0)
             {
-                Debug.LogError("Cannot push a null overlay state.");
                 return;
             }
 
-            TopState?.Pause();
-            overlays.Push(overlay);
-            overlay.Enter();
+            IGameState poppedState = stateStack[^1];
+            stateStack.RemoveAt(stateStack.Count - 1);
+            poppedState.Exit();
+            TopState?.Resume();
+            LogStateStack($"Popped state {GetStateName(poppedState)}");
         }
 
         // Closes the current top overlay and resumes the next state underneath it.
         public void PopOverlay()
         {
-            if (overlays.Count == 0)
+            if (!HasOverlayOpen)
             {
                 return;
             }
 
-            overlays.Pop().Exit();
-            TopState?.Resume();
+            PopState();
         }
 
         // Closes every overlay and resumes the main state if any overlay was open.
@@ -122,16 +149,19 @@ namespace MuseGameJam.StateSystem
         // Closes all overlays, optionally skipping resume when the main state will exit next.
         private void PopAllOverlays(bool resumeCurrentState)
         {
-            bool hadOverlays = overlays.Count > 0;
+            bool hadOverlays = HasOverlayOpen;
 
-            while (overlays.Count > 0)
+            while (HasOverlayOpen)
             {
-                overlays.Pop().Exit();
+                IGameState poppedOverlay = stateStack[^1];
+                stateStack.RemoveAt(stateStack.Count - 1);
+                poppedOverlay.Exit();
+                LogStateStack($"Popped overlay {GetStateName(poppedOverlay)}");
             }
 
             if (resumeCurrentState && hadOverlays)
             {
-                currentState?.Resume();
+                CurrentState?.Resume();
             }
         }
 
@@ -143,7 +173,7 @@ namespace MuseGameJam.StateSystem
                 return;
             }
 
-            if (overlays.Count > 0)
+            if (HasOverlayOpen)
             {
                 PopOverlay();
                 return;
@@ -155,15 +185,73 @@ namespace MuseGameJam.StateSystem
         // Checks whether a specific overlay type is already open before pushing duplicates.
         public bool HasOverlay<TOverlay>() where TOverlay : IGameState
         {
-            foreach (IGameState overlay in overlays)
+            for (int i = stateStack.Count - 1; i > 0; i--)
             {
-                if (overlay is TOverlay)
+                if (stateStack[i] is TOverlay)
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        // Prints the current main state, active top state, and overlay stack for state transition debugging.
+        private void LogStateStack(string action)
+        {
+            Debug.Log(
+                $"[StateMachine] {action}\n" +
+                $"Current state: {GetStateName(CurrentState)}\n" +
+                $"Running state: {GetStateName(TopState)}\n" +
+                $"State stack: {GetStateStackDescription()}",
+                this);
+        }
+
+        // Returns a readable state name for transition logs.
+        private string GetStateName(IGameState state)
+        {
+            return state == null ? "None" : state.GetType().Name;
+        }
+
+        // Builds a bottom-to-top view of every active state.
+        private string GetStateStackDescription()
+        {
+            if (stateStack.Count == 0)
+            {
+                return "Empty";
+            }
+
+            StringBuilder builder = new();
+
+            for (int i = 0; i < stateStack.Count; i++)
+            {
+                if (i > 0)
+                {
+                    builder.Append(" > ");
+                }
+
+                builder.Append(GetStateName(stateStack[i]));
+            }
+
+            return builder.ToString();
+        }
+
+        private IEnumerable<IGameState> GetOverlays()
+        {
+            for (int i = 1; i < stateStack.Count; i++)
+            {
+                yield return stateStack[i];
+            }
+        }
+
+        private void ClearStack()
+        {
+            while (stateStack.Count > 0)
+            {
+                IGameState poppedState = stateStack[^1];
+                stateStack.RemoveAt(stateStack.Count - 1);
+                poppedState.Exit();
+            }
         }
     }
 }
