@@ -3,7 +3,6 @@ using MuseGameJam.Gameplay;
 using MuseGameJam.States;
 using MuseGameJam.StateSystem;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace MuseGameJam.UI
@@ -11,12 +10,12 @@ namespace MuseGameJam.UI
     [RequireComponent(typeof(UIDocument))]
     public class MainUIController : MonoBehaviour
     {
-        // Una voce della tray: l'etichetta mostrata + il droppable assegnato a quell'item.
+        // Una voce della tray: l'etichetta mostrata + il prefab Item assegnato a quell'item.
         [System.Serializable]
         public class TrayItemDef
         {
             public string label = "Item";
-            public GameObject droppablePrefab;
+            public GameObject itemPrefab;
         }
 
         [Header("Tray")]
@@ -29,9 +28,9 @@ namespace MuseGameJam.UI
 
         [Header("Drag & drop")]
         [SerializeField] Camera targetCamera;
-        // Distanza dalla camera del piano su cui galleggia il droppable mentre segue il cursore.
+        // Distanza dalla camera del piano su cui galleggia l'item mentre segue il cursore.
         [SerializeField] float dragDepth = 10f;
-        // Se vero, la tray si nasconde durante il drag (l'oggetto resta visibile nello stage).
+        // Se vero, la tray si nasconde durante il drag (l'item resta visibile nello stage).
         [SerializeField] bool hideTrayWhileDragging = false;
 
         [Header("QR Scanner")]
@@ -39,7 +38,6 @@ namespace MuseGameJam.UI
         // il pulsante camera lo attiva, "Chiudi"/scan-ok lo ridisattiva.
         [SerializeField] GameObject qrScannerObject;
 
-        Button shopButton;
         Button cameraButton;
         Button foodButton;
         Button cleanButton;
@@ -52,16 +50,15 @@ namespace MuseGameJam.UI
         string openCategory;
 
         // Stato del drag in corso (uno alla volta).
-        GameObject activeDroppable;
-        Droppable activeDroppableComp;
-        VisualElement activeItem;
+        GameObject spawnedObject;
+        Item spawnedItem;
+        VisualElement capturedTrayItem;
         int activePointerId;
 
         void OnEnable()
         {
             rootElement = GetComponent<UIDocument>().rootVisualElement;
 
-            shopButton = rootElement.Q<Button>("shop-button");
             cameraButton = rootElement.Q<Button>("camera-button");
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
@@ -103,7 +100,6 @@ namespace MuseGameJam.UI
             }
 
             // Guardia anti-spam: se c'è già un CameraState aperto, non pusharne altri.
-            // (Il pulsante può ricevere click ripetuti dagli update dei pannelli UI Toolkit.)
             if (GameStateMachine.Instance.HasOverlay<CameraState>()) return;
 
             // Passa anche QUESTA UI così il CameraState la nasconde mentre la camera è aperta.
@@ -116,15 +112,6 @@ namespace MuseGameJam.UI
         void HandleUrlScanned(string url)
         {
             Debug.Log($"[MainUI] URL dal QR: {url}");
-        }
-
-        void Update()
-        {
-            // Il droppable segue il cursore finché c'è un drag attivo.
-            if (activeDroppable == null) return;
-            var pointer = Pointer.current;
-            if (pointer == null) return;
-            MoveDroppableTo(pointer.position.ReadValue());
         }
 
         void OnFoodClicked() => ToggleTray("FOOD", foodItems);
@@ -175,7 +162,7 @@ namespace MuseGameJam.UI
                 if (icon != null) icon.pickingMode = PickingMode.Ignore;
                 if (label != null) label.pickingMode = PickingMode.Ignore;
 
-                var prefab = def.droppablePrefab;
+                var prefab = def.itemPrefab;
                 itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab));
                 itemRoot.RegisterCallback<PointerUpEvent>(OnItemPointerUp);
 
@@ -183,27 +170,26 @@ namespace MuseGameJam.UI
             }
         }
 
-        void OnItemPointerDown(PointerDownEvent evt, VisualElement item, GameObject prefab)
+        void OnItemPointerDown(PointerDownEvent evt, VisualElement trayItem, GameObject prefab)
         {
-            if (activeDroppable != null) return; // un drag alla volta
+            if (spawnedObject != null) return; // un drag alla volta
 
             if (prefab == null)
             {
-                Debug.LogWarning("MainUIController: questo TrayItem non ha un droppablePrefab assegnato.");
+                Debug.LogWarning("MainUIController: questo TrayItem non ha un itemPrefab assegnato.");
                 return;
             }
 
-            activeItem = item;
+            capturedTrayItem = trayItem;
             activePointerId = evt.pointerId;
-            item.CapturePointer(evt.pointerId); // così i PointerUp arrivano qui anche fuori dall'item
+            trayItem.CapturePointer(evt.pointerId); // così i PointerUp arrivano qui anche fuori dall'item
 
-            activeDroppable = Instantiate(prefab);
-            activeDroppableComp = activeDroppable.GetComponent<Droppable>();
-
-            var pointer = Pointer.current;
-            if (pointer != null) MoveDroppableTo(pointer.position.ReadValue());
-
-            if (activeDroppableComp != null) activeDroppableComp.OnDragBegin();
+            spawnedObject = Instantiate(prefab);
+            spawnedItem = spawnedObject.GetComponent<Item>();
+            if (spawnedItem != null)
+                spawnedItem.BeginDrag(targetCamera != null ? targetCamera : Camera.main, dragDepth);
+            else
+                Debug.LogWarning("MainUIController: il prefab spawnato non ha un componente Item.");
 
             if (hideTrayWhileDragging) itemTray.style.display = DisplayStyle.None;
 
@@ -212,33 +198,23 @@ namespace MuseGameJam.UI
 
         void OnItemPointerUp(PointerUpEvent evt)
         {
-            if (activeDroppable == null || evt.pointerId != activePointerId) return;
+            if (spawnedObject == null || evt.pointerId != activePointerId) return;
 
-            // La logica di esito (riconoscimento food, accumulo clean/pet) l'ha gestita la DropArea
-            // tramite i trigger durante il drag. Qui chiudiamo solo il drag.
-            if (activeDroppableComp != null) activeDroppableComp.OnDragEnd();
-            else Destroy(activeDroppable);
+            // L'Item gestisce il proprio rilascio (di base sparisce); la DropArea ha già reagito via trigger.
+            if (spawnedItem != null) spawnedItem.Drop();
+            else Destroy(spawnedObject);
 
-            activeDroppable = null;
-            activeDroppableComp = null;
+            spawnedObject = null;
+            spawnedItem = null;
 
             if (hideTrayWhileDragging && openCategory != null)
                 itemTray.style.display = DisplayStyle.Flex;
 
-            if (activeItem != null)
+            if (capturedTrayItem != null)
             {
-                activeItem.ReleasePointer(activePointerId);
-                activeItem = null;
+                capturedTrayItem.ReleasePointer(activePointerId);
+                capturedTrayItem = null;
             }
-        }
-
-        void MoveDroppableTo(Vector2 screenPos)
-        {
-            var cam = targetCamera != null ? targetCamera : Camera.main;
-            if (cam == null) return;
-            var world = cam.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, dragDepth));
-            activeDroppable.transform.position = world;
-            if (activeDroppableComp != null) activeDroppableComp.OnDragUpdate(world);
         }
     }
 }

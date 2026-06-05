@@ -2,28 +2,14 @@ using UnityEngine;
 
 namespace MuseGameJam.Gameplay
 {
-    // Base per gli oggetti trascinabili dalla tray. Il controller li sposta e chiama questi hook;
-    // le sottoclassi (food / clean / pet) mettono qui la loro logica e interagiscono con la
-    // DropArea tramite trigger 2D. Serve un Collider2D (trigger) + Rigidbody2D per far scattare
-    // i trigger su un oggetto in movimento.
-    [RequireComponent(typeof(Rigidbody2D))]
-    public class Droppable : MonoBehaviour
+    // Oggetto che viene "lasciato" su una DropArea e lì riconosciuto (es. cibo per FOOD).
+    // Il riconoscimento del tipo avviene lato DropArea (al rilascio, via evento Dropped); qui si
+    // mette ciò che riguarda l'oggetto nel momento in cui viene droppato.
+    public class Droppable : Item
     {
-        void Reset()
+        protected override void OnDrop()
         {
-            // Configurazione tipica per un oggetto che si muove a mano ma deve generare trigger.
-            var rb = GetComponent<Rigidbody2D>();
-            rb.bodyType = RigidbodyType2D.Kinematic;
-            rb.gravityScale = 0f;
+            // es. notifica "sono stato lasciato". L'area riconosce il tipo via trigger.
         }
-
-        // Preso dalla tray.
-        public virtual void OnDragBegin() { }
-
-        // Ogni frame mentre segue il cursore (posizione mondo aggiornata).
-        public virtual void OnDragUpdate(Vector3 worldPosition) { }
-
-        // Rilasciato. Default: l'oggetto sparisce (la DropArea ha già reagito via trigger).
-        public virtual void OnDragEnd() { Destroy(gameObject); }
     }
 }
