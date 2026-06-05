@@ -1,0 +1,12 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Challenges/Challenges.uss?fileID=7433441132597879392&amp;guid=31c60c3b0a2647c40b04c6573c0b3a07&amp;type=3#Challenges"/>
+    <ui:VisualElement name="challenges-root" class="challenges-root">
+        <ui:VisualElement name="challenges-panel" class="challenges-panel">
+            <ui:VisualElement name="challenges-header" class="challenges-header">
+                <ui:Label name="challenges-title" text="Challenges" class="challenges-title"/>
+                <ui:Button name="challenges-close" text="Close" class="challenges-close"/>
+            </ui:VisualElement>
+            <ui:ScrollView name="challenges-list" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="challenges-list"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

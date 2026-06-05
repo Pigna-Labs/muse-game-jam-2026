@@ -100,7 +100,7 @@ namespace MuseGameJam.XR
             _cameraView?.RegisterCallback<GeometryChangedEvent>(_ => ApplyFeedOrientation());
 
             // Audio di sottofondo: parte appena si entra in modalità camera
-            // (cioè quando il GameObject viene attivato da CameraState) e va in loop.
+            // (cioè quando il GameObject viene attivato da StateCamera) e va in loop.
             StartBackgroundAudio();
 
             // Attivando il GameObject (lo fa il MainUI) parte subito la scansione.
@@ -154,7 +154,7 @@ namespace MuseGameJam.XR
         /// <summary>
         /// Richiesta di chiusura (pulsante "Chiudi"). NON disattiva il GameObject
         /// da solo: emette OnClosed e lascia che a governarlo sia chi possiede lo
-        /// stato (CameraState fa PopOverlay -> Exit -> SetActive(false)).
+        /// stato (StateCamera fa PopOverlay -> Exit -> SetActive(false)).
         /// La camera viene comunque fermata subito.
         /// </summary>
         public void Close()
@@ -291,7 +291,7 @@ namespace MuseGameJam.XR
             Debug.Log($"[QrScanner] QR letto: {text}");
 
             // Ferma la camera ed emette SOLO OnQrDecoded (non OnClosed): chi governa
-            // lo stato (CameraState) fa un unico PopOverlay reagendo a OnQrDecoded.
+            // lo stato (StateCamera) fa un unico PopOverlay reagendo a OnQrDecoded.
             StopScan();
             OnQrDecoded?.Invoke(text);
         }

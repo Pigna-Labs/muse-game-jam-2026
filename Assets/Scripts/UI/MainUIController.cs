@@ -38,7 +38,15 @@ namespace MuseGameJam.UI
         // il pulsante camera lo attiva, "Chiudi"/scan-ok lo ridisattiva.
         [SerializeField] GameObject qrScannerObject;
 
+        [Header("Challenges")]
+        // Prefab for the Challenges menu UI (UIDocument + ChallengesMenuController).
+        // Instantiated by StateChallengesMenu when the "target" button is pressed.
+        [SerializeField] GameObject challengesUiPrefab;
+        // Parent transform to instantiate the challenges UI under (leave empty for the scene root).
+        [SerializeField] Transform challengesUiParent;
+
         Button cameraButton;
+        Button targetButton;
         Button foodButton;
         Button cleanButton;
         Button petButton;
@@ -60,6 +68,7 @@ namespace MuseGameJam.UI
             rootElement = GetComponent<UIDocument>().rootVisualElement;
 
             cameraButton = rootElement.Q<Button>("camera-button");
+            targetButton = rootElement.Q<Button>("target-button");
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
             petButton = rootElement.Q<Button>("pet-button");
@@ -71,6 +80,7 @@ namespace MuseGameJam.UI
             cleanButton.clicked += OnCleanClicked;
             petButton.clicked += OnPetClicked;
             if (cameraButton != null) cameraButton.clicked += OnCameraClicked;
+            if (targetButton != null) targetButton.clicked += OnTargetClicked;
 
             // Lo scanner parte chiuso (disattivato).
             if (qrScannerObject != null) qrScannerObject.SetActive(false);
@@ -85,10 +95,11 @@ namespace MuseGameJam.UI
             if (cleanButton != null) cleanButton.clicked -= OnCleanClicked;
             if (petButton != null) petButton.clicked -= OnPetClicked;
             if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
+            if (targetButton != null) targetButton.clicked -= OnTargetClicked;
         }
 
         // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
-        // CameraState nasconde la main UI, mette in pausa la main e attiva lo scanner;
+        // StateCamera nasconde la main UI, mette in pausa la main e attiva lo scanner;
         // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
         void OnCameraClicked()
         {
@@ -99,11 +110,11 @@ namespace MuseGameJam.UI
                 return;
             }
 
-            // Guardia anti-spam: se c'è già un CameraState aperto, non pusharne altri.
-            if (GameStateMachine.Instance.HasOverlay<CameraState>()) return;
+            // Guardia anti-spam: se c'è già uno StateCamera aperto, non pusharne altri.
+            if (GameStateMachine.Instance.HasOverlay<StateCamera>()) return;
 
-            // Passa anche QUESTA UI così il CameraState la nasconde mentre la camera è aperta.
-            var cameraState = new CameraState(qrScannerObject, gameObject);
+            // Passa anche QUESTA UI così lo StateCamera la nasconde mentre la camera è aperta.
+            var cameraState = new StateCamera(qrScannerObject, gameObject);
             cameraState.OnUrlScanned += HandleUrlScanned;
             GameStateMachine.Instance.PushState(cameraState);
         }
@@ -112,6 +123,30 @@ namespace MuseGameJam.UI
         void HandleUrlScanned(string url)
         {
             Debug.Log($"[MainUI] URL dal QR: {url}");
+        }
+
+        // Target button: opens the Challenges menu as an OVERLAY on the state stack.
+        // StateChallengesMenu instantiates the challenges UI and pauses the main state;
+        // on "Close" or back it calls PopOverlay and returns to the main state.
+        void OnTargetClicked()
+        {
+            if (challengesUiPrefab == null)
+            {
+                Debug.LogWarning("MainUIController: challengesUiPrefab not assigned in Inspector.");
+                return;
+            }
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the challenges menu.");
+                return;
+            }
+
+            // Anti-spam guard: if a challenges menu is already open, don't push another.
+            if (GameStateMachine.Instance.HasOverlay<StateChallengesMenu>()) return;
+
+            // Pass this UI so the overlay hides it while open (it lives on its own UIDocument).
+            var challengesState = new StateChallengesMenu(challengesUiPrefab, challengesUiParent, gameObject);
+            GameStateMachine.Instance.PushState(challengesState);
         }
 
         void OnFoodClicked() => ToggleTray("FOOD", foodItems);
