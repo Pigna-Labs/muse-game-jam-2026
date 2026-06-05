@@ -6,8 +6,8 @@
 }
 
 .top-bar {
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-end;
     padding: 16px;
 }
 
@@ -17,61 +17,66 @@
 
 .bottom-bar {
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     padding: 16px 16px 24px 16px;
 }
 
-/* Pulsanti: legno levigato con bordo morbido e una sottile base più scura per dare profondità. */
-.round-button {
-    width: 42%;
-    min-width: 160px;
-    max-width: 360px;
-    height: 96px;
-    border-radius: 24px;
-    border-left-width: 2px;
-    border-right-width: 2px;
-    border-top-width: 2px;
-    border-bottom-width: 5px;
-    border-left-color: rgb(150, 101, 58);
-    border-right-color: rgb(150, 101, 58);
-    border-top-color: rgb(168, 116, 70);
-    border-bottom-color: rgb(99, 62, 33);
-    background-color: rgb(138, 90, 51);
-    color: rgb(255, 247, 233);
-    font-size: 28px;
-    -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    white-space: normal;
-    transition-property: background-color, scale, translate;
+/* Base comune ai pulsanti-icona: nessuno sfondo, solo l'arte dell'icona. */
+.icon-button {
+    min-width: 0;
+    max-width: none;
+    padding: 0;
+    border-width: 0;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+    transition-property: scale;
     transition-duration: 0.12s;
 }
 
-.round-button:hover {
-    background-color: rgb(160, 107, 62);
-    border-top-color: rgb(190, 135, 86);
-    scale: 1.04 1.04;
+.icon-button:hover {
+    scale: 1.06 1.06;
 }
 
-.round-button:active {
-    background-color: rgb(112, 71, 39);
-    border-bottom-width: 2px;
-    translate: 0 3px;
-    scale: 1 1;
+.icon-button:active {
+    scale: 0.94 0.94;
 }
 
-.round-button:disabled {
-    opacity: 0.5;
+/* Colonna in alto a destra: navigazione (camera, mirino, sblocchi). */
+.nav-button {
+    width: 140px;
+    height: 140px;
+    margin-bottom: 32px;
 }
 
-.round-button--large {
-    width: 30%;
-    min-width: 180px;
-    max-width: 320px;
-    height: 112px;
-    border-radius: 28px;
-    border-bottom-width: 6px;
-    font-size: 32px;
+.nav-button--camera {
+    background-image: url("project://database/Assets/Assets/Art/Icons/camera.png?fileID=2800000&guid=cbebf629e5d4a1540a4675cc06a9461e&type=3#camera");
+}
+
+.nav-button--target {
+    background-image: url("project://database/Assets/Assets/Art/Icons/target.png?fileID=2800000&guid=975aa5307b3091d45875d4eab07953d7&type=3#target");
+}
+
+.nav-button--unlockables {
+    background-image: url("project://database/Assets/Assets/Art/Icons/notebook.png?fileID=2800000&guid=3ac1f283106858f4d9eef6b45514bd76&type=3#notebook");
+}
+
+/* Riga in basso: grandi pulsanti d'azione equidistanti. */
+.action-button {
+    width: 168px;
+    height: 168px;
+}
+
+.action-button--food {
+    background-image: url("project://database/Assets/Assets/Art/Icons/vegetable.png?fileID=2800000&guid=44f28e13c2cdc624daf8898938d0284e&type=3#vegetable");
+}
+
+.action-button--clean {
+    background-image: url("project://database/Assets/Assets/Art/Icons/sponge.png?fileID=2800000&guid=abd1ba72592bdfa4e9bd9ec5b53aa05c&type=3#sponge");
+}
+
+.action-button--pet {
+    background-image: url("project://database/Assets/Assets/Art/Icons/tap.png?fileID=2800000&guid=ed5363b1672a0a344be7724eef0d0b9c&type=3#tap");
 }
 
 .item-tray {
