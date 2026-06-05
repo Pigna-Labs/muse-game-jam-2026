@@ -148,7 +148,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9928e8db99d010a43b78b675e9f2e7eb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MuseJam.XR.QrScannerController
+  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.XR.QrScannerController
   preferRearCamera: 1
   requestedWidth: 640
   requestedHeight: 480

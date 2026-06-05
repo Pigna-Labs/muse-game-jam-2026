@@ -67,7 +67,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 863d7982e2aeeba46a59a8593122772d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MainUIController
+  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.MainUIController
   trayItemTemplate: {fileID: 9197481963319205126, guid: 3afd7ab5b3596f549b98a5e9428a52ed, type: 3}
   trayItems: []
   targetCamera: {fileID: 0}
