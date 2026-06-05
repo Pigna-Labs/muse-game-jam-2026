@@ -38,7 +38,6 @@ namespace MuseGameJam.UI
         // il pulsante camera lo attiva, "Chiudi"/scan-ok lo ridisattiva.
         [SerializeField] GameObject qrScannerObject;
 
-        Button shopButton;
         Button cameraButton;
         Button foodButton;
         Button cleanButton;
@@ -60,7 +59,6 @@ namespace MuseGameJam.UI
         {
             rootElement = GetComponent<UIDocument>().rootVisualElement;
 
-            shopButton = rootElement.Q<Button>("shop-button");
             cameraButton = rootElement.Q<Button>("camera-button");
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
