@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 namespace MuseGameJam.UI
 {
     [RequireComponent(typeof(UIDocument))]
-    public class TriviaUiController : MonoBehaviour
+    public class TriviaUIController : MonoBehaviour
     {
         private const int AnswerCount = 4;
 
@@ -42,7 +42,7 @@ namespace MuseGameJam.UI
         // Updates the visible question and answers from trivia gameplay code.
         public void SetQuestion(TriviaQuestion nextQuestion)
         {
-            question = RequireReference(nextQuestion, "TriviaUiController needs a TriviaQuestion asset assigned.");
+            question = RequireReference(nextQuestion, "TriviaUIController needs a TriviaQuestion asset assigned.");
 
             SetQuestionText(question.Question);
 

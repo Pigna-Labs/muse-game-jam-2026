@@ -11,7 +11,7 @@ namespace MuseGameJam.States
         private readonly TriviaQuestion question;
         private readonly Transform parent;
         private GameObject triviaUiInstance;
-        private TriviaUiController triviaUi;
+        private TriviaUIController triviaUi;
 
         public TriviaQuestionOverlayState(
             GameObject triviaUiPrefab,
@@ -27,11 +27,11 @@ namespace MuseGameJam.States
         public override void Enter()
         {
             triviaUiInstance = Object.Instantiate(triviaUiPrefab, parent);
-            triviaUi = triviaUiInstance.GetComponent<TriviaUiController>();
+            triviaUi = triviaUiInstance.GetComponent<TriviaUIController>();
 
             if (triviaUi == null)
             {
-                throw new MissingComponentException("Trivia overlay prefab needs a TriviaUiController component.");
+                throw new MissingComponentException("Trivia overlay prefab needs a TriviaUIController component.");
             }
 
             triviaUi.SetQuestion(question);
@@ -52,7 +52,7 @@ namespace MuseGameJam.States
             return true;
         }
 
-        // Receives the selected answer index after TriviaUiController has shown feedback.
+        // Receives the selected answer index after TriviaUIController has shown feedback.
         private void HandleAnswerSelected(int answerIndex)
         {
         }
