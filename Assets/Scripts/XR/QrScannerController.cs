@@ -39,6 +39,13 @@ namespace MuseGameJam.XR
         [Tooltip("Ogni quanti secondi provare a decodificare (non ogni frame).")]
         [SerializeField] private float decodeInterval = 0.4f;
 
+        [Header("Audio")]
+        [Tooltip("Suono di sottofondo riprodotto in loop mentre la modalità camera è attiva. " +
+                 "Trascina qui Camera_Background_Test01.wav (in Assets/Assets/Audio/).")]
+        [SerializeField] private AudioClip cameraBackgroundClip;
+        [Range(0f, 1f)]
+        [SerializeField] private float cameraBackgroundVolume = 1f;
+
         /// <summary>Invocato quando un QR viene letto (di norma un link).</summary>
         public event Action<string> OnQrDecoded;
 
@@ -54,6 +61,9 @@ namespace MuseGameJam.XR
         private bool _isScanning;
         private float _nextDecodeTime;
         private Color32[] _pixelBuffer;
+
+        // --- Audio di sottofondo della modalità camera ---
+        private AudioSource _bgAudio;
 
         private readonly BarcodeReader _reader = new BarcodeReader
         {
@@ -89,8 +99,37 @@ namespace MuseGameJam.XR
             // Ri-orienta il feed quando il layout cambia (rotazione device, primo layout).
             _cameraView?.RegisterCallback<GeometryChangedEvent>(_ => ApplyFeedOrientation());
 
+            // Audio di sottofondo: parte appena si entra in modalità camera
+            // (cioè quando il GameObject viene attivato da CameraState) e va in loop.
+            StartBackgroundAudio();
+
             // Attivando il GameObject (lo fa il MainUI) parte subito la scansione.
             StartScan();
+        }
+
+        // ---- Audio di sottofondo ---------------------------------------------
+
+        private void StartBackgroundAudio()
+        {
+            if (cameraBackgroundClip == null) return;
+
+            if (_bgAudio == null)
+            {
+                _bgAudio = gameObject.AddComponent<AudioSource>();
+                _bgAudio.playOnAwake = false;
+                _bgAudio.loop = true;
+                _bgAudio.spatialBlend = 0f; // 2D: stesso volume ovunque
+            }
+
+            _bgAudio.clip = cameraBackgroundClip;
+            _bgAudio.volume = cameraBackgroundVolume;
+            _bgAudio.Play();
+        }
+
+        private void StopBackgroundAudio()
+        {
+            if (_bgAudio != null && _bgAudio.isPlaying)
+                _bgAudio.Stop();
         }
 
         // ---- API pubblica ----------------------------------------------------
@@ -310,6 +349,10 @@ namespace MuseGameJam.XR
             el.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
-        private void OnDisable() => StopScan();
+        private void OnDisable()
+        {
+            StopScan();
+            StopBackgroundAudio();
+        }
     }
 }
