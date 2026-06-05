@@ -44,12 +44,34 @@ namespace MuseGameJam.Gameplay
 
         void FollowCursor()
         {
-            var pointer = Pointer.current;
-            if (pointer == null || cam == null) return;
-            var screen = pointer.position.ReadValue();
+            if (cam == null || !TryGetPointerPosition(out var screen)) return;
             var world = cam.ScreenToWorldPoint(new Vector3(screen.x, screen.y, dragDepth));
             transform.position = world;
             OnDragMove(world);
+        }
+
+        // Posizione schermo del puntatore attivo, robusta su mobile.
+        // Su touch leggiamo il tocco primario direttamente dalla Touchscreen: Pointer.current
+        // su Android può puntare a un Mouse fantasma o restare stale, quindi non seguirebbe il dito.
+        // Su desktop/editor non c'è Touchscreen e si usa Pointer.current (il mouse).
+        static bool TryGetPointerPosition(out Vector2 screenPosition)
+        {
+            var touch = Touchscreen.current;
+            if (touch != null && touch.primaryTouch.press.isPressed)
+            {
+                screenPosition = touch.primaryTouch.position.ReadValue();
+                return true;
+            }
+
+            var pointer = Pointer.current;
+            if (pointer != null)
+            {
+                screenPosition = pointer.position.ReadValue();
+                return true;
+            }
+
+            screenPosition = default;
+            return false;
         }
 
         // Chiamato dal controller al rilascio. Base: l'oggetto sparisce.

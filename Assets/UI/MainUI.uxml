@@ -11,9 +11,15 @@
             <ui:ScrollView name="tray-content" mode="Horizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="tray-content" style="display: flex;"/>
         </ui:VisualElement>
         <ui:VisualElement name="bottom-bar" class="bottom-bar">
-            <ui:Button name="food-button" tooltip="Food" class="icon-button action-button action-button--food"/>
-            <ui:Button name="clean-button" tooltip="Clean" class="icon-button action-button action-button--clean"/>
-            <ui:Button name="pet-button" tooltip="Pet" class="icon-button action-button action-button--pet"/>
+            <MuseGameJam.UI.StatGauge name="food-gauge" value="1">
+                <ui:Button name="food-button" tooltip="Food" class="icon-button action-button action-button--food"/>
+            </MuseGameJam.UI.StatGauge>
+            <MuseGameJam.UI.StatGauge name="clean-gauge" value="1">
+                <ui:Button name="clean-button" tooltip="Clean" class="icon-button action-button action-button--clean"/>
+            </MuseGameJam.UI.StatGauge>
+            <MuseGameJam.UI.StatGauge name="pet-gauge" value="1">
+                <ui:Button name="pet-button" tooltip="Pet" class="icon-button action-button action-button--pet"/>
+            </MuseGameJam.UI.StatGauge>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

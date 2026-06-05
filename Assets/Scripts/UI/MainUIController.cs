@@ -43,6 +43,10 @@ namespace MuseGameJam.UI
         Button cleanButton;
         Button petButton;
 
+        StatGauge foodGauge;
+        StatGauge cleanGauge;
+        StatGauge petGauge;
+
         VisualElement rootElement;
         VisualElement itemTray;
         VisualElement trayContent;
@@ -63,6 +67,10 @@ namespace MuseGameJam.UI
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
             petButton = rootElement.Q<Button>("pet-button");
+
+            foodGauge = rootElement.Q<StatGauge>("food-gauge");
+            cleanGauge = rootElement.Q<StatGauge>("clean-gauge");
+            petGauge = rootElement.Q<StatGauge>("pet-gauge");
 
             itemTray = rootElement.Q<VisualElement>("item-tray");
             trayContent = rootElement.Q<VisualElement>("tray-content");
@@ -113,6 +121,11 @@ namespace MuseGameJam.UI
         {
             Debug.Log($"[MainUI] URL dal QR: {url}");
         }
+
+        // API per il gameplay: imposta il livello (0..1) di ciascun gauge.
+        public void SetFoodLevel(float value) { if (foodGauge != null) foodGauge.value = value; }
+        public void SetCleanLevel(float value) { if (cleanGauge != null) cleanGauge.value = value; }
+        public void SetPetLevel(float value) { if (petGauge != null) petGauge.value = value; }
 
         void OnFoodClicked() => ToggleTray("FOOD", foodItems);
         void OnCleanClicked() => ToggleTray("CLEAN", cleanItems);
@@ -165,6 +178,9 @@ namespace MuseGameJam.UI
                 var prefab = def.itemPrefab;
                 itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab));
                 itemRoot.RegisterCallback<PointerUpEvent>(OnItemPointerUp);
+                // Su touch l'OS può annullare il puntatore (PointerCancel) invece di rilasciarlo:
+                // senza questo, lo stato del drag resterebbe appeso e bloccherebbe ogni drag successivo.
+                itemRoot.RegisterCallback<PointerCancelEvent>(OnItemPointerCancel);
 
                 trayContent.Add(instance);
             }
@@ -204,6 +220,22 @@ namespace MuseGameJam.UI
             if (spawnedItem != null) spawnedItem.Drop();
             else Destroy(spawnedObject);
 
+            EndDrag();
+        }
+
+        // Puntatore annullato dall'OS (tipico su touch): scartiamo l'item senza droparlo
+        // e ripristiniamo lo stato, così la tray resta utilizzabile.
+        void OnItemPointerCancel(PointerCancelEvent evt)
+        {
+            if (spawnedObject == null || evt.pointerId != activePointerId) return;
+
+            Destroy(spawnedObject);
+            EndDrag();
+        }
+
+        // Ripristino comune dello stato del drag (rilascio o annullamento).
+        void EndDrag()
+        {
             spawnedObject = null;
             spawnedItem = null;
 
