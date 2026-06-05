@@ -224,11 +224,13 @@ namespace MuseGameJam.UI
         public void SetCleanLevel(float value) { if (cleanGauge != null) cleanGauge.value = value; }
         public void SetPetLevel(float value) { if (petGauge != null) petGauge.value = value; }
 
-        void OnFoodClicked() => ToggleTray("FOOD", foodItems);
-        void OnCleanClicked() => ToggleTray("CLEAN", cleanItems);
-        void OnPetClicked() => ToggleTray("PET", petItems);
+        // Ogni categoria mappa a una CareAction: l'item spawnato la riceve, così la
+        // DropArea fa partire l'animazione giusta (food->Eat, clean->Clean, pet->Pet).
+        void OnFoodClicked() => ToggleTray("FOOD", foodItems, CareAction.Eat);
+        void OnCleanClicked() => ToggleTray("CLEAN", cleanItems, CareAction.Clean);
+        void OnPetClicked() => ToggleTray("PET", petItems, CareAction.Pet);
 
-        void ToggleTray(string category, List<TrayItemDef> items)
+        void ToggleTray(string category, List<TrayItemDef> items, CareAction action)
         {
             if (openCategory == category)
             {
@@ -238,7 +240,7 @@ namespace MuseGameJam.UI
 
             openCategory = category;
             itemTray.style.display = DisplayStyle.Flex;
-            PopulateTray(items);
+            PopulateTray(items, action);
         }
 
         void HideTray()
@@ -249,7 +251,7 @@ namespace MuseGameJam.UI
         }
 
         // Riempie la banda clonando il template, un item per ogni TrayItemDef della lista scelta.
-        void PopulateTray(List<TrayItemDef> items)
+        void PopulateTray(List<TrayItemDef> items, CareAction action)
         {
             trayContent.Clear();
 
@@ -273,7 +275,7 @@ namespace MuseGameJam.UI
                 if (label != null) label.pickingMode = PickingMode.Ignore;
 
                 var prefab = def.itemPrefab;
-                itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab));
+                itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab, action));
                 itemRoot.RegisterCallback<PointerUpEvent>(OnItemPointerUp);
                 // Su touch l'OS può annullare il puntatore (PointerCancel) invece di rilasciarlo:
                 // senza questo, lo stato del drag resterebbe appeso e bloccherebbe ogni drag successivo.
@@ -283,7 +285,7 @@ namespace MuseGameJam.UI
             }
         }
 
-        void OnItemPointerDown(PointerDownEvent evt, VisualElement trayItem, GameObject prefab)
+        void OnItemPointerDown(PointerDownEvent evt, VisualElement trayItem, GameObject prefab, CareAction action)
         {
             if (spawnedObject != null) return; // un drag alla volta
 
@@ -300,7 +302,12 @@ namespace MuseGameJam.UI
             spawnedObject = Instantiate(prefab);
             spawnedItem = spawnedObject.GetComponent<Item>();
             if (spawnedItem != null)
+            {
+                // L'azione la decide la categoria (food/clean/pet), non il prefab:
+                // così gli stessi prefab base servono tutte le categorie.
+                spawnedItem.SetAction(action);
                 spawnedItem.BeginDrag(targetCamera != null ? targetCamera : Camera.main, dragDepth);
+            }
             else
                 Debug.LogWarning("MainUIController: il prefab spawnato non ha un componente Item.");
 

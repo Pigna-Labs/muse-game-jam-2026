@@ -33,6 +33,10 @@ namespace MuseGameJam.Gameplay
         // Azione di cura associata a questo item (per le animazioni del musetto).
         public CareAction Action => action;
 
+        // Permette di impostare l'azione allo spawn (es. il MainUI la deriva dalla
+        // categoria food/clean/pet), senza dover serializzare prefab separati.
+        public void SetAction(CareAction value) => action = value;
+
         Camera cam;
         float dragDepth;
         bool following;
