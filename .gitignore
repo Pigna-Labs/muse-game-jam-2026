@@ -80,5 +80,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# Unity Performance Testing (file generati localmente, non versionare)
+/[Aa]ssets/[Rr]esources/PerformanceTestRun*.json*
+/[Aa]ssets/[Rr]esources/PerformanceTestRun*
+
 # macOS
 .DS_Store
