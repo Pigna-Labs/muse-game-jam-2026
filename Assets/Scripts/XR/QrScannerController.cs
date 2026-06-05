@@ -47,8 +47,6 @@ namespace MuseJam.XR
         private VisualElement _root;
         private VisualElement _cameraView;
         private VisualElement _overlay;
-        private VisualElement _resultPanel;
-        private Label _resultLabel;
 
         // --- Camera / decode ---
         private WebCamTexture _webcam;
@@ -72,22 +70,27 @@ namespace MuseJam.XR
         private void OnEnable()
         {
             _doc = GetComponent<UIDocument>();
-            _root = _doc.rootVisualElement;
+            _root = _doc != null ? _doc.rootVisualElement : null;
+            if (_root == null)
+            {
+                Debug.LogWarning("[QrScanner] rootVisualElement non pronto: controlla UIDocument/Source Asset.");
+                return;
+            }
 
             _cameraView  = _root.Q<VisualElement>("camera-view");
             _overlay     = _root.Q<VisualElement>("overlay");
-            _resultPanel = _root.Q<VisualElement>("result-panel");
-            _resultLabel = _root.Q<Label>("result-label");
 
-            _root.Q<Button>("scan-button")?.RegisterCallback<ClickEvent>(_ => StartScan());
-            _root.Q<Button>("close-button")?.RegisterCallback<ClickEvent>(_ => StopScan());
-            _root.Q<Button>("rescan-button")?.RegisterCallback<ClickEvent>(_ => StartScan());
+            // Il pulsante "Scansiona" non esiste più: lo scanner si apre dall'esterno
+            // (MainUI attiva il GameObject) e parte subito. "Chiudi" chiude l'oggetto.
+            _root.Q<Button>("close-button")?.RegisterCallback<ClickEvent>(_ => Close());
 
             SetVisible(_overlay, false);
-            SetVisible(_resultPanel, false);
 
             // Ri-orienta il feed quando il layout cambia (rotazione device, primo layout).
             _cameraView?.RegisterCallback<GeometryChangedEvent>(_ => ApplyFeedOrientation());
+
+            // Attivando il GameObject (lo fa il MainUI) parte subito la scansione.
+            StartScan();
         }
 
         // ---- API pubblica ----------------------------------------------------
@@ -95,7 +98,6 @@ namespace MuseJam.XR
         public void StartScan()
         {
             if (_isScanning) return;
-            SetVisible(_resultPanel, false);
             StartCoroutine(StartScanRoutine());
         }
 
@@ -109,6 +111,20 @@ namespace MuseJam.XR
             SetVisible(_overlay, false);
             ReleaseRenderTexture();
         }
+
+        /// <summary>
+        /// Chiude lo scanner: ferma la camera e DISATTIVA il GameObject (così il
+        /// MainUI torna visibile). Lo chiama il pulsante "Chiudi" e lo scan riuscito.
+        /// </summary>
+        public void Close()
+        {
+            StopScan();
+            OnClosed?.Invoke();
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>Invocato quando lo scanner si chiude (per Chiudi o scan riuscito).</summary>
+        public event Action OnClosed;
 
         // ---- Avvio camera ----------------------------------------------------
 
@@ -233,10 +249,12 @@ namespace MuseJam.XR
         private void HandleDecoded(string text)
         {
             Debug.Log($"[QrScanner] QR letto: {text}");
-            StopScan();
-            if (_resultLabel != null) _resultLabel.text = text;
-            SetVisible(_resultPanel, true);
+
+            // 1. Passa l'URL letto a chi ascolta (un altro script userà OnQrDecoded).
             OnQrDecoded?.Invoke(text);
+
+            // 2. Chiude lo scanner e torna alla UI normale (come premere "Chiudi").
+            Close();
         }
 
         // ---- RenderTexture ---------------------------------------------------

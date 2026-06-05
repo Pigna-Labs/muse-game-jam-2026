@@ -29,6 +29,11 @@ public class MainUIController : MonoBehaviour
     // Se vero, la tray si nasconde durante il drag (l'oggetto resta visibile nello stage).
     [SerializeField] bool hideTrayWhileDragging = false;
 
+    [Header("QR Scanner")]
+    // GameObject del QR scanner (con QrScannerController). Parte DISATTIVATO:
+    // il pulsante camera lo attiva, "Chiudi"/scan-ok lo ridisattiva.
+    [SerializeField] GameObject qrScannerObject;
+
     Button shopButton;
     Button cameraButton;
     Button foodButton;
@@ -63,6 +68,10 @@ public class MainUIController : MonoBehaviour
         foodButton.clicked += OnFoodClicked;
         cleanButton.clicked += OnCleanClicked;
         petButton.clicked += OnPetClicked;
+        if (cameraButton != null) cameraButton.clicked += OnCameraClicked;
+
+        // Lo scanner parte chiuso (disattivato).
+        if (qrScannerObject != null) qrScannerObject.SetActive(false);
 
         if (targetCamera == null)
             targetCamera = Camera.main;
@@ -73,6 +82,15 @@ public class MainUIController : MonoBehaviour
         if (foodButton != null) foodButton.clicked -= OnFoodClicked;
         if (cleanButton != null) cleanButton.clicked -= OnCleanClicked;
         if (petButton != null) petButton.clicked -= OnPetClicked;
+        if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
+    }
+
+    // Pulsante camera: apre il QR scanner in fullscreen attivando il suo GameObject.
+    // Lo scanner si auto-avvia (OnEnable -> StartScan) e si chiude da solo su
+    // "Chiudi" o su scan riuscito (QrScannerController.Close()).
+    void OnCameraClicked()
+    {
+        if (qrScannerObject != null) qrScannerObject.SetActive(true);
     }
 
     void Update()

@@ -9,21 +9,12 @@
              background e lo ruota/dimensiona per coprire lo schermo. -->
         <ui:VisualElement name="camera-view" class="camera-view" />
 
-        <!-- Overlay di mira: mostrato durante la scansione. -->
+        <!-- Overlay di mira: mirino + testo + Chiudi. Lo scanner si apre dall'esterno
+             (MainUI attiva il GameObject) e parte subito; "Chiudi" chiude l'oggetto. -->
         <ui:VisualElement name="overlay" class="overlay">
             <ui:VisualElement name="reticle" class="reticle" />
             <ui:Label text="Inquadra il QR" name="hint-label" class="hint-label" />
             <ui:Button text="Chiudi" name="close-button" class="close-button" />
-        </ui:VisualElement>
-
-        <!-- Pulsante iniziale per avviare la scansione (visibile quando non si scansiona). -->
-        <ui:Button text="Scansiona" name="scan-button" class="scan-button" />
-
-        <!-- Pannello risultato: nascosto all'avvio, mostrato col link letto. -->
-        <ui:VisualElement name="result-panel" class="result-panel">
-            <ui:Label text="Risultato" name="result-title" class="result-title" />
-            <ui:Label text="" name="result-label" class="result-label" />
-            <ui:Button text="Scansiona di nuovo" name="rescan-button" class="rescan-button" />
         </ui:VisualElement>
 
     </ui:VisualElement>
