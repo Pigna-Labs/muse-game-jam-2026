@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: efe6900ea3ccb960a9aafbfef86394f5, type: 3}
-  m_Name: Funghi
+  m_Name: Epifite
   m_EditorClassIdentifier: Assembly-CSharp::UnlockablesScriptableObject
-  displayName: Funghi Tropicali
-  qrValue: https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/funghi-tropicali/
+  displayName: Epifite
+  qrValue: https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/epifite/
   triviaQuestions:
-  - {fileID: 11400000, guid: f1cb127f11c5d3a42b4c0fa3f8ac8fe1, type: 2}
-  - {fileID: 11400000, guid: babd8bd1bbd38ff14805400f3e9f87e8, type: 2}
-  - {fileID: 11400000, guid: 33166e6a996a43d9ca0f625b4d46ad65, type: 2}
-  - {fileID: 11400000, guid: 6c6758d1ff250c7dbbf412fea396fd46, type: 2}
+  - {fileID: 11400000, guid: f3daac492679999508496c6a57ebf001, type: 2}
+  - {fileID: 11400000, guid: 679e24645563806abbebad4a87deb9f8, type: 2}
+  - {fileID: 11400000, guid: 93a250f2482ca6fc2a778fb8f63fefb8, type: 2}
+  - {fileID: 11400000, guid: 74fef7bd3c062c0f38adfa24267a4dff, type: 2}
   modelPrefab: {fileID: 0}
   unlocked: 0
