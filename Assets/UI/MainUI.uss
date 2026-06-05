@@ -1,7 +1,8 @@
 .root {
     flex-grow: 1;
     justify-content: space-between;
-    background-color: rgb(42, 118, 66);
+    /* Niente background: il pannello resta trasparente così lo stage mostra il mondo
+       (sprite di sfondo + DropArea + creatura) renderizzato dalla camera. */
 }
 
 .top-bar {
