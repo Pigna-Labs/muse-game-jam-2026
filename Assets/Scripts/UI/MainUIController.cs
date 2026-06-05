@@ -91,7 +91,7 @@ namespace MuseGameJam.UI
         }
 
         // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
-        // CameraState mette in pausa la main e attiva il GameObject dello scanner;
+        // CameraState nasconde la main UI, mette in pausa la main e attiva lo scanner;
         // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
         void OnCameraClicked()
         {
@@ -102,7 +102,12 @@ namespace MuseGameJam.UI
                 return;
             }
 
-            var cameraState = new CameraState(qrScannerObject);
+            // Guardia anti-spam: se c'è già un CameraState aperto, non pusharne altri.
+            // (Il pulsante può ricevere click ripetuti dagli update dei pannelli UI Toolkit.)
+            if (GameStateMachine.Instance.HasOverlay<CameraState>()) return;
+
+            // Passa anche QUESTA UI così il CameraState la nasconde mentre la camera è aperta.
+            var cameraState = new CameraState(qrScannerObject, gameObject);
             cameraState.OnUrlScanned += HandleUrlScanned;
             GameStateMachine.Instance.PushState(cameraState);
         }

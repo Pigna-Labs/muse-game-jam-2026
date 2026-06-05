@@ -23,14 +23,16 @@ namespace MuseGameJam.States
     public class CameraState : GameState
     {
         private readonly GameObject scannerObject;
+        private readonly GameObject mainUiObject;
         private QrScannerController scanner;
 
         /// <summary>Emesso quando il QR è stato letto, con l'URL/testo contenuto.</summary>
         public event Action<string> OnUrlScanned;
 
-        public CameraState(GameObject scannerObject)
+        public CameraState(GameObject scannerObject, GameObject mainUiObject = null)
         {
             this.scannerObject = scannerObject;
+            this.mainUiObject = mainUiObject;
         }
 
         public override void Enter()
@@ -41,6 +43,11 @@ namespace MuseGameJam.States
                 GameStateMachine.Instance.PopOverlay();
                 return;
             }
+
+            // Nasconde la main UI: così non resta visibile sotto la camera e
+            // soprattutto non riceve più click (era la causa dei push ripetuti).
+            if (mainUiObject != null)
+                mainUiObject.SetActive(false);
 
             scanner = scannerObject.GetComponent<QrScannerController>();
 
@@ -66,6 +73,10 @@ namespace MuseGameJam.States
 
             if (scannerObject != null)
                 scannerObject.SetActive(false);
+
+            // Ripristina la main UI tornando alla scena principale.
+            if (mainUiObject != null)
+                mainUiObject.SetActive(true);
         }
 
         // Back mobile = chiudi l'overlay camera.
