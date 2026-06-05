@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 19101, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: TriviaPanelSettings
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.PanelSettings
-  themeUss: {fileID: -4733365628477956816, guid: ad284eb3d8c8e5243921d5ef909fd232, type: 3}
+  themeUss: {fileID: 4413694071827464959, guid: 2975616811d86ef4d9a4d00ecd714488, type: 3}
   m_DisableNoThemeWarning: 0
   m_TargetTexture: {fileID: 0}
   m_RenderMode: 0
