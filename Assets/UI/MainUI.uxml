@@ -8,7 +8,7 @@
         </ui:VisualElement>
         <ui:VisualElement name="stage" class="stage"/>
         <ui:VisualElement name="item-tray" class="item-tray" style="justify-content: center; align-content: auto; display: none;">
-            <ui:ScrollView name="tray-content" mode="Horizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="tray-content" style="display: flex;"/>
+            <ui:VisualElement name="tray-content" class="tray-content" style="display: flex;"/>
         </ui:VisualElement>
         <ui:VisualElement name="bottom-bar" class="bottom-bar">
             <MuseGameJam.UI.StatGauge name="food-gauge" value="1">

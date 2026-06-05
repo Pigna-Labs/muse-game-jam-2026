@@ -96,12 +96,11 @@
     display: flex;
 }
 
+/* Riga di item, centrati quando ci stanno. Contenitore semplice (non ScrollView):
+   una ScrollView su touch usa il drag del dito per scrollare e ruberebbe il
+   trascinamento agli item (funzionano col mouse in editor ma non da telefono). */
 .tray-content {
     flex-grow: 1;
-}
-
-/* Content container interno dello ScrollView: riga di item, centrati quando ci stanno. */
-.tray-content .unity-scroll-view__content-container {
     flex-direction: row;
     align-items: center;
     justify-content: center;
