@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070550121ca6418ea298dd66d8114c3b, type: 3}
+  m_Name: Unlockables
+  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.Gameplay.Unlockables
+  foods:
+  - {fileID: 11400000, guid: 0539a09f00ea47eb81b6de2f947722ce, type: 2}
+  - {fileID: 11400000, guid: 4f7c545ebca849debd80c594637fec53, type: 2}
+  - {fileID: 11400000, guid: 9e95fc0722d24458aaaa7ab1a4844e28, type: 2}
+  companions:
+  - {fileID: 11400000, guid: ca25e5341bf64a908ef211f4fcc358a8, type: 2}
+  - {fileID: 11400000, guid: 78bde7ccb736426e801b8761ea262f43, type: 2}
+  - {fileID: 11400000, guid: 0c8f2ae831fc4c58a9ae6db9c3c0753d, type: 2}
