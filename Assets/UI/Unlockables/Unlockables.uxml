@@ -1,0 +1,12 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Unlockables/Unlockables.uss?fileID=7433441132597879392&amp;guid=baef95d20f044cee9d41229563a297fd&amp;type=3#Unlockables"/>
+    <ui:VisualElement name="unlockables-root" class="unlockables-root">
+        <ui:VisualElement name="unlockables-panel" class="unlockables-panel">
+            <ui:VisualElement name="unlockables-header" class="unlockables-header">
+                <ui:Label name="unlockables-title" text="Unlockables" class="unlockables-title"/>
+                <ui:Button name="unlockables-close" text="Close" class="unlockables-close"/>
+            </ui:VisualElement>
+            <ui:ScrollView name="unlockables-list" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="unlockables-list"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

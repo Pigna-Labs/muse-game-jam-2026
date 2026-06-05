@@ -43,7 +43,23 @@ namespace MuseGameJam.UI
         // info (o si sblocca qualcosa) -> trigger "Happy".
         [SerializeField] Animator musettoAnimator;
 
+        [Header("Challenges")]
+        // Prefab for the Challenges menu UI (UIDocument + ChallengesMenuController).
+        // Instantiated by StateChallengesMenu when the "target" button is pressed.
+        [SerializeField] GameObject challengesUiPrefab;
+        // Parent transform to instantiate the challenges UI under (leave empty for the scene root).
+        [SerializeField] Transform challengesUiParent;
+
+        [Header("Unlockables")]
+        // Prefab for the Unlockables menu UI (UIDocument + UnlockablesMenuController).
+        // Instantiated by StateUnlockablesMenu when the "unlockables" (notebook) button is pressed.
+        [SerializeField] GameObject unlockablesUiPrefab;
+        // Parent transform to instantiate the unlockables UI under (leave empty for the scene root).
+        [SerializeField] Transform unlockablesUiParent;
+
         Button cameraButton;
+        Button targetButton;
+        Button unlockablesButton;
         Button foodButton;
         Button cleanButton;
         Button petButton;
@@ -69,6 +85,8 @@ namespace MuseGameJam.UI
             rootElement = GetComponent<UIDocument>().rootVisualElement;
 
             cameraButton = rootElement.Q<Button>("camera-button");
+            targetButton = rootElement.Q<Button>("target-button");
+            unlockablesButton = rootElement.Q<Button>("unlockables-button");
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
             petButton = rootElement.Q<Button>("pet-button");
@@ -84,6 +102,8 @@ namespace MuseGameJam.UI
             cleanButton.clicked += OnCleanClicked;
             petButton.clicked += OnPetClicked;
             if (cameraButton != null) cameraButton.clicked += OnCameraClicked;
+            if (targetButton != null) targetButton.clicked += OnTargetClicked;
+            if (unlockablesButton != null) unlockablesButton.clicked += OnUnlockablesClicked;
 
             // Lo scanner parte chiuso (disattivato).
             if (qrScannerObject != null) qrScannerObject.SetActive(false);
@@ -98,10 +118,12 @@ namespace MuseGameJam.UI
             if (cleanButton != null) cleanButton.clicked -= OnCleanClicked;
             if (petButton != null) petButton.clicked -= OnPetClicked;
             if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
+            if (targetButton != null) targetButton.clicked -= OnTargetClicked;
+            if (unlockablesButton != null) unlockablesButton.clicked -= OnUnlockablesClicked;
         }
 
         // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
-        // CameraState nasconde la main UI, mette in pausa la main e attiva lo scanner;
+        // StateCamera nasconde la main UI, mette in pausa la main e attiva lo scanner;
         // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
         void OnCameraClicked()
         {
@@ -112,11 +134,11 @@ namespace MuseGameJam.UI
                 return;
             }
 
-            // Guardia anti-spam: se c'è già un CameraState aperto, non pusharne altri.
-            if (GameStateMachine.Instance.HasOverlay<CameraState>()) return;
+            // Guardia anti-spam: se c'è già uno StateCamera aperto, non pusharne altri.
+            if (GameStateMachine.Instance.HasOverlay<StateCamera>()) return;
 
-            // Passa anche QUESTA UI così il CameraState la nasconde mentre la camera è aperta.
-            var cameraState = new CameraState(qrScannerObject, gameObject);
+            // Passa anche QUESTA UI così lo StateCamera la nasconde mentre la camera è aperta.
+            var cameraState = new StateCamera(qrScannerObject, gameObject);
             cameraState.OnUrlScanned += HandleUrlScanned;
             GameStateMachine.Instance.PushState(cameraState);
         }
@@ -150,6 +172,53 @@ namespace MuseGameJam.UI
             musettoAnimator.SetTrigger("Happy");
         }
 
+        // Target button: opens the Challenges menu as an OVERLAY on the state stack.
+        // StateChallengesMenu instantiates the challenges UI and pauses the main state;
+        // on "Close" or back it calls PopOverlay and returns to the main state.
+        void OnTargetClicked()
+        {
+            if (challengesUiPrefab == null)
+            {
+                Debug.LogWarning("MainUIController: challengesUiPrefab not assigned in Inspector.");
+                return;
+            }
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the challenges menu.");
+                return;
+            }
+
+            // Anti-spam guard: if a challenges menu is already open, don't push another.
+            if (GameStateMachine.Instance.HasOverlay<StateChallengesMenu>()) return;
+
+            // Pass this UI so the overlay hides it while open (it lives on its own UIDocument).
+            var challengesState = new StateChallengesMenu(challengesUiPrefab, challengesUiParent, gameObject);
+            GameStateMachine.Instance.PushState(challengesState);
+        }
+
+        // Unlockables (notebook) button: opens the Unlockables menu as an OVERLAY on the state stack.
+        // StateUnlockablesMenu instantiates the unlockables UI and pauses the main state;
+        // on "Close" or back it calls PopOverlay and returns to the main state.
+        void OnUnlockablesClicked()
+        {
+            if (unlockablesUiPrefab == null)
+            {
+                Debug.LogWarning("MainUIController: unlockablesUiPrefab not assigned in Inspector.");
+                return;
+            }
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the unlockables menu.");
+                return;
+            }
+
+            // Anti-spam guard: if an unlockables menu is already open, don't push another.
+            if (GameStateMachine.Instance.HasOverlay<StateUnlockablesMenu>()) return;
+
+            // Pass this UI so the overlay hides it while open (it lives on its own UIDocument).
+            var unlockablesState = new StateUnlockablesMenu(unlockablesUiPrefab, unlockablesUiParent, gameObject);
+            GameStateMachine.Instance.PushState(unlockablesState);
+        }
         // API per il gameplay: imposta il livello (0..1) di ciascun gauge.
         public void SetFoodLevel(float value) { if (foodGauge != null) foodGauge.value = value; }
         public void SetCleanLevel(float value) { if (cleanGauge != null) cleanGauge.value = value; }

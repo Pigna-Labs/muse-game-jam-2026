@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7233829962644540952
+--- !u!1 &100000
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,72 +8,63 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2540934543591591636}
-  - component: {fileID: 4432104783548188663}
-  - component: {fileID: 4971623926751398587}
-  m_Layer: 0
-  m_Name: UI
+  - component: {fileID: 100001}
+  - component: {fileID: 100002}
+  - component: {fileID: 100003}
+  m_Layer: 5
+  m_Name: ChallengesUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2540934543591591636
+--- !u!4 &100001
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7233829962644540952}
+  m_GameObject: {fileID: 100000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: -0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4432104783548188663
+--- !u!114 &100002
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7233829962644540952}
+  m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: 02d19b87a20445b41af642dd689ede5f, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: fadba6289d23fc24484ca9ca67c9ec5a, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 9175273f00d555841a457857b0a18f40, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: 2b65aa9f62911424ab69574a0e26aa94, type: 3}
   m_SortingOrder: 0
   m_Position: 0
   m_WorldSpaceSizeMode: 1
-  m_WorldSpaceWidth: 1920
-  m_WorldSpaceHeight: 1080
+  m_WorldSpaceWidth: 1080
+  m_WorldSpaceHeight: 1920
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
---- !u!114 &4971623926751398587
+--- !u!114 &100003
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7233829962644540952}
+  m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 863d7982e2aeeba46a59a8593122772d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.MainUIController
-  trayItemTemplate: {fileID: 9197481963319205126, guid: 3afd7ab5b3596f549b98a5e9428a52ed, type: 3}
-  trayItems: []
-  targetCamera: {fileID: 0}
-  followDistance: 10
-  dropSpot: {fileID: 0}
-  challengesUiPrefab: {fileID: 100000, guid: 011623942dca4d688521293cd5ab4ddc, type: 3}
-  challengesUiParent: {fileID: 0}
-  unlockablesUiPrefab: {fileID: 100000, guid: 3bec541bf7874febbb3d6b958b998ed8, type: 3}
-  unlockablesUiParent: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 8e2967a8aba451548bf5b4718d485250, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:

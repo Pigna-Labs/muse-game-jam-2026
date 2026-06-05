@@ -1,0 +1,66 @@
+/* Challenges menu: full-screen bottom sheet that slides up from the bottom. */
+.challenges-root {
+    flex-grow: 1;
+}
+
+.challenges-panel {
+    /* Fill the whole screen. */
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 24px;
+    background-color: rgb(33, 92, 52);
+
+    /* Closed state: pushed fully below the screen (100% of its own height). */
+    translate: 0 100%;
+    transition-property: translate;
+    transition-duration: 0.32s;
+    transition-timing-function: ease-out;
+}
+
+/* Open state: slid up into place. The controller adds this class once laid out. */
+.challenges-panel--open {
+    translate: 0 0;
+}
+
+.challenges-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.challenges-title {
+    color: rgb(255, 255, 255);
+    font-size: 44px;
+    -unity-font-style: bold;
+}
+
+.challenges-close {
+    min-width: 0;
+    padding: 12px 28px;
+    border-width: 0;
+    border-bottom-width: 4px;
+    border-radius: 16px;
+    border-bottom-color: rgb(99, 62, 33);
+    background-color: rgb(138, 90, 51);
+    color: rgb(255, 255, 255);
+    font-size: 28px;
+    -unity-font-style: bold;
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.challenges-close:hover {
+    scale: 1.06 1.06;
+}
+
+.challenges-close:active {
+    scale: 0.94 0.94;
+}
+
+.challenges-list {
+    flex-grow: 1;
+}
