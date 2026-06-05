@@ -1,6 +1,6 @@
 # muse-game-jam-2026
 
-Gioco realizzato per la **Museum Game Jam @ MUSE** (5–6 giugno 2026, Trento), in **Unity 6.3 LTS** (`6000.3.6f1`), pipeline **URP**, build **Android + Windows** (mobile per la consegna, desktop per la demo).
+Gioco realizzato per la **Museum Game Jam @ MUSE** (5–6 giugno 2026, Trento), in **Unity 6.3 LTS** (`6000.3.6f1`), pipeline **URP**. Consegna = **APK Android** su itch.io; build **Windows** `.exe` come extra per la demo.
 
 Progetto **Pigna Labs**. Team: Andrea, Amerigo, Ovidiu, Davide. Tracking task su Plane (progetto **MGJ — Muse Game Jam**).
 
@@ -12,13 +12,32 @@ Progetto **Pigna Labs**. Team: Andrea, Amerigo, Ovidiu, Davide. Tracking task su
 
 | | |
 |---|---|
-| **Quando** | Ven 5 giugno dalle **14:00** → Sab 6 giugno fino alle **17:00** (24h, si dorme al museo) |
-| **Dove** | MUSE — Museo delle Scienze, Trento |
-| **Durata** | 24 ore, premiazione pubblica finale sabato |
-| **Cosa** | Realizzare un **videogioco app** partendo *dall'atmosfera e da ciò che è custodito tra le mura del MUSE* |
-| **Target build** | **Android** (consegna jam) **+ Windows** (demo premiazione) — input **touch + mouse/tastiera** |
+| **Quando** | Start **ven 5 giugno ore 15:00** → fine **sab 6 giugno ore 15:00** (24h, si dorme al museo) |
+| **Dove** | MUSE — Museo delle Scienze, Trento (apertura 10:00–18:00) |
+| **Cosa** | Realizzare un videogioco partendo *dall'atmosfera e da ciò che è custodito tra le mura del MUSE* |
+| **🚨 Deadline build** | **Sab 6 giugno ore 14:30** — upload della build giocabile su **itch.io** (sito della jam) |
+| **Consegna** | **APK Android scaricabile** caricato su itch.io. Windows `.exe` = extra per la demo |
+| **Pitch** | Sab ore 15:30 — **5 min pitch + 5 min Q/A** per progetto |
 
-> ⚠️ **Niente "tema segreto" rivelato all'ora X** (non è la Global Game Jam): il tema *è il MUSE stesso* — la sua atmosfera, i suoi exhibit, i suoi contenuti scientifici. L'angolo preciso lo scegliamo all'inizio, sul posto, ispirandoci al museo.
+> ⚠️ **Niente "tema segreto" rivelato all'ora X** (non è la Global Game Jam): il tema *è il MUSE stesso* — la sua atmosfera, i suoi exhibit, i suoi contenuti scientifici. L'angolo preciso lo scegliamo allo start, sul posto, ispirandoci al museo.
+
+### 📅 Programma ufficiale
+
+| Quando | Cosa |
+|---|---|
+| **Ven 5 — 15:00** | 🚦 **START** — ideazione / coding con supporto IGDA |
+| Ven 5 — 18:00 | Chiusura museo al pubblico; cena Jammers in terrazza → **notte di programmazione** |
+| Sab 6 — 08:00–09:00 | Colazione al MUSE Cafè |
+| Sab 6 — 12:00–14:00 | Pranzo (panino/insalata) al MUSE Cafè |
+| **Sab 6 — 14:30** | 🚨 **DEADLINE: upload build su itch.io** |
+| Sab 6 — 15:00 | Fine jam + consegna presentazione (15:00/15:30) |
+| **Sab 6 — 15:30** | 🎤 Presentazioni: **pitch 5 min + Q/A 5 min** |
+| Sab 6 — 16:30 | Giuria + **demo giocabile aperta al pubblico** (postazioni playtest) |
+| **Sab 6 — 17:00** | 🏆 Cerimonia di chiusura + **premiazione** |
+
+> 🍕 Cena ven + colazione/pranzo sab inclusi e gratuiti. Si può portare cibo/bevande in autonomia o farsi consegnare delivery. Si dorme al museo: porta **sacco a pelo, materassino-extra, cuscino, tappi/mascherina**.
+>
+> 📜 Partecipando accetti regolamento + **Code of Conduct/Ethics di IGDA**. Rispetta gli spazi, raccolta differenziata, niente download illegali sulla rete del museo, vietato fumare dentro. Per ogni necessità → volontari col badge **Mentor/Volunteers**.
 
 ## 🏔️ Il contesto: cos'è e cosa custodisce il MUSE
 
@@ -92,13 +111,21 @@ Il gioco va buildato per **entrambi** i target. Tienili in mente da subito: inpu
 
 ---
 
-## ⏱️ Checklist primo giorno (ven 5/6, 14:00)
+## ⏱️ Checklist
 
+**Allo start (ven 5, 15:00)**
 - [ ] Tutti hanno clonato + `git lfs install` + aperto il progetto in `6000.3.6f1`
-- [ ] Modulo Android installato; build di prova **APK (Android)** e **.exe (Windows)** funzionanti entrambe
+- [ ] Modulo Android installato; build di prova **APK** funzionante (è la consegna!) + `.exe` di prova
+- [ ] Account **itch.io** pronto per l'upload (verifica chi carica)
 - [ ] Tema/angolo museale scelto e scritto in fondo a questo README
 - [ ] Ruoli assegnati (code / design / art / audio) e cartelle `Assets/` divise per owner
 - [ ] Primo commit del "vertical slice" entro sera
+
+**🚨 Sabato mattina (margine sul 14:30)**
+- [ ] APK finale buildato e **testato su device reale**
+- [ ] APK caricato su **itch.io** (entro 14:30 — non aspettare l'ultimo minuto)
+- [ ] Pitch pronto (5 min) + risposte alle domande prevedibili (5 min Q/A)
+- [ ] Build pronta per le postazioni di **playtest** pubblico (16:30)
 
 ## 🎯 TEMA / IDEA SCELTA *(da compilare in jam)*
 
