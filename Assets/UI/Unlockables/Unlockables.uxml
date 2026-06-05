@@ -6,7 +6,24 @@
                 <ui:Label name="unlockables-title" text="Unlockables" class="unlockables-title"/>
                 <ui:Button name="unlockables-close" text="Close" class="unlockables-close"/>
             </ui:VisualElement>
-            <ui:ScrollView name="unlockables-list" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="unlockables-list"/>
+            <ui:ScrollView name="unlockables-list" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="unlockables-list">
+                <ui:VisualElement name="companions-section" class="unlockables-section">
+                    <ui:Label name="companions-section-title" text="Companions" class="unlockables-section-title"/>
+                    <ui:VisualElement name="companions-grid" class="unlockables-grid"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="food-section" class="unlockables-section">
+                    <ui:Label name="food-section-title" text="Foods" class="unlockables-section-title"/>
+                    <ui:VisualElement name="food-grid" class="unlockables-grid"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="soaps-section" class="unlockables-section">
+                    <ui:Label name="soaps-section-title" text="Soaps" class="unlockables-section-title"/>
+                    <ui:VisualElement name="soaps-grid" class="unlockables-grid"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="toys-section" class="unlockables-section">
+                    <ui:Label name="toys-section-title" text="Toys" class="unlockables-section-title"/>
+                    <ui:VisualElement name="toys-grid" class="unlockables-grid"/>
+                </ui:VisualElement>
+            </ui:ScrollView>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

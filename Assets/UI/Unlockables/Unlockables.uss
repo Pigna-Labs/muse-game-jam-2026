@@ -29,12 +29,12 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .unlockables-title {
     color: rgb(255, 255, 255);
-    font-size: 44px;
+    font-size: 60px;
     -unity-font-style: bold;
 }
 
@@ -47,7 +47,7 @@
     border-bottom-color: rgb(99, 62, 33);
     background-color: rgb(138, 90, 51);
     color: rgb(255, 255, 255);
-    font-size: 28px;
+    font-size: 36px;
     -unity-font-style: bold;
     transition-property: scale;
     transition-duration: 0.12s;
@@ -63,4 +63,60 @@
 
 .unlockables-list {
     flex-grow: 1;
+}
+
+/* One titled subsection (Food, Companions). */
+.unlockables-section {
+    margin-bottom: 56px;
+}
+
+.unlockables-section-title {
+    color: rgb(255, 255, 255);
+    font-size: 44px;
+    -unity-font-style: bold;
+    margin-top: 16px;
+    margin-bottom: 28px;
+}
+
+/* Wrapping grid of tiles inside a section. */
+.unlockables-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* A single unlockable: image on top, caption below. */
+.unlockable-tile {
+    width: 280px;
+    height: 340px;
+    margin-right: 14px;
+    margin-bottom: 14px;
+    padding: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 18px;
+    background-color: rgb(26, 73, 41);
+}
+
+.unlockable-tile__image {
+    width: 260px;
+    height: 260px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Locked: tint the sprite fully black so only its silhouette shows. */
+.unlockable-tile__image--locked {
+    -unity-background-image-tint-color: rgb(0, 0, 0);
+}
+
+.unlockable-tile__label {
+    margin-top: 18px;
+    color: rgb(255, 255, 255);
+    font-size: 28px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.unlockable-tile__label--locked {
+    color: rgb(150, 178, 159);
 }

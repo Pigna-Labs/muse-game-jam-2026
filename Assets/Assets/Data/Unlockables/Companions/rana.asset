@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a25bd63ed412993f9889a5bcc4f38269, type: 3}
-  m_Name: turaco
+  m_Name: rana
   m_EditorClassIdentifier: Assembly-CSharp::CompanionSO
-  displayName: Turaco di Livingstone
-  image: {fileID: 0}
+  displayName: Rana spinosa del Fornasini
+  image: {fileID: 21300000, guid: 0c2c2bf0d9a8d0dfbb307a9255a0cbde, type: 3}
   unlocked: 0

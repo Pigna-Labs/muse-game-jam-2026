@@ -68,3 +68,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb650353f3fd4fe6b102637814a076c3, type: 3}
   m_Name:
   m_EditorClassIdentifier:
+  unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
