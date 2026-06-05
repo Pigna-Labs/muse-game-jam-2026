@@ -588,6 +588,18 @@ PrefabInstance:
       value: Character
       objectReference: {fileID: 0}
     - target: {fileID: 1644648827557285201, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1644648827557285201, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1644648827557285201, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1644648827557285201, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -627,11 +639,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3765140320455682560, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
+      propertyPath: musettoAnimator
+      value: 
+      objectReference: {fileID: 610991284}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
+--- !u!95 &610991284 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 2919993494881491392, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
+  m_PrefabInstance: {fileID: 610991283}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

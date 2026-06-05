@@ -38,6 +38,11 @@ namespace MuseGameJam.UI
         // il pulsante camera lo attiva, "Chiudi"/scan-ok lo ridisattiva.
         [SerializeField] GameObject qrScannerObject;
 
+        [Header("Animazioni musetto")]
+        // Animator del musetto (CharacterAnimController). Quando si scansiona una nuova
+        // info (o si sblocca qualcosa) -> trigger "Happy".
+        [SerializeField] Animator musettoAnimator;
+
         Button cameraButton;
         Button foodButton;
         Button cleanButton;
@@ -120,6 +125,29 @@ namespace MuseGameJam.UI
         void HandleUrlScanned(string url)
         {
             Debug.Log($"[MainUI] URL dal QR: {url}");
+            // Nuova info scansionata -> il musetto è felice (trigger del controller).
+            TriggerHappy("QR scansionato");
+        }
+
+        // Chiamabile da qualsiasi script quando si ottiene/sblocca un nuovo oggetto:
+        // fa partire l'animazione "felice" del musetto.
+        public void CelebrateNewItem()
+        {
+            TriggerHappy("nuovo oggetto");
+        }
+
+        // Centralizza il trigger Happy + log diagnostico.
+        void TriggerHappy(string motivo)
+        {
+            if (musettoAnimator == null)
+            {
+                Debug.LogWarning($"[Anim] musettoAnimator NON assegnato nel MainUIController ({motivo}): trascina il musetto nel campo in Inspector.");
+                return;
+            }
+            var st = musettoAnimator.GetCurrentAnimatorStateInfo(0);
+            Debug.Log($"[Anim] SetTrigger(Happy) [{motivo}]. Stato attuale hash={st.fullPathHash} " +
+                      $"normalizedTime={st.normalizedTime:F2}. Se non transita: togli 'Has Exit Time' alla transizione Idle->Felice.");
+            musettoAnimator.SetTrigger("Happy");
         }
 
         // API per il gameplay: imposta il livello (0..1) di ciascun gauge.

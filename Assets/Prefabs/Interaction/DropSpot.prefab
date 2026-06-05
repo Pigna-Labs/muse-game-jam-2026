@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8780505690246165282}
   - component: {fileID: 8337491509817081669}
   - component: {fileID: 3765140320455682560}
+  - component: {fileID: 2919993494881491392}
   m_Layer: 0
   m_Name: DropSpot
   m_TagString: Untagged
@@ -153,3 +154,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DropArea
   movePerUnit: 0.05
   fillPerSecond: 0.02
+--- !u!95 &2919993494881491392
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661282114294521074}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7e122c741e641e345b004f0fb505d55b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

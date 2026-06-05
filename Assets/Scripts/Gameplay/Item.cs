@@ -3,6 +3,16 @@ using UnityEngine.InputSystem;
 
 namespace MuseGameJam.Gameplay
 {
+    // Cosa fa questo item al musetto quando viene usato sull'area.
+    // La DropArea lo legge per far partire l'animazione/parametro giusto.
+    public enum CareAction
+    {
+        None,   // nessuna animazione
+        Eat,    // cibo  -> trigger "Eating"
+        Pet,    // coccole -> bool "IsPetting" (mentre è nell'area)
+        Clean,  // pulizia -> bool "IsCleaning" (mentre è nell'area)
+    }
+
     // Comportamento base di un oggetto preso dalla tray:
     //  - segue il cursore mentre è "in mano"
     //  - al rilascio sparisce
@@ -15,6 +25,13 @@ namespace MuseGameJam.Gameplay
         // Emesso quando l'item viene rilasciato, appena prima che sparisca.
         // Le DropArea che lo contengono lo ascoltano per reagire al "drop".
         public event System.Action<Item> Dropped;
+
+        [Tooltip("Cosa fa questo item al musetto: la DropArea fa partire l'anim corrispondente. " +
+                 "Es. cibo=Eat, spugna=Clean, mano=Pet.")]
+        [SerializeField] CareAction action = CareAction.None;
+
+        // Azione di cura associata a questo item (per le animazioni del musetto).
+        public CareAction Action => action;
 
         Camera cam;
         float dragDepth;
