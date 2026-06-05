@@ -1,13 +1,13 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Companion", menuName = "Scriptable Objects/Companion")]
-public class CompanionScriptableObject : ScriptableObject
+public class CompanionSO : ScriptableObject
 {
         [SerializeField] private string displayName;
-        [SerializeField] private GameObject modelPrefab;
+        [SerializeField] private Sprite image;
         [SerializeField] private bool unlocked;
 
         public string DisplayName => displayName;
-        public GameObject ModelPrefab => modelPrefab;
+        public Sprite Image => image;
         public bool Unlocked => unlocked;
 }

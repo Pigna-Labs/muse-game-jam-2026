@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f93cf0a6a743451e9162e6c206d9527d, type: 3}
-  m_Name: Companion2
-  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.Gameplay.Companion
-  displayName: Companion 2
+  m_Script: {fileID: 11500000, guid: a25bd63ed412993f9889a5bcc4f38269, type: 3}
+  m_Name: turaco
+  m_EditorClassIdentifier: Assembly-CSharp::CompanionSO
+  displayName: Turaco di Livingstone
   image: {fileID: 0}
+  unlocked: 0

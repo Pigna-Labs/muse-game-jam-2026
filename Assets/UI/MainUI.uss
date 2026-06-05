@@ -62,9 +62,11 @@
 }
 
 /* Riga in basso: grandi pulsanti d'azione equidistanti. */
+/* Sta DENTRO il cerchio .stat-gauge (132px): l'icona (scale-to-fit) deve rientrare nel
+   quadrato inscritto del cerchio, altrimenti gli angoli vengono ritagliati da overflow:hidden. */
 .action-button {
-    width: 168px;
-    height: 168px;
+    width: 96px;
+    height: 96px;
 }
 
 .action-button--food {
@@ -94,12 +96,11 @@
     display: flex;
 }
 
+/* Riga di item, centrati quando ci stanno. Contenitore semplice (non ScrollView):
+   una ScrollView su touch usa il drag del dito per scrollare e ruberebbe il
+   trascinamento agli item (funzionano col mouse in editor ma non da telefono). */
 .tray-content {
     flex-grow: 1;
-}
-
-/* Content container interno dello ScrollView: riga di item, centrati quando ci stanno. */
-.tray-content .unity-scroll-view__content-container {
     flex-direction: row;
     align-items: center;
     justify-content: center;
@@ -131,3 +132,32 @@
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
+
+/* Gauge circolare con outline bianco: il bottone ci sta centrato sopra, il riempimento dietro. */
+.stat-gauge {
+    width: 132px;
+    height: 132px;
+    border-radius: 66px;
+    border-left-width: 4px;
+    border-right-width: 4px;
+    border-top-width: 4px;
+    border-bottom-width: 4px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Riempimento: ancorato al fondo, l'altezza (= valore) e il colore li imposta StatGauge da codice. */
+.stat-gauge__fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0;
+}
+

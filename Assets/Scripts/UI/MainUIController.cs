@@ -45,11 +45,23 @@ namespace MuseGameJam.UI
         // Parent transform to instantiate the challenges UI under (leave empty for the scene root).
         [SerializeField] Transform challengesUiParent;
 
+        [Header("Unlockables")]
+        // Prefab for the Unlockables menu UI (UIDocument + UnlockablesMenuController).
+        // Instantiated by StateUnlockablesMenu when the "unlockables" (notebook) button is pressed.
+        [SerializeField] GameObject unlockablesUiPrefab;
+        // Parent transform to instantiate the unlockables UI under (leave empty for the scene root).
+        [SerializeField] Transform unlockablesUiParent;
+
         Button cameraButton;
         Button targetButton;
+        Button unlockablesButton;
         Button foodButton;
         Button cleanButton;
         Button petButton;
+
+        StatGauge foodGauge;
+        StatGauge cleanGauge;
+        StatGauge petGauge;
 
         VisualElement rootElement;
         VisualElement itemTray;
@@ -69,9 +81,14 @@ namespace MuseGameJam.UI
 
             cameraButton = rootElement.Q<Button>("camera-button");
             targetButton = rootElement.Q<Button>("target-button");
+            unlockablesButton = rootElement.Q<Button>("unlockables-button");
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
             petButton = rootElement.Q<Button>("pet-button");
+
+            foodGauge = rootElement.Q<StatGauge>("food-gauge");
+            cleanGauge = rootElement.Q<StatGauge>("clean-gauge");
+            petGauge = rootElement.Q<StatGauge>("pet-gauge");
 
             itemTray = rootElement.Q<VisualElement>("item-tray");
             trayContent = rootElement.Q<VisualElement>("tray-content");
@@ -81,6 +98,7 @@ namespace MuseGameJam.UI
             petButton.clicked += OnPetClicked;
             if (cameraButton != null) cameraButton.clicked += OnCameraClicked;
             if (targetButton != null) targetButton.clicked += OnTargetClicked;
+            if (unlockablesButton != null) unlockablesButton.clicked += OnUnlockablesClicked;
 
             // Lo scanner parte chiuso (disattivato).
             if (qrScannerObject != null) qrScannerObject.SetActive(false);
@@ -96,6 +114,7 @@ namespace MuseGameJam.UI
             if (petButton != null) petButton.clicked -= OnPetClicked;
             if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
             if (targetButton != null) targetButton.clicked -= OnTargetClicked;
+            if (unlockablesButton != null) unlockablesButton.clicked -= OnUnlockablesClicked;
         }
 
         // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
@@ -149,6 +168,34 @@ namespace MuseGameJam.UI
             GameStateMachine.Instance.PushState(challengesState);
         }
 
+        // Unlockables (notebook) button: opens the Unlockables menu as an OVERLAY on the state stack.
+        // StateUnlockablesMenu instantiates the unlockables UI and pauses the main state;
+        // on "Close" or back it calls PopOverlay and returns to the main state.
+        void OnUnlockablesClicked()
+        {
+            if (unlockablesUiPrefab == null)
+            {
+                Debug.LogWarning("MainUIController: unlockablesUiPrefab not assigned in Inspector.");
+                return;
+            }
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the unlockables menu.");
+                return;
+            }
+
+            // Anti-spam guard: if an unlockables menu is already open, don't push another.
+            if (GameStateMachine.Instance.HasOverlay<StateUnlockablesMenu>()) return;
+
+            // Pass this UI so the overlay hides it while open (it lives on its own UIDocument).
+            var unlockablesState = new StateUnlockablesMenu(unlockablesUiPrefab, unlockablesUiParent, gameObject);
+            GameStateMachine.Instance.PushState(unlockablesState);
+        }
+        // API per il gameplay: imposta il livello (0..1) di ciascun gauge.
+        public void SetFoodLevel(float value) { if (foodGauge != null) foodGauge.value = value; }
+        public void SetCleanLevel(float value) { if (cleanGauge != null) cleanGauge.value = value; }
+        public void SetPetLevel(float value) { if (petGauge != null) petGauge.value = value; }
+
         void OnFoodClicked() => ToggleTray("FOOD", foodItems);
         void OnCleanClicked() => ToggleTray("CLEAN", cleanItems);
         void OnPetClicked() => ToggleTray("PET", petItems);
@@ -200,6 +247,9 @@ namespace MuseGameJam.UI
                 var prefab = def.itemPrefab;
                 itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab));
                 itemRoot.RegisterCallback<PointerUpEvent>(OnItemPointerUp);
+                // Su touch l'OS può annullare il puntatore (PointerCancel) invece di rilasciarlo:
+                // senza questo, lo stato del drag resterebbe appeso e bloccherebbe ogni drag successivo.
+                itemRoot.RegisterCallback<PointerCancelEvent>(OnItemPointerCancel);
 
                 trayContent.Add(instance);
             }
@@ -239,6 +289,22 @@ namespace MuseGameJam.UI
             if (spawnedItem != null) spawnedItem.Drop();
             else Destroy(spawnedObject);
 
+            EndDrag();
+        }
+
+        // Puntatore annullato dall'OS (tipico su touch): scartiamo l'item senza droparlo
+        // e ripristiniamo lo stato, così la tray resta utilizzabile.
+        void OnItemPointerCancel(PointerCancelEvent evt)
+        {
+            if (spawnedObject == null || evt.pointerId != activePointerId) return;
+
+            Destroy(spawnedObject);
+            EndDrag();
+        }
+
+        // Ripristino comune dello stato del drag (rilascio o annullamento).
+        void EndDrag()
+        {
             spawnedObject = null;
             spawnedItem = null;
 
