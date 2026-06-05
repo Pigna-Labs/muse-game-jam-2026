@@ -1,0 +1,74 @@
+.root {
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.top-bar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px;
+}
+
+.stage {
+    flex-grow: 1;
+}
+
+.bottom-bar {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 16px 16px 24px 16px;
+}
+
+.round-button {
+    width: 72px;
+    height: 72px;
+    border-radius: 36px;
+}
+
+.round-button--large {
+    width: 88px;
+    height: 88px;
+    border-radius: 44px;
+}
+
+.item-tray {
+    min-height: 110px;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px;
+    background-color: rgb(160, 10, 25);
+    display: none;
+}
+
+.item-tray--visible {
+    display: flex;
+}
+
+.tray-content {
+    flex-grow: 1;
+}
+
+/* Content container interno dello ScrollView: riga di item, centrati quando ci stanno. */
+.tray-content .unity-scroll-view__content-container {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.tray-item {
+    align-items: center;
+    margin-right: 12px;
+}
+
+.tray-item__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+}
+
+.tray-item__label {
+    margin-top: 4px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+}

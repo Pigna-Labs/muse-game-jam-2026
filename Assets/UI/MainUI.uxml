@@ -1,0 +1,18 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainUI.uss?fileID=7433441132597879392&amp;guid=920627a4c92126740a1ecb7f5271d639&amp;type=3#MainUI"/>
+    <ui:VisualElement name="root" class="root">
+        <ui:VisualElement name="top-bar" class="top-bar">
+            <ui:Button name="shop-button" text="SHOP" class="round-button"/>
+            <ui:Button name="camera-button" text="CAMERA" class="round-button"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="stage" class="stage"/>
+        <ui:VisualElement name="item-tray" class="item-tray" style="justify-content: center; align-content: auto; display: none;">
+            <ui:ScrollView name="tray-content" mode="Horizontal" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="tray-content" style="display: flex;"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="bottom-bar" class="bottom-bar">
+            <ui:Button name="food-button" text="FOOD" class="round-button round-button--large"/>
+            <ui:Button name="clean-button" text="CLEAN" class="round-button round-button--large"/>
+            <ui:Button name="pet-button" text="PET" class="round-button round-button--large"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
