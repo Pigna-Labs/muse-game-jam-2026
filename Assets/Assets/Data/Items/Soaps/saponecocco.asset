@@ -10,10 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64c02681e45dbc22e899c4d3433194ae, type: 3}
-  m_Name: lombrichi
+  m_Name: saponecocco
   m_EditorClassIdentifier: Assembly-CSharp::ItemSO
-  displayName: 
-  itemType: 0
-  quantity: 0
-  gain: 0
-  image: {fileID: 0}
+  displayName: Scrub Sabbia
+  itemType: 1
+  image: {fileID: 21300000, guid: 39036fc83a2700741a3380999a35ca06, type: 3}

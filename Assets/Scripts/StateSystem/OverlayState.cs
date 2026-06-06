@@ -6,26 +6,36 @@ namespace MuseGameJam.StateSystem
     /// Base class for overlay states pushed above the main game UI.
     ///
     /// Centralizes the behavior shared by every overlay:
-    ///  - hides the main UI while the overlay is active, so its separate UIDocument
-    ///    panel does not render over the overlay nor keep receiving taps underneath it;
+    ///  - optionally hides the main UI while the overlay is active (see hideMainUi),
+    ///    so its separate UIDocument panel does not render over the overlay nor keep
+    ///    receiving taps underneath it;
     ///  - closes the overlay on mobile back (HandleBack -> PopOverlay).
     ///
-    /// Subclasses implement OnEnter/OnExit for their own setup and teardown; the main
-    /// UI is already hidden by the time OnEnter runs and is restored after OnExit.
+    /// Subclasses implement OnEnter/OnExit for their own setup and teardown.
+    ///
+    /// hideMainUi controls whether the main UI is deactivated for the lifetime of the
+    /// overlay. Overlays whose own panel has a higher PanelSettings sort order render
+    /// above the main UI anyway, so they can pass hideMainUi: false to keep it visible
+    /// behind them (e.g. so it shows through during a slide-in animation). The overlay's
+    /// own full-screen root still captures taps, so the main UI stays non-interactive
+    /// while covered. Fully opaque/replacement overlays (e.g. the QR camera) keep the
+    /// default and hide it.
     /// </summary>
     public abstract class OverlayState : GameState
     {
         private readonly GameObject mainUiObject;
+        private readonly bool hideMainUi;
 
-        protected OverlayState(GameObject mainUiObject)
+        protected OverlayState(GameObject mainUiObject, bool hideMainUi = true)
         {
             this.mainUiObject = mainUiObject;
+            this.hideMainUi = hideMainUi;
         }
 
-        // Hides the main UI, then runs the subclass setup.
+        // Hides the main UI (unless opted out), then runs the subclass setup.
         public sealed override void Enter()
         {
-            if (mainUiObject != null)
+            if (hideMainUi && mainUiObject != null)
             {
                 mainUiObject.SetActive(false);
             }
@@ -33,12 +43,12 @@ namespace MuseGameJam.StateSystem
             OnEnter();
         }
 
-        // Runs the subclass teardown, then restores the main UI.
+        // Runs the subclass teardown, then restores the main UI if it was hidden.
         public sealed override void Exit()
         {
             OnExit();
 
-            if (mainUiObject != null)
+            if (hideMainUi && mainUiObject != null)
             {
                 mainUiObject.SetActive(true);
             }

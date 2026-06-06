@@ -13,10 +13,15 @@ MonoBehaviour:
   m_Name: Unlockables
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.Gameplay.Unlockables
   foods:
-  - {fileID: 11400000, guid: 0539a09f00ea47eb81b6de2f947722ce, type: 2}
-  - {fileID: 11400000, guid: 4f7c545ebca849debd80c594637fec53, type: 2}
-  - {fileID: 11400000, guid: 9e95fc0722d24458aaaa7ab1a4844e28, type: 2}
+  - {fileID: 11400000, guid: a8e4012662532f5aaa9919deaf1e0134, type: 2}
+  - {fileID: 11400000, guid: 666ba5596f57a04c1acbc076d7848267, type: 2}
+  - {fileID: 11400000, guid: 4462066576de2ff78846e253d3b42d8f, type: 2}
+  soaps:
+  - {fileID: 11400000, guid: 682ebbf1f9e55ff479c9c5de9fe5fdc1, type: 2}
+  - {fileID: 11400000, guid: ef7f92eacd05dc242a10c12818788e0a, type: 2}
+  - {fileID: 11400000, guid: e9a4b34185bf96e408e6a1802bb04377, type: 2}
+  toys: []
   companions:
-  - {fileID: 11400000, guid: ca25e5341bf64a908ef211f4fcc358a8, type: 2}
-  - {fileID: 11400000, guid: 78bde7ccb736426e801b8761ea262f43, type: 2}
-  - {fileID: 11400000, guid: 0c8f2ae831fc4c58a9ae6db9c3c0753d, type: 2}
+  - {fileID: 11400000, guid: 115dfdc3b35e327cf8664ab768c5a4bc, type: 2}
+  - {fileID: 11400000, guid: d7231a6a5a7f6c0a1b92497a0e20e708, type: 2}
+  - {fileID: 11400000, guid: d404290a2e08a231e90d9178180b4508, type: 2}

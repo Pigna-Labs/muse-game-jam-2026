@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using MuseGameJam.Gameplay;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,6 +14,11 @@ namespace MuseGameJam.UI
     /// controller only toggles the open class and times the close so the overlay is
     /// not destroyed before the slide-down finishes.
     ///
+    /// On open it also fills two subsections - Food and Companions - by iterating the
+    /// Unlockables asset. Each entry is drawn as a tile; locked entries show their
+    /// sprite tinted fully black (a silhouette), so the player sees the shape but not
+    /// the art until it is unlocked.
+    ///
     /// Stays decoupled from the state system: it only exposes CloseRequested once the
     /// close animation is done. The StateUnlockablesMenu owns the lifecycle (PopOverlay).
     /// </summary>
@@ -20,11 +27,28 @@ namespace MuseGameJam.UI
     {
         private const string OpenClass = "unlockables-panel--open";
 
+        // USS classes for the generated tiles (see Unlockables.uss).
+        private const string TileClass = "unlockable-tile";
+        private const string TileImageClass = "unlockable-tile__image";
+        private const string TileImageLockedClass = "unlockable-tile__image--locked";
+        private const string TileLabelClass = "unlockable-tile__label";
+        private const string TileLabelLockedClass = "unlockable-tile__label--locked";
+
+        // Caption shown instead of the name while an entry is still locked.
+        private const string LockedCaption = "???";
+
         // Must match the transition-duration of .unlockables-panel in Unlockables.uss.
         private const long SlideMilliseconds = 320;
 
+        // Source of the food and companion entries to display.
+        [SerializeField] private Unlockables unlockables;
+
         private UIDocument document;
         private VisualElement panel;
+        private VisualElement companionsGrid;
+        private VisualElement foodGrid;
+        private VisualElement soapsGrid;
+        private VisualElement toysGrid;
         private Button closeButton;
         private bool closing;
 
@@ -36,6 +60,7 @@ namespace MuseGameJam.UI
         {
             closing = false;
             BindElements();
+            PopulateSections();
             PlayOpenAnimation();
         }
 
@@ -56,10 +81,81 @@ namespace MuseGameJam.UI
 
             VisualElement root = RequireReference(document.rootVisualElement, "Unlockables UIDocument has no root visual element. Check that its Visual Tree Asset is assigned.");
             panel = RequireElement<VisualElement>(root, "unlockables-panel");
+            companionsGrid = RequireElement<VisualElement>(root, "companions-grid");
+            foodGrid = RequireElement<VisualElement>(root, "food-grid");
+            soapsGrid = RequireElement<VisualElement>(root, "soaps-grid");
+            toysGrid = RequireElement<VisualElement>(root, "toys-grid");
             closeButton = RequireElement<Button>(root, "unlockables-close");
 
             closeButton.clicked -= RequestClose;
             closeButton.clicked += RequestClose;
+        }
+
+        // Fills the Companions, Foods, Soaps and Toys grids from the Unlockables asset.
+        // Items (food/soap/toy) have no unlock flag yet, so they are always drawn locked
+        // (blackened); companions honour their own Unlocked flag.
+        private void PopulateSections()
+        {
+            companionsGrid.Clear();
+            foodGrid.Clear();
+            soapsGrid.Clear();
+            toysGrid.Clear();
+
+            if (unlockables == null)
+            {
+                Debug.LogWarning("UnlockablesMenuController: Unlockables asset not assigned in Inspector.");
+                return;
+            }
+
+            foreach (CompanionSO companion in unlockables.Companions)
+            {
+                if (companion == null) continue;
+                companionsGrid.Add(CreateTile(companion.Image, companion.DisplayName, companion.Unlocked));
+            }
+
+            PopulateItemGrid(foodGrid, unlockables.Foods);
+            PopulateItemGrid(soapsGrid, unlockables.Soaps);
+            PopulateItemGrid(toysGrid, unlockables.Toys);
+        }
+
+        // Adds one locked (blackened) tile per item in the list.
+        private void PopulateItemGrid(VisualElement grid, IReadOnlyList<ItemSO> items)
+        {
+            foreach (ItemSO item in items)
+            {
+                if (item == null) continue;
+                grid.Add(CreateTile(item.Image, item.DisplayName, unlocked: false));
+            }
+        }
+
+        // Builds a single tile: the sprite on top (tinted black while locked) and a caption
+        // below (the name once unlocked, "???" while still locked).
+        private VisualElement CreateTile(Sprite image, string displayName, bool unlocked)
+        {
+            VisualElement tile = new VisualElement();
+            tile.AddToClassList(TileClass);
+
+            VisualElement icon = new VisualElement();
+            icon.AddToClassList(TileImageClass);
+            if (image != null)
+            {
+                icon.style.backgroundImage = new StyleBackground(image);
+            }
+            if (!unlocked)
+            {
+                icon.AddToClassList(TileImageLockedClass);
+            }
+            tile.Add(icon);
+
+            Label caption = new Label(unlocked ? displayName : LockedCaption);
+            caption.AddToClassList(TileLabelClass);
+            if (!unlocked)
+            {
+                caption.AddToClassList(TileLabelLockedClass);
+            }
+            tile.Add(caption);
+
+            return tile;
         }
 
         // Adds the open class once the panel has its first (closed) layout, so the

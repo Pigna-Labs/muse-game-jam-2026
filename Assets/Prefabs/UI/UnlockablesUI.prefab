@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name:
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: fadba6289d23fc24484ca9ca67c9ec5a, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: ee8273a18313445281d6e454eb3ba16d, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 0f7ceaf2d0514200b0fe3a2ac0a50141, type: 3}
   m_SortingOrder: 0
@@ -68,3 +68,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb650353f3fd4fe6b102637814a076c3, type: 3}
   m_Name:
   m_EditorClassIdentifier:
+  unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}

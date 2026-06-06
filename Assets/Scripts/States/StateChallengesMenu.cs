@@ -8,8 +8,9 @@ namespace MuseGameJam.States
     /// Challenges menu overlay, opened by the "target" button of the MainUI.
     ///
     /// Pushed onto the stack by MainUIController: the GameStateMachine pauses the
-    /// main state, the OverlayState base hides the main UI, and this state
-    /// instantiates its UI above the main scene.
+    /// main state and this state instantiates its UI above the main scene. The
+    /// challenges panel renders above the main UI (higher PanelSettings sort order),
+    /// so the main UI is kept visible behind it (hideMainUi: false) instead of hidden.
     ///
     /// It closes (PopOverlay) when:
     ///  - the user presses "Close"  -> ChallengesMenuController.CloseRequested
@@ -26,7 +27,7 @@ namespace MuseGameJam.States
         private ChallengesMenuController challengesUi;
 
         public StateChallengesMenu(GameObject challengesUiPrefab, Transform parent, GameObject mainUiObject = null)
-            : base(mainUiObject)
+            : base(mainUiObject, hideMainUi: false)
         {
             this.challengesUiPrefab = challengesUiPrefab;
             this.parent = parent;
