@@ -46,11 +46,15 @@ namespace MuseGameJam.Gameplay
         }
 
         [Header("Clip per stato (volume/pitch indipendenti)")]
-        [SerializeField] private StateAudio idle;     // loop
+        [SerializeField] private StateAudio idle;     // gesto idle (one-shot)
         [SerializeField] private StateAudio pulito;   // loop
-        [SerializeField] private StateAudio coccole;  // loop
+        [SerializeField] private StateAudio coccole;  // 1° = base, poi varianti random
         [SerializeField] private StateAudio cibo;     // one-shot
         [SerializeField] private StateAudio felice;   // one-shot
+
+        [Tooltip("Varianti riprodotte DOPO il primo audio di coccole: dal 2° suono in poi " +
+                 "ne viene scelta una a caso (evitando di ripetere l'ultima). Vuoto = ripete il base.")]
+        [SerializeField] private AudioClip[] coccolePostFirst;
 
         [Header("Master")]
         [Tooltip("Moltiplicatore globale applicato a tutti i volumi sopra.")]
@@ -81,6 +85,10 @@ namespace MuseGameJam.Gameplay
         private float _lastIdleNormalized;
         private int _idleCyclesPlayed;
         private int _idleCyclesTarget;
+
+        // Sequenza audio coccole: 1° = base, poi varianti random (no loop nativo).
+        private bool _coccoleActive;
+        private int _lastCoccoleVariant = -1; // per non ripetere la stessa due volte di fila
 
         private void Awake()
         {
@@ -121,6 +129,36 @@ namespace MuseGameJam.Gameplay
             // ogni N cicli (N casuale). Negli altri stati l'idle resta zitto.
             if (state == IdleState)
                 TickIdle(info.normalizedTime);
+
+            // Coccole: quando la clip corrente finisce, concatena una variante random.
+            if (_coccoleActive && state == CoccoleState && !_source.isPlaying)
+                PlayNextCoccole();
+        }
+
+        // Riproduce la prossima clip di coccole: una variante random tra coccolePostFirst
+        // (evitando l'ultima usata). Se non ci sono varianti, ripete il base.
+        private void PlayNextCoccole()
+        {
+            float vol   = coccole != null ? coccole.volume : 1f;
+            float pitch = coccole != null ? coccole.pitch : 1f;
+
+            AudioClip next = PickCoccoleVariant();
+            if (next == null) next = coccole != null ? coccole.clip : null;
+            if (next == null) { _coccoleActive = false; return; }
+
+            PlayOnSource(next, vol, pitch, loop: false);
+        }
+
+        private AudioClip PickCoccoleVariant()
+        {
+            if (coccolePostFirst == null || coccolePostFirst.Length == 0) return null;
+            if (coccolePostFirst.Length == 1) { _lastCoccoleVariant = 0; return coccolePostFirst[0]; }
+
+            int idx;
+            do { idx = Random.Range(0, coccolePostFirst.Length); }
+            while (idx == _lastCoccoleVariant); // evita di ripetere l'ultima
+            _lastCoccoleVariant = idx;
+            return coccolePostFirst[idx];
         }
 
         // Suoni legati al CAMBIO di stato.
@@ -128,30 +166,45 @@ namespace MuseGameJam.Gameplay
         //  - gesto idle (IdleTrigger): one-shot con idle.clip.
         private void OnStateChanged(int state)
         {
+            // Uscendo dalle coccole, chiudi la sequenza audio variata.
+            _coccoleActive = (state == CoccoleState);
+
+            // Coccole = sequenza speciale: primo = base, poi varianti random (no loop nativo).
+            if (state == CoccoleState)
+            {
+                _lastCoccoleVariant = -1;
+                if (coccole != null && coccole.clip != null)
+                    PlayOnSource(coccole.clip, coccole.volume, coccole.pitch, loop: false);
+                else
+                    _source.Stop();
+                return;
+            }
+
             StateAudio audio = null;
             bool loop = false;
 
             if (state == PulitoState)           { audio = pulito;  loop = true; }
-            else if (state == CoccoleState)     { audio = coccole; loop = true; }
             else if (state == CiboState)        { audio = cibo;    loop = false; }
             else if (state == FeliceState)      { audio = felice;  loop = false; }
             else if (state == IdleTriggerState) { audio = idle;    loop = false; } // gesto -> verso
             // IdleState (stance) -> nessun audio
 
-            if (audio == null || audio.clip == null) { _source.Stop(); }
-            else
-            {
-                _source.Stop();
-                _source.clip = audio.clip;
-                _source.loop = loop;
-                _source.volume = audio.volume * masterVolume;
-                _source.pitch = audio.pitch;
-                _source.Play();
-            }
+            if (audio == null || audio.clip == null) _source.Stop();
+            else PlayOnSource(audio.clip, audio.volume, audio.pitch, loop);
 
             // Entrando nella stance reimposta il conteggio: il gesto scatterà
             // dopo qualche ciclo, non subito.
             if (state == IdleState) ResetIdleCounter(normalized: 0f);
+        }
+
+        private void PlayOnSource(AudioClip clip, float volume, float pitch, bool loop)
+        {
+            _source.Stop();
+            _source.clip = clip;
+            _source.loop = loop;
+            _source.volume = volume * masterVolume;
+            _source.pitch = pitch;
+            _source.Play();
         }
 
         // Conta i cicli completati della STANCE idle (ogni volta che normalizedTime

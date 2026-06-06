@@ -24,6 +24,12 @@ namespace MuseGameJam.Gameplay
         // Se lasciato vuoto, nessuna animazione (resta solo il log).
         [SerializeField] Animator musettoAnimator;
 
+        // Emesso quando un'azione di cura viene eseguita (cibo droppato, pulizia/coccola
+        // iniziata). Il MainUIController lo ascolta per nascondere l'hint di quella
+        // categoria una volta che il giocatore ha capito cosa fare. Statico così non
+        // serve collegare riferimenti in Inspector.
+        public static event System.Action<CareAction> CareActionPerformed;
+
         readonly HashSet<Item> tracked = new HashSet<Item>();
         readonly Dictionary<Item, Vector3> lastPos = new Dictionary<Item, Vector3>();
         readonly Dictionary<Item, float> progress = new Dictionary<Item, float>();
@@ -51,6 +57,10 @@ namespace MuseGameJam.Gameplay
                 case CareAction.Pet:   SetAnimBool("IsPetting", true);  break;
                 case CareAction.Clean: SetAnimBool("IsCleaning", true); break;
             }
+
+            // Pet/Clean contano come "eseguite" appena l'item entra nell'area (primo contatto).
+            if (item.Action == CareAction.Pet || item.Action == CareAction.Clean)
+                CareActionPerformed?.Invoke(item.Action);
         }
 
         void OnTriggerStay2D(Collider2D other)
@@ -90,6 +100,7 @@ namespace MuseGameJam.Gameplay
             {
                 SetAnimTrigger("Eating");
                 item.ApplyCare(foodGainPerDrop);
+                CareActionPerformed?.Invoke(CareAction.Eat); // cibo droppato = azione eseguita
             }
 
             Forget(item); // Forget azzera anche gli eventuali bool continui (vedi sotto)

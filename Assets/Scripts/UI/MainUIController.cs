@@ -63,6 +63,7 @@ namespace MuseGameJam.UI
         Button foodButton;
         Button cleanButton;
         Button petButton;
+        Button audioToggleButton;
 
         StatGauge foodGauge;
         StatGauge cleanGauge;
@@ -71,6 +72,18 @@ namespace MuseGameJam.UI
         VisualElement rootElement;
         VisualElement itemTray;
         VisualElement trayContent;
+        VisualElement trayHint;
+        Label trayHintLabel;
+
+        // Testo dell'hint per ciascuna categoria (cosa deve fare il giocatore).
+        const string FoodHint = "Dai da mangiare a Musetto!";
+        const string CleanHint = "Lava Musetto!";
+        const string PetHint = "Coccola Musetto!";
+
+        // Azioni di cura già completate dal giocatore almeno una volta: per queste
+        // l'hint non si mostra più. Finché un'azione NON è qui dentro, l'aiuto continua
+        // a comparire all'apertura del relativo menu (resta finché non completi l'azione).
+        readonly HashSet<CareAction> careDone = new HashSet<CareAction>();
 
         string openCategory;
 
@@ -90,6 +103,7 @@ namespace MuseGameJam.UI
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
             petButton = rootElement.Q<Button>("pet-button");
+            audioToggleButton = rootElement.Q<Button>("audio-toggle-button");
 
             foodGauge = rootElement.Q<StatGauge>("food-gauge");
             cleanGauge = rootElement.Q<StatGauge>("clean-gauge");
@@ -97,6 +111,8 @@ namespace MuseGameJam.UI
 
             itemTray = rootElement.Q<VisualElement>("item-tray");
             trayContent = rootElement.Q<VisualElement>("tray-content");
+            trayHint = rootElement.Q<VisualElement>("tray-hint");
+            trayHintLabel = rootElement.Q<Label>("tray-hint-label");
 
             foodButton.clicked += OnFoodClicked;
             cleanButton.clicked += OnCleanClicked;
@@ -104,6 +120,13 @@ namespace MuseGameJam.UI
             if (cameraButton != null) cameraButton.clicked += OnCameraClicked;
             if (targetButton != null) targetButton.clicked += OnTargetClicked;
             if (unlockablesButton != null) unlockablesButton.clicked += OnUnlockablesClicked;
+            if (audioToggleButton != null) audioToggleButton.clicked += OnAudioToggleClicked;
+
+            // Riflette subito lo stato corrente dell'audio sull'icona.
+            UpdateAudioToggleIcon();
+
+            // Quando un'azione di cura viene eseguita, l'hint di quella categoria sparisce.
+            DropArea.CareActionPerformed += OnCareActionPerformed;
 
             // Lo scanner parte chiuso (disattivato).
             if (qrScannerObject != null) qrScannerObject.SetActive(false);
@@ -146,7 +169,41 @@ namespace MuseGameJam.UI
             if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
             if (targetButton != null) targetButton.clicked -= OnTargetClicked;
             if (unlockablesButton != null) unlockablesButton.clicked -= OnUnlockablesClicked;
+            if (audioToggleButton != null) audioToggleButton.clicked -= OnAudioToggleClicked;
+
+            DropArea.CareActionPerformed -= OnCareActionPerformed;
         }
+
+        // Toggle audio globale: muta/riattiva TUTTO l'audio (musica, musetto, camera).
+        // AudioListener.pause ferma l'intera scena audio in un colpo solo.
+        void OnAudioToggleClicked()
+        {
+            AudioListener.pause = !AudioListener.pause;
+            UpdateAudioToggleIcon();
+        }
+
+        void UpdateAudioToggleIcon()
+        {
+            if (audioToggleButton != null)
+                audioToggleButton.text = AudioListener.pause ? "🔇" : "🔊";
+        }
+
+        // Azione di cura eseguita almeno una volta: l'hint di quella categoria non serve
+        // più. Se è proprio quello mostrato ora, lo nascondiamo subito.
+        void OnCareActionPerformed(CareAction action)
+        {
+            careDone.Add(action);
+            if (CategoryOf(action) == openCategory)
+                HideHint();
+        }
+
+        static string CategoryOf(CareAction action) => action switch
+        {
+            CareAction.Eat => "FOOD",
+            CareAction.Clean => "CLEAN",
+            CareAction.Pet => "PET",
+            _ => null,
+        };
 
         // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
         // StateCamera nasconde la main UI, mette in pausa la main e attiva lo scanner;
@@ -259,11 +316,12 @@ namespace MuseGameJam.UI
 
         // Ogni categoria mappa a una CareAction: l'item spawnato la riceve, così la
         // DropArea fa partire l'animazione giusta (food->Eat, clean->Clean, pet->Pet).
-        void OnFoodClicked() => ToggleTray("FOOD", foodItems, CareAction.Eat);
-        void OnCleanClicked() => ToggleTray("CLEAN", cleanItems, CareAction.Clean);
-        void OnPetClicked() => ToggleTray("PET", petItems, CareAction.Pet);
+        // Il terzo argomento è il testo dell'hint mostrato sopra la tray.
+        void OnFoodClicked() => ToggleTray("FOOD", foodItems, CareAction.Eat, FoodHint);
+        void OnCleanClicked() => ToggleTray("CLEAN", cleanItems, CareAction.Clean, CleanHint);
+        void OnPetClicked() => ToggleTray("PET", petItems, CareAction.Pet, PetHint);
 
-        void ToggleTray(string category, List<TrayItemDef> items, CareAction action)
+        void ToggleTray(string category, List<TrayItemDef> items, CareAction action, string hint)
         {
             if (openCategory == category)
             {
@@ -273,6 +331,14 @@ namespace MuseGameJam.UI
 
             openCategory = category;
             itemTray.style.display = DisplayStyle.Flex;
+
+            // L'hint resta visibile finché il giocatore non ha COMPLETATO almeno una volta
+            // l'azione di questa categoria; dopo non ricompare più.
+            if (!careDone.Contains(action))
+                ShowHint(hint);
+            else
+                HideHint();
+
             PopulateTray(items, action);
         }
 
@@ -280,7 +346,20 @@ namespace MuseGameJam.UI
         {
             openCategory = null;
             itemTray.style.display = DisplayStyle.None;
+            HideHint();
             trayContent.Clear();
+        }
+
+        // Mostra l'hint (freccia + testo) sopra la tray con il messaggio della categoria.
+        void ShowHint(string text)
+        {
+            if (trayHintLabel != null) trayHintLabel.text = text;
+            if (trayHint != null) trayHint.style.display = DisplayStyle.Flex;
+        }
+
+        void HideHint()
+        {
+            if (trayHint != null) trayHint.style.display = DisplayStyle.None;
         }
 
         // Riempie la banda clonando il template, un item per ogni TrayItemDef della lista scelta.
