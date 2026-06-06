@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64c02681e45dbc22e899c4d3433194ae, type: 3}
+  m_Name: formicaleccalecca
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSO
+  displayName: Formica Lecca-Lecca
+  itemType: 0
+  quantity: 0
+  gain: 15
+  image: {fileID: 21300000, guid: 5ff6bf6d9572ce94cb1f687c1393704f, type: 3}
