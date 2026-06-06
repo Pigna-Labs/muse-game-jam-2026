@@ -17,3 +17,4 @@ MonoBehaviour:
   quantity: 0
   gain: 15
   image: {fileID: 21300000, guid: 5ff6bf6d9572ce94cb1f687c1393704f, type: 3}
+  unlocked: 1

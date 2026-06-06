@@ -763,6 +763,10 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 7a506b138be33de49ae11024c64c1c71, type: 3}
     volume: 1
     pitch: 1
+  coccolePostFirst:
+  - {fileID: 8300000, guid: 71fdeb5deb869fc4b8abd1f653f97d1f, type: 3}
+  - {fileID: 8300000, guid: 77ed3621fa3d150448fadfc8b9e20aa7, type: 3}
+  - {fileID: 8300000, guid: 350408bfd8b1b3e4aa3ed49af1201696, type: 3}
   masterVolume: 1
   idleEveryMinCycles: 3
   idleEveryMaxCycles: 6

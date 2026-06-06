@@ -17,10 +17,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 666ba5596f57a04c1acbc076d7848267, type: 2}
   - {fileID: 11400000, guid: 4462066576de2ff78846e253d3b42d8f, type: 2}
   soaps:
-  - {fileID: 11400000, guid: 682ebbf1f9e55ff479c9c5de9fe5fdc1, type: 2}
   - {fileID: 11400000, guid: ef7f92eacd05dc242a10c12818788e0a, type: 2}
   - {fileID: 11400000, guid: e9a4b34185bf96e408e6a1802bb04377, type: 2}
-  toys: []
+  toys:
+  - {fileID: 11400000, guid: 4d41942f293a3304eb62e0c8fb36f491, type: 2}
+  - {fileID: 11400000, guid: 682ebbf1f9e55ff479c9c5de9fe5fdc1, type: 2}
   companions:
   - {fileID: 11400000, guid: 115dfdc3b35e327cf8664ab768c5a4bc, type: 2}
   - {fileID: 11400000, guid: d7231a6a5a7f6c0a1b92497a0e20e708, type: 2}
