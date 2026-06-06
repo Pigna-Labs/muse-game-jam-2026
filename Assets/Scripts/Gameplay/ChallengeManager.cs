@@ -49,6 +49,16 @@ namespace MuseGameJam.Gameplay
         // Raised when a challenge's trivia is completed and its reward granted.
         public event Action<ChallengeSO> ChallengeCompleted;
 
+        // Seed Unity's global RNG once per launch from a time-based value. Without this the
+        // engine can start from the same state every run, so Random.Range would pick the
+        // same trivia question (and the same starting gauge stats) on every playthrough.
+        // Runs automatically at startup, before any scene loads, in both editor and builds.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void SeedRandom()
+        {
+            UnityEngine.Random.InitState((int)System.DateTime.Now.Ticks);
+        }
+
         // Builds the session state singleton before any UI or scan asks for it.
         private void Awake()
         {
