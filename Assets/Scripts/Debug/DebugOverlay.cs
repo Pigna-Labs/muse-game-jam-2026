@@ -7,11 +7,16 @@ namespace MuseGameJam.DevTools
     /// On-screen log viewer — si crea da solo a runtime, nessun GameObject da aggiungere.
     /// Mostra tutti i Debug.Log/Warning/Error in un pannello scrollabile.
     /// Il pulsante "LOG ▼" in alto a destra lo nasconde/mostra.
-    /// Per disabilitare nel build di release: commenta [RuntimeInitializeOnLoadMethod] oppure
-    /// usa un #if DEVELOPMENT_BUILD / #if UNITY_EDITOR guard.
+    ///
+    /// INTERRUTTORE: metti Enabled = false qui sotto per spegnerlo del tutto
+    /// (non si crea nemmeno il GameObject). true per riattivarlo.
     /// </summary>
     public class DebugOverlay : MonoBehaviour
     {
+        // === ON/OFF dell'overlay di debug ===
+        // false = spento (niente pannello, niente cattura log). true = acceso.
+        private const bool Enabled = false;
+
         private const int MaxMessages = 50;
         private const int FontSize    = 28;
         private const float PanelHeightFraction = 0.45f;
@@ -23,9 +28,12 @@ namespace MuseGameJam.DevTools
         private GUIStyle _btnStyle;
 
         // Crea il GameObject e ci attacca questo script automaticamente all'avvio di ogni scena.
+        // Se Enabled è false non crea nulla: l'overlay resta completamente spento.
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void AutoCreate()
         {
+            if (!Enabled) return;
+
             var go = new GameObject("[DebugOverlay]");
             DontDestroyOnLoad(go);
             go.AddComponent<DebugOverlay>();
