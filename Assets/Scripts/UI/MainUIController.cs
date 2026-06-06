@@ -194,6 +194,7 @@ namespace MuseGameJam.UI
         {
             AudioListener.pause = !AudioListener.pause;
             UpdateAudioToggleIcon();
+            UISoundManager.Instance?.PlayNeutral();
         }
 
         void UpdateAudioToggleIcon()
@@ -240,6 +241,7 @@ namespace MuseGameJam.UI
         // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
         void OnCameraClicked()
         {
+            UISoundManager.Instance?.PlayNeutral();
             if (qrScannerObject == null) return;
             if (GameStateMachine.Instance == null)
             {
@@ -268,13 +270,21 @@ namespace MuseGameJam.UI
                 return;
             }
 
+            Debug.Log($"[MainUI] Cerco info per QR '{url}' — {unlockables.Infos?.Count ?? 0} info nel catalogo.");
+            if (unlockables.Infos != null)
+                foreach (var i in unlockables.Infos)
+                    Debug.Log($"[MainUI]   candidata: displayName='{i?.DisplayName}' qrValue='{i?.QrValue}'");
+
             InfoSO info = unlockables.FindInfoByQrValue(url);
             if (info == null)
             {
-                Debug.Log($"[MainUI] Nessuna info corrisponde al QR '{url}'.");
+                Debug.Log($"[MainUI] Nessuna info corrisponde al QR '{url}': controlla che qrValue nell'asset Info corrisponda esattamente all'URL del QR.");
+                // Feedback al giocatore: questo QR non è del museo.
+                if (speechBubble != null) speechBubble.ShowQrNotRecognized();
                 return;
             }
-            
+            Debug.Log($"[MainUI] Info trovata: '{info.DisplayName}'.");
+
             // Segna l'Info corrispondente come scansionata in ogni challenge che la contiene.
             bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
 
@@ -346,6 +356,7 @@ namespace MuseGameJam.UI
         // on "Close" or back it calls PopOverlay and returns to the main state.
         void OnTargetClicked()
         {
+            UISoundManager.Instance?.PlayNeutral();
             if (challengesUiPrefab == null)
             {
                 Debug.LogWarning("MainUIController: challengesUiPrefab not assigned in Inspector.");
@@ -370,6 +381,7 @@ namespace MuseGameJam.UI
         // on "Close" or back it calls PopOverlay and returns to the main state.
         void OnUnlockablesClicked()
         {
+            UISoundManager.Instance?.PlayNeutral();
             if (unlockablesUiPrefab == null)
             {
                 Debug.LogWarning("MainUIController: unlockablesUiPrefab not assigned in Inspector.");
@@ -396,9 +408,9 @@ namespace MuseGameJam.UI
         // Ogni categoria mappa a una CareAction: l'item spawnato la riceve, così la
         // DropArea fa partire l'animazione giusta (food->Eat, clean->Clean, pet->Pet).
         // Il terzo argomento è il testo dell'hint mostrato sopra la tray.
-        void OnFoodClicked() => ToggleTray("FOOD", foodItems, CareAction.Eat, FoodHint);
-        void OnCleanClicked() => ToggleTray("CLEAN", cleanItems, CareAction.Clean, CleanHint);
-        void OnPetClicked() => ToggleTray("PET", petItems, CareAction.Pet, PetHint);
+        void OnFoodClicked()  { UISoundManager.Instance?.PlayNeutral(); ToggleTray("FOOD",  foodItems,  CareAction.Eat,   FoodHint);  }
+        void OnCleanClicked() { UISoundManager.Instance?.PlayNeutral(); ToggleTray("CLEAN", cleanItems, CareAction.Clean, CleanHint); }
+        void OnPetClicked()   { UISoundManager.Instance?.PlayNeutral(); ToggleTray("PET",   petItems,   CareAction.Pet,   PetHint);   }
 
         void ToggleTray(string category, List<TrayItemDef> items, CareAction action, string hint)
         {
