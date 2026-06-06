@@ -4,6 +4,9 @@ using MuseGameJam.States;
 using MuseGameJam.StateSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
+#if UNITY_EDITOR
+using UnityEngine.InputSystem;
+#endif
 
 namespace MuseGameJam.UI
 {
@@ -56,6 +59,17 @@ namespace MuseGameJam.UI
         [SerializeField] GameObject unlockablesUiPrefab;
         // Parent transform to instantiate the unlockables UI under (leave empty for the scene root).
         [SerializeField] Transform unlockablesUiParent;
+        // Unlockable Manager SO holding the Info catalog: a scanned QR unlocks the matching Info.
+        [SerializeField] Unlockables unlockables;
+
+        [Header("Speech bubble")]
+        // Fumetto sopra il musetto (sta sulla stessa UIDocument della MainUI).
+        // I testi e l'etichetta della CTA sono configurati sullo SpeechBubbleController.
+        [SerializeField] SpeechBubbleController speechBubble;
+
+        // Sollevato quando l'utente preme la CTA del fumetto: collegare qui l'apertura
+        // della UI dell'info quando sarà implementata.
+        public event System.Action<InfoSO> InfoUiRequested;
 
         Button cameraButton;
         Button targetButton;
@@ -148,6 +162,22 @@ namespace MuseGameJam.UI
             if (unlockablesButton != null) unlockablesButton.clicked -= OnUnlockablesClicked;
         }
 
+#if UNITY_EDITOR
+        // TEST (solo editor): premi Q per simulare la scansione del QR dell'info "Funghi Tropicali".
+        // Passa per lo stesso HandleUrlScanned di uno scan vero (lookup -> unlock -> fumetto).
+        // TODO: rimuovere quando i test sono finiti.
+        const string FunghiTestQr = "https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/funghi-tropicali/";
+
+        void Update()
+        {
+            if (Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame)
+            {
+                Debug.Log("[MainUI] TEST: scan Funghi via tasto Q");
+                HandleUrlScanned(FunghiTestQr);
+            }
+        }
+#endif
+
         // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
         // StateCamera nasconde la main UI, mette in pausa la main e attiva lo scanner;
         // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
@@ -169,11 +199,25 @@ namespace MuseGameJam.UI
             GameStateMachine.Instance.PushState(cameraState);
         }
 
-        // L'URL letto dal QR arriva qui: lo registriamo sulle challenge attive.
+        // Il valore letto dal QR arriva qui: cerchiamo un Info asset con lo stesso QrValue
+        // e, se non è ancora sbloccato, lo sblocchiamo.
         void HandleUrlScanned(string url)
         {
-            Debug.Log($"[MainUI] URL dal QR: {url}");
+            Debug.Log($"[MainUI] QR letto: {url}");
 
+            if (unlockables == null)
+            {
+                Debug.LogWarning("MainUIController: Unlockables non assegnato in Inspector: impossibile sbloccare le info.");
+                return;
+            }
+
+            InfoSO info = unlockables.FindInfoByQrValue(url);
+            if (info == null)
+            {
+                Debug.Log($"[MainUI] Nessuna info corrisponde al QR '{url}'.");
+                return;
+            }
+            
             // Segna l'Info corrispondente come scansionata in ogni challenge che la contiene.
             bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
 
@@ -182,6 +226,41 @@ namespace MuseGameJam.UI
             {
                 TriggerHappy("QR scansionato");
             }
+
+            // Unlock() ritorna true solo la prima volta (locked -> unlocked).
+            if (info.Unlock())
+            {
+                Debug.Log($"[MainUI] Info sbloccata: {info.DisplayName}");
+                // Nuova info sbloccata -> il musetto è felice.
+                TriggerHappy("info sbloccata");
+                ShowInfoBubble(info, unlocked: true);
+            }
+            else
+            {
+                // QR di un'info già sbloccata: nessuno sblocco, ma mostriamo comunque il fumetto.
+                ShowInfoBubble(info, unlocked: false);
+            }
+        }
+
+        // Mostra il fumetto sopra il musetto. Testo e CTA vivono sullo SpeechBubbleController;
+        // qui scegliamo solo QUALE evento è (sblocco vs già nota) e cosa fa la CTA (aprire la UI).
+        void ShowInfoBubble(InfoSO info, bool unlocked)
+        {
+            if (speechBubble == null)
+            {
+                Debug.LogWarning("MainUIController: SpeechBubble non assegnato in Inspector: nessun fumetto mostrato.");
+                return;
+            }
+
+            if (unlocked) speechBubble.ShowInfoUnlocked(info.Image, () => OpenInfoUi(info));
+            else          speechBubble.ShowInfoAlreadyKnown(info.Image, () => OpenInfoUi(info));
+        }
+
+        // CTA del fumetto: per ora log + evento. La UI dell'info verrà implementata più avanti.
+        void OpenInfoUi(InfoSO info)
+        {
+            Debug.Log($"[MainUI] CTA fumetto: apri UI per '{info?.DisplayName}' (UI non ancora implementata).");
+            InfoUiRequested?.Invoke(info);
         }
 
         // Chiamabile da qualsiasi script quando si ottiene/sblocca un nuovo oggetto:
