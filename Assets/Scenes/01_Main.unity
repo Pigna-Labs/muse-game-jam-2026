@@ -167,6 +167,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4100566868407823554, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
+      propertyPath: anchor
+      value: 
+      objectReference: {fileID: 610991289}
+    - target: {fileID: 4100566868407823554, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
+      propertyPath: worldCamera
+      value: 
+      objectReference: {fileID: 330585545}
     - target: {fileID: 4432104783548188663, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
       propertyPath: m_PanelSettings
       value: 
@@ -183,6 +191,10 @@ PrefabInstance:
       propertyPath: targetCamera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 4971623926751398587, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
+      propertyPath: musettoAnimator
+      value: 
+      objectReference: {fileID: 610991284}
     - target: {fileID: 4971623926751398587, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
       propertyPath: qrScannerObject
       value: 
