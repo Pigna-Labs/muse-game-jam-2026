@@ -1,4 +1,5 @@
 using MuseGameJam.StateSystem;
+using MuseGameJam.States;
 using MuseGameJam.Visuals;
 using UnityEngine;
 
@@ -49,9 +50,13 @@ namespace MuseGameJam.Gameplay
         [Tooltip("Ogni quanti secondi ricontrollare se è cambiato giorno/notte.")]
         [SerializeField] private float dayNightCheckInterval = 30f;
 
-        [Header("Fade overlay (camera ecc.)")]
-        [Tooltip("Durata del fade out/in quando si apre/chiude un overlay (secondi).")]
+        [Header("Fade overlay")]
+        [Tooltip("Durata del fade quando si apre/chiude un overlay (secondi).")]
         [SerializeField] private float overlayFade = 1f;
+        [Tooltip("Volume della musica (0..1) quando è aperto un menu di navigazione " +
+                 "(challenges/unlockables): abbassata ma ancora udibile.")]
+        [Range(0f, 1f)] [SerializeField] private float menuDuck = 0.5f;
+        // La modalità camera (StateCamera) azzera del tutto la musica (0).
 
         private AudioSource _main;
         private AudioSource _day;
@@ -88,8 +93,9 @@ namespace MuseGameJam.Gameplay
 
         private void Update()
         {
-            // 1) Fade overlay: la musica sfuma quando un overlay è aperto.
-            _overlayTarget = IsOverlayOpen() ? 0f : 1f;
+            // 1) Fade overlay: camera = silenzio totale, menu di navigazione = duck al 50%,
+            //    nessun overlay = volume pieno.
+            _overlayTarget = ComputeOverlayTarget();
             if (!Mathf.Approximately(_overlayMul, _overlayTarget))
             {
                 float step = (overlayFade > 0f) ? Time.unscaledDeltaTime / overlayFade : 1f;
@@ -161,11 +167,17 @@ namespace MuseGameJam.Gameplay
             return src;
         }
 
-        // True quando un overlay (camera ecc.) è sullo stack: la musica deve sfumare.
-        private static bool IsOverlayOpen()
+        // Volume target (0..1) della musica in base a cosa è aperto:
+        //  - modalità camera (StateCamera)      -> 0   (silenzio totale)
+        //  - altro overlay (menu navigazione)   -> menuDuck (abbassata ma udibile)
+        //  - nessun overlay                     -> 1   (pieno)
+        private float ComputeOverlayTarget()
         {
             var sm = GameStateMachine.Instance;
-            return sm != null && sm.HasOverlayOpen;
+            if (sm == null) return 1f;
+            if (sm.HasOverlay<StateCamera>()) return 0f;   // camera: muto
+            if (sm.HasOverlayOpen) return menuDuck;        // altri menu: duck
+            return 1f;
         }
     }
 }

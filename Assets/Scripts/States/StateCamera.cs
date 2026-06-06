@@ -74,6 +74,7 @@ namespace MuseGameJam.States
         // QR read: forward the URL and close the overlay (back to the main state).
         private void HandleQrDecoded(string url)
         {
+            Debug.Log($"[StateCamera] QR decodificato: '{url}' — invoco OnUrlScanned (subscriber count={OnUrlScanned?.GetInvocationList().Length ?? 0}).");
             OnUrlScanned?.Invoke(url);
             GameStateMachine.Instance.PopOverlay();
         }

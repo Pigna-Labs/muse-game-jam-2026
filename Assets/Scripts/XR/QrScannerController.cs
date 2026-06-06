@@ -79,6 +79,8 @@ namespace MuseGameJam.XR
 
         private void OnEnable()
         {
+            Debug.Log("[QrScanner] OnEnable: scanner attivato.");
+
             _doc = GetComponent<UIDocument>();
             _root = _doc != null ? _doc.rootVisualElement : null;
             if (_root == null)
@@ -89,6 +91,8 @@ namespace MuseGameJam.XR
 
             _cameraView  = _root.Q<VisualElement>("camera-view");
             _overlay     = _root.Q<VisualElement>("overlay");
+            Debug.Log($"[QrScanner] UI: camera-view={(_cameraView != null ? "ok" : "MANCANTE")} " +
+                      $"overlay={(_overlay != null ? "ok" : "MANCANTE")}.");
 
             // Il pulsante "Scansiona" non esiste più: lo scanner si apre dall'esterno
             // (MainUI attiva il GameObject) e parte subito. "Chiudi" chiude l'oggetto.
@@ -170,19 +174,29 @@ namespace MuseGameJam.XR
 
         private IEnumerator StartScanRoutine()
         {
+            Debug.Log("[QrScanner] StartScanRoutine: richiedo permesso camera...");
             yield return RequestCameraPermission();
             if (!HasCameraPermission())
             {
-                Debug.LogWarning("[QrScanner] Permesso camera negato.");
+                Debug.LogWarning("[QrScanner] Permesso camera NEGATO: lo scanner non può partire.");
                 yield break;
             }
+            Debug.Log("[QrScanner] Permesso camera OK.");
+
+            // Elenco completo dei device, utile su mobile per capire quale viene scelto.
+            var devices = WebCamTexture.devices;
+            Debug.Log($"[QrScanner] Device trovati: {(devices == null ? 0 : devices.Length)}.");
+            if (devices != null)
+                foreach (var d in devices)
+                    Debug.Log($"[QrScanner]   - '{d.name}' frontFacing={d.isFrontFacing}");
 
             string deviceName = PickCameraDevice();
             if (string.IsNullOrEmpty(deviceName))
             {
-                Debug.LogWarning("[QrScanner] Nessuna camera trovata.");
+                Debug.LogWarning("[QrScanner] Nessuna camera trovata: impossibile scansionare.");
                 yield break;
             }
+            Debug.Log($"[QrScanner] Device scelto: '{deviceName}' (preferRearCamera={preferRearCamera}).");
 
             _webcam = new WebCamTexture(deviceName, requestedWidth, requestedHeight, requestedFps);
             _webcam.Play();
@@ -190,6 +204,10 @@ namespace MuseGameJam.XR
             float timeout = Time.realtimeSinceStartup + 3f;
             while (_webcam.width <= 16 && Time.realtimeSinceStartup < timeout)
                 yield return null;
+
+            Debug.Log($"[QrScanner] Camera avviata: device='{deviceName}' richiesta={requestedWidth}x{requestedHeight} " +
+                      $"reale={_webcam.width}x{_webcam.height} isPlaying={_webcam.isPlaying}. " +
+                      "Se la risoluzione reale è bassa (es. 16x16) il QR non sarà leggibile.");
 
             CreateRenderTexture(_webcam.width, _webcam.height);
             if (_cameraView != null && _displayRt != null)
@@ -267,6 +285,10 @@ namespace MuseGameJam.XR
             TryDecodeFrame();
         }
 
+        // Diagnostica: ogni quanti TENTATIVI di decodifica loggare lo stato (0 = mai).
+        [SerializeField] private int debugLogEveryAttempts = 25;
+        private int _decodeAttempts;
+
         private void TryDecodeFrame()
         {
             try
@@ -277,6 +299,13 @@ namespace MuseGameJam.XR
                 _webcam.GetPixels32(_pixelBuffer);
 
                 var result = _reader.Decode(_pixelBuffer, w, h);
+
+                _decodeAttempts++;
+                if (debugLogEveryAttempts > 0 && _decodeAttempts % debugLogEveryAttempts == 0)
+                    Debug.Log($"[QrScanner] Decode in corso: {_decodeAttempts} tentativi su frame {w}x{h}, " +
+                              $"ultimo esito={(result != null ? "QR TROVATO" : "nessun QR nel frame")}. " +
+                              "Se conta sale ma resta 'nessun QR', il decoder gira ma non vede il codice (fuoco/luce/dimensione).");
+
                 if (result != null && !string.IsNullOrEmpty(result.Text))
                     HandleDecoded(result.Text);
             }
