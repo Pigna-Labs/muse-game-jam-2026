@@ -767,6 +767,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 71fdeb5deb869fc4b8abd1f653f97d1f, type: 3}
   - {fileID: 8300000, guid: 77ed3621fa3d150448fadfc8b9e20aa7, type: 3}
   - {fileID: 8300000, guid: 350408bfd8b1b3e4aa3ed49af1201696, type: 3}
+  pulitoPostFirst:
+  - {fileID: 8300000, guid: 6dd272b1e61b44b4f99cb484d5d09a9f, type: 3}
+  - {fileID: 8300000, guid: 9ab19b40a3f381f41b3714169e43f327, type: 3}
+  - {fileID: 8300000, guid: 58febbbd4ed8899468009ff0abc79ea4, type: 3}
   masterVolume: 1
   idleEveryMinCycles: 3
   idleEveryMaxCycles: 6
