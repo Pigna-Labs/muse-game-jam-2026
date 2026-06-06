@@ -17,15 +17,19 @@ namespace MuseGameJam.Gameplay
     /// pulito/coccole (durano quanto l'azione), una volta sola per gli eventi
     /// (cibo/felice). Tornando a un altro stato l'audio precedente viene fermato.
     ///
-    /// IDLE: non suona in loop continuo. Mentre il musetto è fermo (stato idle)
-    /// emette il suo versetto ogni N cicli dell'animazione (N casuale nell'intervallo
-    /// impostato, di default ~6-7 cicli), così fa un verso ogni tanto invece di
-    /// cinguettare di continuo. L'idle ha un AudioSource dedicato per non
-    /// interferire con gli altri suoni.
+    /// IDLE in due stati:
+    ///   MusettoIdelAnimation        -> "stance" idle, ciclo neutro SENZA audio.
+    ///   MusettoIdleTriggerAnimation -> "gesto" idle, one-shot CON audio (idle.clip).
+    /// Mentre è nella stance, dopo 3-6 cicli (casuale) questo script spara il
+    /// parametro IdleTrigger: l'Animator passa al gesto, qui suoniamo il verso una
+    /// volta, poi l'Animator torna alla stance (transizione gestita in editor).
+    /// Dal gesto si può comunque passare agli altri stati (pet/clean/eat/happy).
     ///
     /// SETUP IN EDITOR (lo fa l'umano):
-    ///   Metti questo script sullo stesso GameObject che ha l'Animator del musetto
-    ///   (oppure assegna l'Animator nel campo), poi trascina i 5 AudioClip negli slot.
+    ///   - Questo script sul GameObject con l'Animator (o assegna l'Animator nel campo).
+    ///   - Transizioni: stance --[IdleTrigger]--> gesto (Has Exit Time off);
+    ///     gesto --[exit time]--> stance; e dal gesto anche verso pet/clean/eat/happy.
+    ///   - Trascina i 6 AudioClip negli slot (idle = audio del gesto).
     /// </summary>
     public class MusettoAudio : MonoBehaviour
     {
@@ -53,24 +57,27 @@ namespace MuseGameJam.Gameplay
         [Range(0f, 1f)]
         [SerializeField] private float masterVolume = 1f;
 
-        [Header("Idle sporadico")]
-        [Tooltip("Min cicli dell'animazione idle prima di riemettere il verso.")]
-        [SerializeField] private int idleEveryMinCycles = 6;
-        [Tooltip("Max cicli dell'animazione idle prima di riemettere il verso.")]
-        [SerializeField] private int idleEveryMaxCycles = 7;
+        [Header("Gesto idle (IdleTrigger)")]
+        [Tooltip("Min cicli della stance idle prima di scattare il gesto (IdleTrigger).")]
+        [SerializeField] private int idleEveryMinCycles = 3;
+        [Tooltip("Max cicli della stance idle prima di scattare il gesto (IdleTrigger).")]
+        [SerializeField] private int idleEveryMaxCycles = 6;
 
         // Hash dei nomi di stato (devono combaciare col controller).
-        private static readonly int IdleState    = Animator.StringToHash("MusettoIdelAnimation");
+        private static readonly int IdleState        = Animator.StringToHash("MusettoIdelAnimation");        // stance
+        private static readonly int IdleTriggerState = Animator.StringToHash("MusettoIdleTriggerAnimation"); // gesto
         private static readonly int CiboState     = Animator.StringToHash("MusettoCiboAnimation");
         private static readonly int PulitoState   = Animator.StringToHash("MusettoPulitoAnimation");
         private static readonly int FeliceState   = Animator.StringToHash("MusettoFeliceAnimation");
         private static readonly int CoccoleState  = Animator.StringToHash("MusettoCoccoleAnimation");
 
-        private AudioSource _source;     // suoni di stato (pulito/coccole/cibo/felice)
-        private AudioSource _idleSource; // verso idle sporadico (separato, non si pesta col resto)
-        private int _currentState;       // shortNameHash dello stato per cui sta suonando
+        // Parametro che fa passare dalla stance al gesto idle.
+        private static readonly int IdleTriggerParam = Animator.StringToHash("IdleTrigger");
 
-        // Conteggio cicli dell'animazione idle per decidere quando riemettere il verso.
+        private AudioSource _source;  // unica sorgente: suoni di stato + verso del gesto idle
+        private int _currentState;    // shortNameHash dello stato per cui sta suonando
+
+        // Conteggio cicli della stance idle per decidere quando scattare il gesto.
         private float _lastIdleNormalized;
         private int _idleCyclesPlayed;
         private int _idleCyclesTarget;
@@ -85,10 +92,6 @@ namespace MuseGameJam.Gameplay
             _source.playOnAwake = false;
             _source.spatialBlend = 0f; // 2D
 
-            _idleSource = gameObject.AddComponent<AudioSource>();
-            _idleSource.playOnAwake = false;
-            _idleSource.spatialBlend = 0f; // 2D
-
             PickNextIdleTarget();
         }
 
@@ -101,7 +104,6 @@ namespace MuseGameJam.Gameplay
             if (IsMainPaused())
             {
                 if (_source.isPlaying) _source.Stop();
-                if (_idleSource.isPlaying) _idleSource.Stop();
                 _currentState = 0; // forza il replay del suono di stato al ritorno
                 return;
             }
@@ -121,39 +123,42 @@ namespace MuseGameJam.Gameplay
                 TickIdle(info.normalizedTime);
         }
 
-        // Suoni legati al CAMBIO di stato. L'idle è gestito a parte (sporadico),
-        // quindi qui non si riproduce: entrando in idle si ferma solo l'audio di stato.
+        // Suoni legati al CAMBIO di stato.
+        //  - stance idle: nessun audio (ci pensa il gesto).
+        //  - gesto idle (IdleTrigger): one-shot con idle.clip.
         private void OnStateChanged(int state)
         {
             StateAudio audio = null;
             bool loop = false;
 
-            if (state == PulitoState)      { audio = pulito;  loop = true; }
-            else if (state == CoccoleState){ audio = coccole; loop = true; }
-            else if (state == CiboState)   { audio = cibo;    loop = false; }
-            else if (state == FeliceState) { audio = felice;  loop = false; }
-            // IdleState -> nessun audio di stato (ci pensa TickIdle)
+            if (state == PulitoState)           { audio = pulito;  loop = true; }
+            else if (state == CoccoleState)     { audio = coccole; loop = true; }
+            else if (state == CiboState)        { audio = cibo;    loop = false; }
+            else if (state == FeliceState)      { audio = felice;  loop = false; }
+            else if (state == IdleTriggerState) { audio = idle;    loop = false; } // gesto -> verso
+            // IdleState (stance) -> nessun audio
 
-            if (audio == null || audio.clip == null) { _source.Stop(); return; }
+            if (audio == null || audio.clip == null) { _source.Stop(); }
+            else
+            {
+                _source.Stop();
+                _source.clip = audio.clip;
+                _source.loop = loop;
+                _source.volume = audio.volume * masterVolume;
+                _source.pitch = audio.pitch;
+                _source.Play();
+            }
 
-            _source.Stop();
-            _source.clip = audio.clip;
-            _source.loop = loop;
-            _source.volume = audio.volume * masterVolume;
-            _source.pitch = audio.pitch;
-            _source.Play();
-
-            // Entrando in idle reimposta il conteggio: il primo verso arriverà
+            // Entrando nella stance reimposta il conteggio: il gesto scatterà
             // dopo qualche ciclo, non subito.
             if (state == IdleState) ResetIdleCounter(normalized: 0f);
         }
 
-        // Conta i cicli completati dell'animazione idle (ogni volta che normalizedTime
-        // scavalca un intero) e, raggiunto il target casuale, emette il verso una volta.
+        // Conta i cicli completati della STANCE idle (ogni volta che normalizedTime
+        // scavalca un intero) e, raggiunto il target casuale, fa scattare il gesto
+        // (IdleTrigger). L'Animator passa allo stato gesto, dove suona il verso.
         private void TickIdle(float normalizedTime)
         {
-            if (idle == null || idle.clip == null) return;
-
             float frac = normalizedTime - Mathf.Floor(normalizedTime);
             // Wrap: la parte frazionaria è "tornata indietro" -> un ciclo è completato.
             if (frac < _lastIdleNormalized)
@@ -161,7 +166,7 @@ namespace MuseGameJam.Gameplay
                 _idleCyclesPlayed++;
                 if (_idleCyclesPlayed >= _idleCyclesTarget)
                 {
-                    PlayIdleOneShot();
+                    animator.SetTrigger(IdleTriggerParam);
                     PickNextIdleTarget();
                     _idleCyclesPlayed = 0;
                 }
@@ -175,12 +180,6 @@ namespace MuseGameJam.Gameplay
         {
             var sm = GameStateMachine.Instance;
             return sm != null && sm.HasOverlayOpen;
-        }
-
-        private void PlayIdleOneShot()
-        {
-            _idleSource.pitch = idle.pitch;
-            _idleSource.PlayOneShot(idle.clip, idle.volume * masterVolume);
         }
 
         private void PickNextIdleTarget()
