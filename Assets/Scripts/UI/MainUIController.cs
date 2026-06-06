@@ -285,21 +285,14 @@ namespace MuseGameJam.UI
                 return;
             }
 
-            Debug.Log($"[MainUI] Cerco info per QR '{url}' (norm='{Unlockables.NormalizeUrl(url)}') — {unlockables.Infos?.Count ?? 0} info nel catalogo.");
-            if (unlockables.Infos != null)
-                foreach (var i in unlockables.Infos)
-                    Debug.Log($"[MainUI]   candidata: '{i?.DisplayName}' norm='{Unlockables.NormalizeUrl(i?.QrValue)}'");
-
             InfoSO info = unlockables.FindInfoByQrValue(url);
             if (info == null)
             {
-                Debug.Log($"[MainUI] Nessuna info corrisponde al QR (anche dopo normalizzazione). Confronta le forme 'norm=' qui sopra.");
                 // Feedback al giocatore: questo QR non è del museo.
                 if (speechBubble != null) speechBubble.ShowQrNotRecognized();
                 return;
             }
-            Debug.Log($"[MainUI] Info trovata: '{info.DisplayName}'.");
-            
+
             // Mark the matching Info as scanned in every challenge that contains it.
             bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
 

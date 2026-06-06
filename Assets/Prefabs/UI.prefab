@@ -72,25 +72,14 @@ MonoBehaviour:
   trayItemTemplate: {fileID: 9197481963319205126, guid: 3afd7ab5b3596f549b98a5e9428a52ed, type: 3}
   unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
   targetCamera: {fileID: 0}
-  foodItems:
-  - label: FoodItem
-    itemPrefab: {fileID: 4984254596860307585, guid: 2107efcbd431c8f47a1f2ac5722381a6, type: 3}
-  cleanItems:
-  - label: SoapItem
-    itemPrefab: {fileID: 4984254596860307585, guid: 140e9d2f788b41a4198bf28f366671c7, type: 3}
-  petItems:
-  - label: PetItem
-    itemPrefab: {fileID: 4984254596860307585, guid: 140e9d2f788b41a4198bf28f366671c7, type: 3}
-  targetCamera: {fileID: 0}
   dragDepth: 10
-  hideTrayWhileDragging: 0
+  draggedItemWorldSize: 1.5
   qrScannerObject: {fileID: 0}
   musettoAnimator: {fileID: 0}
   challengesUiPrefab: {fileID: 100000, guid: 011623942dca4d688521293cd5ab4ddc, type: 3}
   challengesUiParent: {fileID: 0}
   unlockablesUiPrefab: {fileID: 100000, guid: 3bec541bf7874febbb3d6b958b998ed8, type: 3}
   unlockablesUiParent: {fileID: 0}
-  unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
   speechBubble: {fileID: 4100566868407823554}
 --- !u!114 &4100566868407823554
 MonoBehaviour:
@@ -113,6 +102,7 @@ MonoBehaviour:
 
 '
   infoAlreadyKnownMessage: "Questo lo conosco gi\xE0!"
+  qrNotRecognizedMessage: "Mmh, questo non \xE8 un QR del museo! \U0001F914"
   ctaLabel: Scopri
   typewriterSpeed: 18
   floatAmplitude: 0

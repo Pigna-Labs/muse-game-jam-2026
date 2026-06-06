@@ -78,7 +78,6 @@ namespace MuseGameJam.States
         // is never opened, so this ordering bug only showed up with a real scan.)
         private void HandleQrDecoded(string url)
         {
-            Debug.Log($"[StateCamera] QR decodificato: '{url}' — chiudo overlay poi invoco OnUrlScanned (subscriber count={OnUrlScanned?.GetInvocationList().Length ?? 0}).");
             GameStateMachine.Instance.PopOverlay();
             OnUrlScanned?.Invoke(url);
         }
