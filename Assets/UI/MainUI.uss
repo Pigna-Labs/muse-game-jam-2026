@@ -20,6 +20,8 @@
     justify-content: space-evenly;
     align-items: center;
     padding: 16px 16px 24px 16px;
+    /* Almeno +30% di spazio verticale rispetto all'altezza naturale (~172px → ~224px). */
+    min-height: 224px;
 }
 
 /* Base comune ai pulsanti-icona: nessuno sfondo, solo l'arte dell'icona. */
@@ -65,8 +67,8 @@
 /* Sta DENTRO il cerchio .stat-gauge (132px): l'icona (scale-to-fit) deve rientrare nel
    quadrato inscritto del cerchio, altrimenti gli angoli vengono ritagliati da overflow:hidden. */
 .action-button {
-    width: 96px;
-    height: 96px;
+    width: 128px;
+    height: 128px;
 }
 
 .action-button--food {
@@ -135,9 +137,9 @@
 
 /* Gauge circolare con outline bianco: il bottone ci sta centrato sopra, il riempimento dietro. */
 .stat-gauge {
-    width: 132px;
-    height: 132px;
-    border-radius: 66px;
+    width: 176px;
+    height: 176px;
+    border-radius: 88px;
     border-left-width: 4px;
     border-right-width: 4px;
     border-top-width: 4px;

@@ -26,6 +26,14 @@ namespace MuseGameJam.Gameplay
         // Le DropArea che lo contengono lo ascoltano per reagire al "drop".
         public event System.Action<Item> Dropped;
 
+        // Emesso quando l'item contribuisce alla cura del musetto (cibo dato, strofinata, coccola):
+        // porta l'azione e di quanto far salire (0..1) la barra corrispondente. La DropArea lo
+        // scatena (al rilascio per il cibo, in continuo per pulizia/coccole); la UI alza il gauge.
+        public event System.Action<CareAction, float> CareApplied;
+
+        // Chiamato dalla DropArea quando l'item produce il suo effetto sul musetto.
+        public void ApplyCare(float amount) => CareApplied?.Invoke(action, amount);
+
         [Tooltip("Cosa fa questo item al musetto: la DropArea fa partire l'anim corrispondente. " +
                  "Es. cibo=Eat, spugna=Clean, mano=Pet.")]
         [SerializeField] CareAction action = CareAction.None;
