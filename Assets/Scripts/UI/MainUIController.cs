@@ -62,6 +62,15 @@ namespace MuseGameJam.UI
         // Unlockable Manager SO holding the Info catalog: a scanned QR unlocks the matching Info.
         [SerializeField] Unlockables unlockables;
 
+        [Header("Speech bubble")]
+        // Fumetto sopra il musetto (sta sulla stessa UIDocument della MainUI).
+        // I testi e l'etichetta della CTA sono configurati sullo SpeechBubbleController.
+        [SerializeField] SpeechBubbleController speechBubble;
+
+        // Sollevato quando l'utente preme la CTA del fumetto: collegare qui l'apertura
+        // della UI dell'info quando sarà implementata.
+        public event System.Action<InfoSO> InfoUiRequested;
+
         Button cameraButton;
         Button targetButton;
         Button unlockablesButton;
@@ -164,14 +173,10 @@ namespace MuseGameJam.UI
             GameStateMachine.Instance.PushState(cameraState);
         }
 
-        // L'URL letto dal QR arriva qui: per ora lo logghiamo; lo passeremo poi a un altro script.
         // Il valore letto dal QR arriva qui: cerchiamo un Info asset con lo stesso QrValue
         // e, se non è ancora sbloccato, lo sblocchiamo.
         void HandleUrlScanned(string url)
         {
-            Debug.Log($"[MainUI] URL dal QR: {url}");
-            // Nuova info scansionata -> il musetto è felice (trigger del controller).
-            TriggerHappy("QR scansionato");
             Debug.Log($"[MainUI] QR letto: {url}");
 
             if (unlockables == null)
@@ -193,12 +198,34 @@ namespace MuseGameJam.UI
                 Debug.Log($"[MainUI] Info sbloccata: {info.DisplayName}");
                 // Nuova info sbloccata -> il musetto è felice.
                 TriggerHappy("info sbloccata");
+                ShowInfoBubble(info, unlocked: true);
             }
             else
             {
                 // QR di un'info già sbloccata: nessuno sblocco, ma mostriamo comunque il fumetto.
+                ShowInfoBubble(info, unlocked: false);
+            }
+        }
+
+        // Mostra il fumetto sopra il musetto. Testo e CTA vivono sullo SpeechBubbleController;
+        // qui scegliamo solo QUALE evento è (sblocco vs già nota) e cosa fa la CTA (aprire la UI).
+        void ShowInfoBubble(InfoSO info, bool unlocked)
+        {
+            if (speechBubble == null)
+            {
+                Debug.LogWarning("MainUIController: SpeechBubble non assegnato in Inspector: nessun fumetto mostrato.");
+                return;
             }
 
+            if (unlocked) speechBubble.ShowInfoUnlocked(info.Image, () => OpenInfoUi(info));
+            else          speechBubble.ShowInfoAlreadyKnown(info.Image, () => OpenInfoUi(info));
+        }
+
+        // CTA del fumetto: per ora log + evento. La UI dell'info verrà implementata più avanti.
+        void OpenInfoUi(InfoSO info)
+        {
+            Debug.Log($"[MainUI] CTA fumetto: apri UI per '{info?.DisplayName}' (UI non ancora implementata).");
+            InfoUiRequested?.Invoke(info);
         }
 
         // Chiamabile da qualsiasi script quando si ottiene/sblocca un nuovo oggetto:

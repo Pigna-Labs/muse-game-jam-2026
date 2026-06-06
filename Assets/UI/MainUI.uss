@@ -161,3 +161,94 @@
     height: 0;
 }
 
+/* Fumetto sopra il musetto: posizione (left/top) la imposta SpeechBubbleController da codice.
+   picking-mode Ignore sul contenitore (vedi UXML) così la bolla non ruba i tap allo stage;
+   il pulsante CTA resta comunque cliccabile. */
+/* Fumetto = immagine Baloon.PNG come background. Niente bordi/codina disegnati: la
+   grafica (codina inclusa) sta nell'immagine. Il padding tiene testo e CTA dentro la
+   pancia della nuvoletta; quello in basso lascia spazio alla codina. */
+.speech-bubble {
+    position: absolute;
+    width: 980px;
+    height: 950px;
+    align-items: center;
+    justify-content: center;
+    padding: 140px 150px 320px 150px;
+}
+
+/* Outline: stessa immagine, tinta di nero e leggermente più grande su ogni lato.
+   Sta sotto il fill, così il nero spunta come bordino lungo la sagoma (codina inclusa). */
+.speech-bubble__outline {
+    position: absolute;
+    left: -24px;
+    right: -24px;
+    top: -24px;
+    bottom: -24px;
+    background-image: url("project://database/Assets/Assets/Art/Images/Speech/Baloon.PNG?fileID=2800000&guid=b8166b2a8ba4f297ebdfccac059d7abc&type=3#Baloon");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(0, 0, 0);
+}
+
+/* Icona dell'Info: figlia del fumetto (quindi galleggia con esso), appoggiata sul
+   lato sinistro. Bordo spesso scuro; lo sprite lo imposta SpeechBubbleController. */
+.speech-bubble__icon {
+    position: absolute;
+    left: 250px;
+    top: 430px;
+    width: 130px;
+    height: 130px;
+    border-radius: 26px;
+    border-left-width: 12px;
+    border-right-width: 12px;
+    border-top-width: 12px;
+    border-bottom-width: 12px;
+    border-left-color: rgb(54, 35, 18);
+    border-right-color: rgb(54, 35, 18);
+    border-top-color: rgb(54, 35, 18);
+    border-bottom-color: rgb(54, 35, 18);
+    background-color: rgb(255, 252, 242);
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* Fill: l'immagine normale, esattamente sul box, sopra l'outline. */
+.speech-bubble__fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-image: url("project://database/Assets/Assets/Art/Images/Speech/Baloon.PNG?fileID=2800000&guid=b8166b2a8ba4f297ebdfccac059d7abc&type=3#Baloon");
+    -unity-background-scale-mode: stretch-to-fill;
+}
+
+.speech-bubble__text {
+    color: rgb(54, 35, 18);
+    font-size: 44px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.speech-bubble__cta {
+    margin-top: 20px;
+    padding: 14px 34px;
+    border-width: 0;
+    border-bottom-width: 6px;
+    border-bottom-color: rgb(28, 74, 42);
+    border-radius: 22px;
+    background-color: rgb(45, 122, 68);
+    color: rgb(255, 255, 255);
+    font-size: 36px;
+    -unity-font-style: bold;
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.speech-bubble__cta:hover {
+    scale: 1.06 1.06;
+}
+
+.speech-bubble__cta:active {
+    scale: 0.94 0.94;
+}
+
