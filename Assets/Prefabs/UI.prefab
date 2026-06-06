@@ -70,6 +70,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.MainUIController
   trayItemTemplate: {fileID: 9197481963319205126, guid: 3afd7ab5b3596f549b98a5e9428a52ed, type: 3}
+  unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
+  targetCamera: {fileID: 0}
   foodItems:
   - label: FoodItem
     itemPrefab: {fileID: 4984254596860307585, guid: 2107efcbd431c8f47a1f2ac5722381a6, type: 3}

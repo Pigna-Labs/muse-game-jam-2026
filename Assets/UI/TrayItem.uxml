@@ -2,6 +2,5 @@
     <Style src="project://database/Assets/UI/MainUI.uss?fileID=7433441132597879392&amp;guid=920627a4c92126740a1ecb7f5271d639&amp;type=3#MainUI"/>
     <ui:VisualElement name="item" class="tray-item" style="align-self: center;">
         <ui:Button name="item-icon" class="tray-item__icon"/>
-        <ui:Label name="item-label" text="Item" class="tray-item__label"/>
     </ui:VisualElement>
 </ui:UXML>

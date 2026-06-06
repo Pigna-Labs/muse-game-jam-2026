@@ -92,8 +92,8 @@ namespace MuseGameJam.UI
         }
 
         // Fills the Companions, Foods, Soaps and Toys grids from the Unlockables asset.
-        // Items (food/soap/toy) have no unlock flag yet, so they are always drawn locked
-        // (blackened); companions honour their own Unlocked flag.
+        // Each entry honours its unlock state (ships-unlocked flag or unlocked this session
+        // via the ChallengeManager registry); still-locked entries are drawn blackened.
         private void PopulateSections()
         {
             companionsGrid.Clear();

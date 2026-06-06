@@ -1,8 +1,8 @@
 .root {
     flex-grow: 1;
     justify-content: space-between;
-    /* Niente background: il pannello resta trasparente così lo stage mostra il mondo
-       (sprite di sfondo + DropArea + creatura) renderizzato dalla camera. */
+    /* No background: the panel stays transparent so the stage shows the world
+       (background sprite + DropArea + creature) rendered by the camera. */
 }
 
 .top-bar {
@@ -11,8 +11,8 @@
     padding: 32px;
 }
 
-/* Toggle audio globale: in alto a sinistra, sopra tutto. Lo stato (on/off) lo
-   riflette MainUIController cambiando il testo dell'icona. */
+/* Global audio toggle: top-left, above everything. State (on/off) is reflected by
+   MainUIController by changing the icon's text. */
 .audio-toggle {
     position: absolute;
     top: 32px;
@@ -47,7 +47,7 @@
     padding: 32px 32px 40px 32px;
 }
 
-/* Base comune ai pulsanti-icona: nessuno sfondo, solo l'arte dell'icona. */
+/* Shared base for icon buttons: no background, only the icon art. */
 .icon-button {
     min-width: 0;
     max-width: none;
@@ -67,7 +67,7 @@
     scale: 0.94 0.94;
 }
 
-/* Colonna in alto a destra: navigazione (camera, mirino, sblocchi). */
+/* Top-right column: navigation (camera, target, unlockables). */
 .nav-button {
     width: 140px;
     height: 140px;
@@ -86,10 +86,10 @@
     background-image: url("project://database/Assets/Assets/Art/Icons/notebook.png?fileID=2800000&guid=3ac1f283106858f4d9eef6b45514bd76&type=3#notebook");
 }
 
-/* Riga in basso: grandi pulsanti d'azione equidistanti. */
-/* Sta DENTRO il cerchio .stat-gauge (192px): l'icona (scale-to-fit) deve rientrare nel
-   quadrato inscritto del cerchio, altrimenti gli angoli vengono ritagliati da overflow:hidden.
-   Dimensione allineata alle icone di navigazione in alto a destra (.nav-button, 140px). */
+/* Bottom row: large evenly-spaced action buttons. */
+/* Sits INSIDE the .stat-gauge circle (192px): the icon (scale-to-fit) must fit within
+   the circle's inscribed square, otherwise the corners get clipped by overflow:hidden.
+   Size aligned with the top-right navigation icons (.nav-button, 140px). */
 .action-button {
     width: 120px;
     height: 120px;
@@ -108,7 +108,7 @@
 }
 
 .item-tray {
-    min-height: 138px;
+    min-height: 220px;
     flex-direction: row;
     align-items: center;
     padding: 15px;
@@ -122,9 +122,9 @@
     display: flex;
 }
 
-/* Riga di item, centrati quando ci stanno. Contenitore semplice (non ScrollView):
-   una ScrollView su touch usa il drag del dito per scrollare e ruberebbe il
-   trascinamento agli item (funzionano col mouse in editor ma non da telefono). */
+/* Row of items, centered when they fit. Plain container (not a ScrollView):
+   a ScrollView on touch uses finger drag to scroll and would steal the drag
+   from the items (works with the mouse in the editor but not on a phone). */
 .tray-content {
     flex-grow: 1;
     flex-direction: row;
@@ -138,9 +138,9 @@
 }
 
 .tray-item__icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 22px;
+    width: 180px;
+    height: 180px;
+    border-radius: 36px;
     border-left-width: 2px;
     border-right-width: 2px;
     border-top-width: 2px;
@@ -150,6 +150,7 @@
     border-top-color: rgb(168, 116, 70);
     border-bottom-color: rgb(99, 62, 33);
     background-color: rgb(138, 90, 51);
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .tray-item__label {
@@ -159,7 +160,7 @@
     -unity-text-align: middle-center;
 }
 
-/* Gauge circolare con outline bianco: il bottone ci sta centrato sopra, il riempimento dietro. */
+/* Circular gauge with a white outline: the button sits centered over it, the fill behind. */
 .stat-gauge {
     width: 164px;
     height: 164px;
@@ -178,7 +179,7 @@
     background-color: rgba(0, 0, 0, 0.25);
 }
 
-/* Riempimento: ancorato al fondo, l'altezza (= valore) e il colore li imposta StatGauge da codice. */
+/* Fill: anchored to the bottom; height (= value) and color are set by StatGauge from code. */
 .stat-gauge__fill {
     position: absolute;
     left: 0;
