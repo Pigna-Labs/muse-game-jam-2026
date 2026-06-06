@@ -36,7 +36,7 @@
     border-bottom-color: rgb(89, 53, 28);
 }
 
-f.stage {
+.stage {
     flex-grow: 1;
 }
 
