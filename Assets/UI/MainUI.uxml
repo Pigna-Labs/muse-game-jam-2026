@@ -1,7 +1,6 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/MainUI.uss?fileID=7433441132597879392&amp;guid=920627a4c92126740a1ecb7f5271d639&amp;type=3#MainUI"/>
     <ui:VisualElement name="root" class="root">
-        <ui:Button name="audio-toggle-button" tooltip="Audio on/off" text="🔊" class="audio-toggle" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_suono.PNG?fileID=2800000&amp;guid=5e3a1e4960db1c04fad931d6bde77b2c&amp;type=3#Icona_suono&quot;); top: 32px; left: 31px; color: rgba(27, 27, 27, 0);"/>
         <ui:VisualElement name="top-bar" class="top-bar">
             <ui:Button name="camera-button" tooltip="Camera" class="icon-button nav-button nav-button--camera" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_foto.PNG?fileID=2800000&amp;guid=fa6c1273ace18dc41b2c282b553b698d&amp;type=3#Icona_foto&quot;); width: 200px; height: 200px; margin-bottom: 3px;"/>
             <ui:Button name="target-button" tooltip="Target" class="icon-button nav-button nav-button--target" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_obiettivi.PNG?fileID=2800000&amp;guid=5ceacd3ba5c3e8f4a990eb8e80aaf660&amp;type=3#Icona_obiettivi&quot;); width: 200px; height: 200px;"/>
@@ -34,5 +33,8 @@
                 <ui:Button name="pet-button" tooltip="Pet" text="" class="icon-button action-button action-button--pet" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_coccole.PNG?fileID=2800000&amp;guid=4bebf02ca10b603429b6e4ced25afa64&amp;type=3#Icona_coccole&quot;); background-position-x: center; background-position-y: center; width: 150px; height: 150px; margin-top: 16px;"/>
             </MuseGameJam.UI.StatGauge>
         </ui:VisualElement>
+        <ui:Button name="audio-toggle-button" tooltip="Audio on/off" text="🔊" class="audio-toggle" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_suono.PNG?fileID=2800000&amp;guid=5e3a1e4960db1c04fad931d6bde77b2c&amp;type=3#Icona_suono&quot;); top: 32px; left: 31px; color: rgba(27, 27, 27, 0);">
+            <ui:VisualElement name="audio-mute-slash" class="audio-toggle__slash" picking-mode="Ignore" style="display: none;"/>
+        </ui:Button>
     </ui:VisualElement>
 </ui:UXML>

@@ -89,6 +89,7 @@ namespace MuseGameJam.UI
         Button cleanButton;
         Button petButton;
         Button audioToggleButton;
+        VisualElement audioMuteSlash;
 
         StatGauge foodGauge;
         StatGauge cleanGauge;
@@ -138,6 +139,7 @@ namespace MuseGameJam.UI
             cleanButton = rootElement.Q<Button>("clean-button");
             petButton = rootElement.Q<Button>("pet-button");
             audioToggleButton = rootElement.Q<Button>("audio-toggle-button");
+            audioMuteSlash = rootElement.Q<VisualElement>("audio-mute-slash");
 
             foodGauge = rootElement.Q<StatGauge>("food-gauge");
             cleanGauge = rootElement.Q<StatGauge>("clean-gauge");
@@ -256,6 +258,8 @@ namespace MuseGameJam.UI
         {
             if (audioToggleButton != null)
                 audioToggleButton.text = audioMuted ? "🔇" : "🔊";
+            if (audioMuteSlash != null)
+                audioMuteSlash.style.display = audioMuted ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         // A care action was performed at least once: that category's hint is no longer
