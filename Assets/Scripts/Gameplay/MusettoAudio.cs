@@ -13,9 +13,9 @@ namespace MuseGameJam.Gameplay
     ///   MusettoCiboAnimation    -> cibo    (one-shot)
     ///   MusettoFeliceAnimation  -> felice  (one-shot)
     ///
-    /// Quando lo stato dell'Animator cambia, parte l'audio relativo: in loop per
-    /// pulito/coccole (durano quanto l'azione), una volta sola per gli eventi
-    /// (cibo/felice). Tornando a un altro stato l'audio precedente viene fermato.
+    /// Quando lo stato dell'Animator cambia, parte l'audio relativo. Coccole e pulito
+    /// usano una sequenza variata (1° = base, dal 2° varianti random concatenate finché
+    /// dura l'azione); cibo/felice sono one-shot. Cambiando stato l'audio si ferma.
     ///
     /// IDLE in due stati:
     ///   MusettoIdelAnimation        -> "stance" idle, ciclo neutro SENZA audio.
@@ -47,14 +47,18 @@ namespace MuseGameJam.Gameplay
 
         [Header("Clip per stato (volume/pitch indipendenti)")]
         [SerializeField] private StateAudio idle;     // gesto idle (one-shot)
-        [SerializeField] private StateAudio pulito;   // loop
+        [SerializeField] private StateAudio pulito;   // 1° = base, poi varianti random
         [SerializeField] private StateAudio coccole;  // 1° = base, poi varianti random
         [SerializeField] private StateAudio cibo;     // one-shot
         [SerializeField] private StateAudio felice;   // one-shot
 
-        [Tooltip("Varianti riprodotte DOPO il primo audio di coccole: dal 2° suono in poi " +
+        [Tooltip("Varianti riprodotte DOPO il primo audio di COCCOLE: dal 2° suono in poi " +
                  "ne viene scelta una a caso (evitando di ripetere l'ultima). Vuoto = ripete il base.")]
         [SerializeField] private AudioClip[] coccolePostFirst;
+
+        [Tooltip("Varianti riprodotte DOPO il primo audio di PULIZIA: dal 2° suono in poi " +
+                 "ne viene scelta una a caso (evitando di ripetere l'ultima). Vuoto = ripete il base.")]
+        [SerializeField] private AudioClip[] pulitoPostFirst;
 
         [Header("Master")]
         [Tooltip("Moltiplicatore globale applicato a tutti i volumi sopra.")]
@@ -86,9 +90,12 @@ namespace MuseGameJam.Gameplay
         private int _idleCyclesPlayed;
         private int _idleCyclesTarget;
 
-        // Sequenza audio coccole: 1° = base, poi varianti random (no loop nativo).
-        private bool _coccoleActive;
-        private int _lastCoccoleVariant = -1; // per non ripetere la stessa due volte di fila
+        // Sequenza audio "base poi varianti random" (coccole/pulito): 1° suono = base,
+        // dal 2° in poi una variante random, concatenati sulla durata della clip (no loop nativo).
+        private bool _seqActive;            // una sequenza variata è in corso
+        private StateAudio _seqBase;        // clip base + volume/pitch della sequenza attiva
+        private AudioClip[] _seqVariants;   // varianti da cui pescare
+        private int _lastVariant = -1;      // per non ripetere la stessa due volte di fila
 
         private void Awake()
         {
@@ -130,35 +137,49 @@ namespace MuseGameJam.Gameplay
             if (state == IdleState)
                 TickIdle(info.normalizedTime);
 
-            // Coccole: quando la clip corrente finisce, concatena una variante random.
-            if (_coccoleActive && state == CoccoleState && !_source.isPlaying)
-                PlayNextCoccole();
+            // Sequenza variata (coccole/pulito): a clip finita, concatena una variante random.
+            if (_seqActive && !_source.isPlaying)
+                PlayNextVariant();
         }
 
-        // Riproduce la prossima clip di coccole: una variante random tra coccolePostFirst
-        // (evitando l'ultima usata). Se non ci sono varianti, ripete il base.
-        private void PlayNextCoccole()
+        // Avvia una sequenza variata: suona subito il base, poi Update concatena le varianti.
+        private void StartVariedSequence(StateAudio baseAudio, AudioClip[] variants)
         {
-            float vol   = coccole != null ? coccole.volume : 1f;
-            float pitch = coccole != null ? coccole.pitch : 1f;
+            _seqActive = baseAudio != null && baseAudio.clip != null;
+            _seqBase = baseAudio;
+            _seqVariants = variants;
+            _lastVariant = -1;
 
-            AudioClip next = PickCoccoleVariant();
-            if (next == null) next = coccole != null ? coccole.clip : null;
-            if (next == null) { _coccoleActive = false; return; }
+            if (_seqActive)
+                PlayOnSource(baseAudio.clip, baseAudio.volume, baseAudio.pitch, loop: false);
+            else
+                _source.Stop();
+        }
+
+        // Riproduce la prossima clip della sequenza: una variante random (evitando l'ultima).
+        // Se non ci sono varianti, ripete il base.
+        private void PlayNextVariant()
+        {
+            float vol   = _seqBase != null ? _seqBase.volume : 1f;
+            float pitch = _seqBase != null ? _seqBase.pitch : 1f;
+
+            AudioClip next = PickVariant(_seqVariants);
+            if (next == null) next = _seqBase != null ? _seqBase.clip : null;
+            if (next == null) { _seqActive = false; return; }
 
             PlayOnSource(next, vol, pitch, loop: false);
         }
 
-        private AudioClip PickCoccoleVariant()
+        private AudioClip PickVariant(AudioClip[] variants)
         {
-            if (coccolePostFirst == null || coccolePostFirst.Length == 0) return null;
-            if (coccolePostFirst.Length == 1) { _lastCoccoleVariant = 0; return coccolePostFirst[0]; }
+            if (variants == null || variants.Length == 0) return null;
+            if (variants.Length == 1) { _lastVariant = 0; return variants[0]; }
 
             int idx;
-            do { idx = Random.Range(0, coccolePostFirst.Length); }
-            while (idx == _lastCoccoleVariant); // evita di ripetere l'ultima
-            _lastCoccoleVariant = idx;
-            return coccolePostFirst[idx];
+            do { idx = Random.Range(0, variants.Length); }
+            while (idx == _lastVariant); // evita di ripetere l'ultima
+            _lastVariant = idx;
+            return variants[idx];
         }
 
         // Suoni legati al CAMBIO di stato.
@@ -166,27 +187,27 @@ namespace MuseGameJam.Gameplay
         //  - gesto idle (IdleTrigger): one-shot con idle.clip.
         private void OnStateChanged(int state)
         {
-            // Uscendo dalle coccole, chiudi la sequenza audio variata.
-            _coccoleActive = (state == CoccoleState);
-
-            // Coccole = sequenza speciale: primo = base, poi varianti random (no loop nativo).
+            // Coccole e pulito usano la sequenza variata (base + varianti random).
             if (state == CoccoleState)
             {
-                _lastCoccoleVariant = -1;
-                if (coccole != null && coccole.clip != null)
-                    PlayOnSource(coccole.clip, coccole.volume, coccole.pitch, loop: false);
-                else
-                    _source.Stop();
+                StartVariedSequence(coccole, coccolePostFirst);
                 return;
             }
+            if (state == PulitoState)
+            {
+                StartVariedSequence(pulito, pulitoPostFirst);
+                return;
+            }
+
+            // Cambiando verso un altro stato, chiudi l'eventuale sequenza variata in corso.
+            _seqActive = false;
 
             StateAudio audio = null;
             bool loop = false;
 
-            if (state == PulitoState)           { audio = pulito;  loop = true; }
-            else if (state == CiboState)        { audio = cibo;    loop = false; }
-            else if (state == FeliceState)      { audio = felice;  loop = false; }
-            else if (state == IdleTriggerState) { audio = idle;    loop = false; } // gesto -> verso
+            if (state == CiboState)             { audio = cibo;   loop = false; }
+            else if (state == FeliceState)      { audio = felice; loop = false; }
+            else if (state == IdleTriggerState) { audio = idle;   loop = false; } // gesto -> verso
             // IdleState (stance) -> nessun audio
 
             if (audio == null || audio.clip == null) _source.Stop();
