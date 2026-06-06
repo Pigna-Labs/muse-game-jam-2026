@@ -33,6 +33,8 @@ namespace MuseGameJam.UI
         private const string TileImageLockedClass = "unlockable-tile__image--locked";
         private const string TileLabelClass = "unlockable-tile__label";
         private const string TileLabelLockedClass = "unlockable-tile__label--locked";
+        // Marks a companion tile whose companion is currently placed in the scene.
+        private const string TilePlacedClass = "unlockable-tile--placed";
 
         // Caption shown instead of the name while an entry is still locked.
         private const string LockedCaption = "???";
@@ -110,7 +112,15 @@ namespace MuseGameJam.UI
             foreach (CompanionSO companion in unlockables.Companions)
             {
                 if (companion == null) continue;
-                companionsGrid.Add(CreateTile(companion.Image, companion.DisplayName, IsUnlocked(companion)));
+                bool unlocked = IsUnlocked(companion);
+                VisualElement tile = CreateTile(companion.Image, companion.DisplayName, unlocked);
+                // Unlocked companions are tappable: a tap places the companion in the scene
+                // at its fixed slot, a second tap removes it again.
+                if (unlocked)
+                {
+                    MakeCompanionTileInteractive(tile, companion);
+                }
+                companionsGrid.Add(tile);
             }
 
             PopulateItemGrid(foodGrid, unlockables.Foods);
@@ -164,6 +174,30 @@ namespace MuseGameJam.UI
             tile.Add(caption);
 
             return tile;
+        }
+
+        // Wires a companion tile so tapping it toggles the companion in the scene, and shows the
+        // current placed state. No-op visuals if there is no CompanionManager in the scene.
+        private void MakeCompanionTileInteractive(VisualElement tile, CompanionSO companion)
+        {
+            CompanionManager manager = CompanionManager.Instance;
+            tile.EnableInClassList(TilePlacedClass, manager != null && manager.IsPlaced(companion));
+            tile.RegisterCallback<ClickEvent>(_ => ToggleCompanion(tile, companion));
+        }
+
+        // Places the companion at its fixed slot, or removes it if already placed, and reflects
+        // the resulting state on the tile.
+        private void ToggleCompanion(VisualElement tile, CompanionSO companion)
+        {
+            CompanionManager manager = CompanionManager.Instance;
+            if (manager == null)
+            {
+                Debug.LogWarning("UnlockablesMenuController: no CompanionManager in the scene to place the companion.");
+                return;
+            }
+
+            bool placed = manager.ToggleUnlockable(companion);
+            tile.EnableInClassList(TilePlacedClass, placed);
         }
 
         // Adds the open class once the panel has its first (closed) layout, so the

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MuseGameJam.Gameplay
 {
@@ -7,8 +8,13 @@ namespace MuseGameJam.Gameplay
     /// Spawns companion (unlockable) visuals into the scene.
     ///
     /// Holds a reference to the shared <see cref="Unlockables"/> asset (the list of all
-    /// unlockables) and instantiates a companion prefab at a spawn point, applying the
+    /// unlockables) and instantiates a companion prefab at a placeholder slot, applying the
     /// selected <see cref="CompanionSO"/>'s sprite.
+    ///
+    /// Each companion is bound to a fixed placeholder: its index in the Unlockables asset's
+    /// companion list selects the matching slot in <see cref="placeholders"/>, so a companion
+    /// always lands in the same place. Scene singleton so the Unlockables menu can reach it
+    /// to toggle companions in and out from a tile tap.
     /// </summary>
     public class CompanionManager : MonoBehaviour
     {
@@ -18,18 +24,69 @@ namespace MuseGameJam.Gameplay
         [Tooltip("Prefab instantiated for each spawned companion. Needs a SpriteRenderer to show the companion image.")]
         [SerializeField] private GameObject companionPrefab;
 
-        [Tooltip("Anchors where unlockables can spawn. One is picked at random per spawn. " +
-                 "Falls back to this transform if the list is empty.")]
-        [SerializeField] private List<Transform> spawnAnchors = new();
+        [Tooltip("Uniform world scale applied to each spawned companion. The companion art is large " +
+                 "(2048px @ 100 PPU = ~20 world units), so a small value keeps it sized to its slot.")]
+        [SerializeField] private float companionScale = 0.1f;
 
-        // Tracks spawned instances so the same companion is not duplicated.
+        [Tooltip("Placeholder slots, one per companion. A companion is placed at the slot whose index " +
+                 "matches its position in the Unlockables companion list. Falls back to this transform " +
+                 "if no matching slot is set.")]
+        [FormerlySerializedAs("spawnAnchors")]
+        [SerializeField] private List<Transform> placeholders = new();
+
+        // Tracks spawned instances so the same companion is not duplicated, and so it can be removed.
         private readonly Dictionary<CompanionSO, GameObject> spawned = new();
+
+        public static CompanionManager Instance { get; private set; }
 
         public Unlockables Unlockables => unlockables;
 
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         /// <summary>
-        /// Spawns the given unlockable's companion prefab on a random spawn anchor, applying the
-        /// unlockable's sprite, and returns its instance. If it is already spawned, returns the
+        /// Toggles the given companion in the scene: places it at its fixed slot if it is not
+        /// currently shown, or removes it if it is. Returns true if the companion is now placed,
+        /// false if it was removed (or could not be placed).
+        /// </summary>
+        public bool ToggleUnlockable(CompanionSO companion)
+        {
+            if (IsPlaced(companion))
+            {
+                RemoveUnlockable(companion);
+                return false;
+            }
+
+            return SpawnUnlockable(companion) != null;
+        }
+
+        /// <summary>True if the given companion currently has an instance in the scene.</summary>
+        public bool IsPlaced(CompanionSO companion)
+        {
+            return companion != null
+                && spawned.TryGetValue(companion, out GameObject existing)
+                && existing != null;
+        }
+
+        /// <summary>
+        /// Spawns the given companion's prefab at its statically assigned placeholder slot, applying
+        /// the companion's sprite, and returns its instance. If it is already spawned, returns the
         /// existing instance instead of duplicating it.
         /// </summary>
         public GameObject SpawnUnlockable(CompanionSO companion)
@@ -51,9 +108,10 @@ namespace MuseGameJam.Gameplay
                 return existing;
             }
 
-            Transform anchor = PickRandomAnchor();
+            Transform anchor = ResolveSlot(companion);
             GameObject instance = Instantiate(companionPrefab, anchor.position, anchor.rotation, anchor);
             instance.name = $"Companion_{companion.DisplayName}";
+            instance.transform.localScale = Vector3.one * companionScale;
 
             ApplySprite(instance, companion.Image);
 
@@ -61,29 +119,51 @@ namespace MuseGameJam.Gameplay
             return instance;
         }
 
-        // Picks a random non-null anchor from the list; falls back to this transform if none are set.
-        private Transform PickRandomAnchor()
+        /// <summary>Removes the given companion's instance from the scene, if it is placed.</summary>
+        public void RemoveUnlockable(CompanionSO companion)
         {
-            int validCount = 0;
-            foreach (Transform anchor in spawnAnchors)
+            if (companion != null && spawned.TryGetValue(companion, out GameObject existing))
             {
-                if (anchor != null) validCount++;
+                if (existing != null)
+                {
+                    Destroy(existing);
+                }
+                spawned.Remove(companion);
+            }
+        }
+
+        // Resolves the placeholder a companion belongs to: the slot whose index matches the
+        // companion's position in the Unlockables list. Falls back to this transform when the
+        // companion is not found or no matching slot is assigned.
+        private Transform ResolveSlot(CompanionSO companion)
+        {
+            int index = IndexOf(companion);
+            if (index >= 0 && index < placeholders.Count && placeholders[index] != null)
+            {
+                return placeholders[index];
             }
 
-            if (validCount == 0)
+            return transform;
+        }
+
+        // Position of the companion in the Unlockables companion list, or -1 if not present.
+        private int IndexOf(CompanionSO companion)
+        {
+            if (unlockables == null)
             {
-                return transform;
+                return -1;
             }
 
-            int pick = Random.Range(0, validCount);
-            foreach (Transform anchor in spawnAnchors)
+            IReadOnlyList<CompanionSO> companions = unlockables.Companions;
+            for (int i = 0; i < companions.Count; i++)
             {
-                if (anchor == null) continue;
-                if (pick == 0) return anchor;
-                pick--;
+                if (companions[i] == companion)
+                {
+                    return i;
+                }
             }
 
-            return transform; // unreachable: validCount > 0 guarantees a hit above
+            return -1;
         }
 
         // Copies the companion's sprite onto the instance's SpriteRenderer, if any.
