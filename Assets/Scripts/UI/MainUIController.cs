@@ -169,12 +169,19 @@ namespace MuseGameJam.UI
             GameStateMachine.Instance.PushState(cameraState);
         }
 
-        // L'URL letto dal QR arriva qui: per ora lo logghiamo; lo passeremo poi a un altro script.
+        // L'URL letto dal QR arriva qui: lo registriamo sulle challenge attive.
         void HandleUrlScanned(string url)
         {
             Debug.Log($"[MainUI] URL dal QR: {url}");
-            // Nuova info scansionata -> il musetto è felice (trigger del controller).
-            TriggerHappy("QR scansionato");
+
+            // Segna l'Info corrispondente come scansionata in ogni challenge che la contiene.
+            bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
+
+            // Solo se il QR ha fatto progredire una challenge -> il musetto è felice.
+            if (matched)
+            {
+                TriggerHappy("QR scansionato");
+            }
         }
 
         // Chiamabile da qualsiasi script quando si ottiene/sblocca un nuovo oggetto:

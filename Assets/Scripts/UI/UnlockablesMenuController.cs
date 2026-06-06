@@ -110,7 +110,7 @@ namespace MuseGameJam.UI
             foreach (CompanionSO companion in unlockables.Companions)
             {
                 if (companion == null) continue;
-                companionsGrid.Add(CreateTile(companion.Image, companion.DisplayName, companion.Unlocked));
+                companionsGrid.Add(CreateTile(companion.Image, companion.DisplayName, IsUnlocked(companion)));
             }
 
             PopulateItemGrid(foodGrid, unlockables.Foods);
@@ -118,14 +118,22 @@ namespace MuseGameJam.UI
             PopulateItemGrid(toysGrid, unlockables.Toys);
         }
 
-        // Adds one locked (blackened) tile per item in the list.
+        // Adds one tile per item, blackened until the item has been unlocked.
         private void PopulateItemGrid(VisualElement grid, IReadOnlyList<ItemSO> items)
         {
             foreach (ItemSO item in items)
             {
                 if (item == null) continue;
-                grid.Add(CreateTile(item.Image, item.DisplayName, unlocked: false));
+                grid.Add(CreateTile(item.Image, item.DisplayName, IsUnlocked(item)));
             }
+        }
+
+        // An entry is unlocked if it ships unlocked or was unlocked this session (registry).
+        private static bool IsUnlocked(UnlockableSO unlockable)
+        {
+            return ChallengeManager.Instance != null
+                ? ChallengeManager.Instance.IsUnlocked(unlockable)
+                : unlockable.Unlocked;
         }
 
         // Builds a single tile: the sprite on top (tinted black while locked) and a caption

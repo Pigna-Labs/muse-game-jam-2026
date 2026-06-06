@@ -10,6 +10,10 @@ namespace MuseGameJam.UI
     {
         private const int AnswerCount = 4;
 
+        // How long the answer feedback (correct/wrong highlight) stays up before a
+        // trivia session advances to the next question.
+        private const long FeedbackMilliseconds = 900;
+
         [SerializeField] private TriviaQuestion question;
 
         private readonly Action[] answerHandlers = new Action[AnswerCount];
@@ -65,6 +69,13 @@ namespace MuseGameJam.UI
             }
 
             answerButtons[index].text = answer;
+        }
+
+        // Runs an action after the answer feedback has been visible for a beat, using the
+        // document's scheduler so a trivia session can pace itself without a coroutine.
+        public void ScheduleAfterFeedback(Action action)
+        {
+            document.rootVisualElement.schedule.Execute(action).StartingIn(FeedbackMilliseconds);
         }
 
         // Enables or disables answer taps while feedback or transitions are playing.

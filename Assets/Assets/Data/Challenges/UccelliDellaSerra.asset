@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93bc43adeb8b4882a8e971180c2c438a, type: 3}
+  m_Name: UccelliDellaSerra
+  m_EditorClassIdentifier:
+  displayName: Gli Uccelli della Serra
+  infos:
+  - {fileID: 11400000, guid: b70e2b9c01778b5b8843904b3c2493d6, type: 2}
+  reward: {fileID: 11400000, guid: 115dfdc3b35e327cf8664ab768c5a4bc, type: 2}

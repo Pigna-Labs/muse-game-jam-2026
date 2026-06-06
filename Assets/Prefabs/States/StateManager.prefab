@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5132150953755076204}
   - component: {fileID: 5132150953755076203}
   - component: {fileID: 5132150953755076202}
+  - component: {fileID: 5132150953755076205}
   m_Layer: 0
   m_Name: StateManager
   m_TagString: Untagged
@@ -56,8 +57,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c04cc10ec45547d3b949febe51e53c6d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   stateMachine: {fileID: 5132150953755076203}
   entrySceneName: 00_Entry
   mainSceneName: 01_Main
+--- !u!114 &5132150953755076205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5132150953755076201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e2e72183d948a0bf742446ebf200d7, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  challenges:
+  - {fileID: 11400000, guid: 031c73e678384ad1bf04c0e532bc7e34, type: 2}
+  - {fileID: 11400000, guid: df107b99b06841a6bcab496e7df2ca0a, type: 2}
+  triviaUiPrefab: {fileID: 100000, guid: 49380eb9eddf4ec89da63529b3e6796a, type: 3}
+  overlayRoot: {fileID: 0}
+  debugTapToComplete: 1
