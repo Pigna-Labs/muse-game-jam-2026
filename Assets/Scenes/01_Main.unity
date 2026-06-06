@@ -883,10 +883,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CompanionManager
       objectReference: {fileID: 0}
-    - target: {fileID: 5356391802303499508, guid: e582e29a73cebdd4aa0598509df77b9f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.4
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
