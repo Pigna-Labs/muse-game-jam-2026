@@ -10,37 +10,39 @@ namespace MuseGameJam.UI
     [RequireComponent(typeof(UIDocument))]
     public class MainUIController : MonoBehaviour
     {
-        // Una voce della tray: l'etichetta mostrata + il prefab Item assegnato a quell'item.
-        [System.Serializable]
-        public class TrayItemDef
-        {
-            public string label = "Item";
-            public GameObject itemPrefab;
-        }
-
         [Header("Tray")]
-        // Template UXML dell'oggetto-item (TrayItem.uxml).
+        // UXML template for a tray item (TrayItem.uxml).
         [SerializeField] VisualTreeAsset trayItemTemplate;
-        // Una lista di item per ciascun pulsante della bottom-bar.
-        [SerializeField] List<TrayItemDef> foodItems = new List<TrayItemDef>();
-        [SerializeField] List<TrayItemDef> cleanItems = new List<TrayItemDef>();
-        [SerializeField] List<TrayItemDef> petItems = new List<TrayItemDef>();
+        // Source of unlockable entries: the tray shows the icons of UNLOCKED items in each
+        // category (Foods -> food, Soaps -> clean, Toys -> pet).
+        [SerializeField] Unlockables unlockables;
+
+        // Base prefab spawned at selection time: NOT serialized; loaded from Resources and
+        // picked by category. Food=Droppable (left on the area), Clean/Pet=Draggable (rubbed
+        // on the area). The dragged object's icon comes from the selected item (see
+        // OnItemPointerDown).
+        const string DroppableResourcePath = "Interaction/Droppable";
+        const string DraggableResourcePath = "Interaction/Draggable";
+        GameObject droppablePrefab;
+        GameObject draggablePrefab;
 
         [Header("Drag & drop")]
         [SerializeField] Camera targetCamera;
-        // Distanza dalla camera del piano su cui galleggia l'item mentre segue il cursore.
+        // Distance from the camera of the plane the item floats on while following the cursor.
         [SerializeField] float dragDepth = 10f;
-        // Se vero, la tray si nasconde durante il drag (l'item resta visibile nello stage).
-        [SerializeField] bool hideTrayWhileDragging = false;
+        // World-space size of the dragged object's largest side. Item sprites have different
+        // pixel counts: without normalizing, a large one would fill the screen. The object is
+        // scaled so the sprite occupies this size.
+        [SerializeField] float draggedItemWorldSize = 1.5f;
 
         [Header("QR Scanner")]
-        // GameObject del QR scanner (con QrScannerController). Parte DISATTIVATO:
-        // il pulsante camera lo attiva, "Chiudi"/scan-ok lo ridisattiva.
+        // QR scanner GameObject (carries QrScannerController). Starts DISABLED: the camera
+        // button activates it, "Close"/scan-ok disables it again.
         [SerializeField] GameObject qrScannerObject;
 
-        [Header("Animazioni musetto")]
-        // Animator del musetto (CharacterAnimController). Quando si scansiona una nuova
-        // info (o si sblocca qualcosa) -> trigger "Happy".
+        [Header("Musetto animations")]
+        // Musetto animator (CharacterAnimController). When a new info is scanned (or
+        // something is unlocked) -> "Happy" trigger.
         [SerializeField] Animator musettoAnimator;
 
         [Header("Challenges")]
@@ -75,22 +77,30 @@ namespace MuseGameJam.UI
         VisualElement trayHint;
         Label trayHintLabel;
 
-        // Testo dell'hint per ciascuna categoria (cosa deve fare il giocatore).
+        // Hint text for each category (what the player should do).
         const string FoodHint = "Dai da mangiare a Musetto!";
         const string CleanHint = "Lava Musetto!";
         const string PetHint = "Coccola Musetto!";
 
-        // Azioni di cura già completate dal giocatore almeno una volta: per queste
-        // l'hint non si mostra più. Finché un'azione NON è qui dentro, l'aiuto continua
-        // a comparire all'apertura del relativo menu (resta finché non completi l'azione).
+        // Care actions the player has already completed at least once: their hint stays
+        // hidden afterwards. While an action is NOT in this set, the hint keeps appearing
+        // when the matching menu is opened (until the action is completed).
         readonly HashSet<CareAction> careDone = new HashSet<CareAction>();
 
-        string openCategory;
+        // Open tray: which category and whether it is visible. The tray's lifecycle is owned
+        // by StateInteractionMenu (ShowTray/HideTray); here we just track the current state.
+        bool trayOpen;
+        CareAction openAction;
 
-        // Stato del drag in corso (uno alla volta).
+        // Dismiss request for the tray (object picked up or tap outside): listened to by
+        // StateInteractionMenu, which calls PopOverlay (-> HideTray).
+        public event System.Action InteractionDismissRequested;
+
+        // Active drag state (one at a time). The pointer is captured on the root, not on the
+        // individual tray item: that way closing the tray at drag-start does not break release.
         GameObject spawnedObject;
         Item spawnedItem;
-        VisualElement capturedTrayItem;
+        VisualElement capturedElement;
         int activePointerId;
 
         void OnEnable()
@@ -122,22 +132,30 @@ namespace MuseGameJam.UI
             if (unlockablesButton != null) unlockablesButton.clicked += OnUnlockablesClicked;
             if (audioToggleButton != null) audioToggleButton.clicked += OnAudioToggleClicked;
 
-            // Riflette subito lo stato corrente dell'audio sull'icona.
+            // The drag captures the pointer on the ROOT (not on the tray item): that way
+            // closing the tray at drag-start does not lose the release. Up/Cancel land here.
+            rootElement.RegisterCallback<PointerUpEvent>(OnPointerUp);
+            rootElement.RegisterCallback<PointerCancelEvent>(OnPointerCancel);
+            // Tap outside the tray = dismiss. Registered in the capture phase (TrickleDown)
+            // so no descendant can swallow the event before we evaluate it.
+            rootElement.RegisterCallback<PointerDownEvent>(OnRootPointerDown, TrickleDown.TrickleDown);
+
+            // Reflect the current audio state on the icon immediately.
             UpdateAudioToggleIcon();
 
-            // Quando un'azione di cura viene eseguita, l'hint di quella categoria sparisce.
+            // When a care action is performed, the hint for that category disappears.
             DropArea.CareActionPerformed += OnCareActionPerformed;
 
-            // Lo scanner parte chiuso (disattivato).
+            // The scanner starts closed (disabled).
             if (qrScannerObject != null) qrScannerObject.SetActive(false);
 
             if (targetCamera == null)
                 targetCamera = Camera.main;
         }
 
-        // Le tre barre partono a un valore casuale (evito gli estremi 0/1 per leggibilità).
-        // Chiamato da StateMainGame all'ingresso nel gioco, così avviene una volta sola e non
-        // si ri-randomizza ogni volta che la UI si riabilita tornando da un overlay.
+        // The three bars start at random values (extremes 0/1 are avoided for readability).
+        // Called by StateMainGame on entering the game, so it runs once and is not
+        // re-randomized every time the UI re-enables after returning from an overlay.
         public void RandomizeStats()
         {
             if (foodGauge != null) foodGauge.value = Random.Range(0.2f, 0.8f);
@@ -145,7 +163,7 @@ namespace MuseGameJam.UI
             if (petGauge != null) petGauge.value = Random.Range(0.2f, 0.8f);
         }
 
-        // Un item ha contribuito alla cura: alza la barra dell'azione corrispondente.
+        // An item contributed care: raise the matching action's gauge.
         void OnCareApplied(CareAction action, float amount)
         {
             switch (action)
@@ -158,7 +176,7 @@ namespace MuseGameJam.UI
 
         static void AddToGauge(StatGauge gauge, float amount)
         {
-            if (gauge != null) gauge.value += amount; // il setter di StatGauge fa il Clamp01
+            if (gauge != null) gauge.value += amount; // StatGauge's setter clamps to 0..1
         }
 
         void OnDisable()
@@ -171,11 +189,18 @@ namespace MuseGameJam.UI
             if (unlockablesButton != null) unlockablesButton.clicked -= OnUnlockablesClicked;
             if (audioToggleButton != null) audioToggleButton.clicked -= OnAudioToggleClicked;
 
+            if (rootElement != null)
+            {
+                rootElement.UnregisterCallback<PointerUpEvent>(OnPointerUp);
+                rootElement.UnregisterCallback<PointerCancelEvent>(OnPointerCancel);
+                rootElement.UnregisterCallback<PointerDownEvent>(OnRootPointerDown, TrickleDown.TrickleDown);
+            }
+
             DropArea.CareActionPerformed -= OnCareActionPerformed;
         }
 
-        // Toggle audio globale: muta/riattiva TUTTO l'audio (musica, musetto, camera).
-        // AudioListener.pause ferma l'intera scena audio in un colpo solo.
+        // Global audio toggle: mute/unmute ALL audio (music, musetto, camera).
+        // AudioListener.pause halts the entire audio scene in one shot.
         void OnAudioToggleClicked()
         {
             AudioListener.pause = !AudioListener.pause;
@@ -188,77 +213,69 @@ namespace MuseGameJam.UI
                 audioToggleButton.text = AudioListener.pause ? "🔇" : "🔊";
         }
 
-        // Azione di cura eseguita almeno una volta: l'hint di quella categoria non serve
-        // più. Se è proprio quello mostrato ora, lo nascondiamo subito.
+        // A care action was performed at least once: that category's hint is no longer
+        // needed. If it is the one currently shown, hide it now.
         void OnCareActionPerformed(CareAction action)
         {
             careDone.Add(action);
-            if (CategoryOf(action) == openCategory)
+            if (trayOpen && openAction == action)
                 HideHint();
         }
 
-        static string CategoryOf(CareAction action) => action switch
-        {
-            CareAction.Eat => "FOOD",
-            CareAction.Clean => "CLEAN",
-            CareAction.Pet => "PET",
-            _ => null,
-        };
-
-        // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
-        // StateCamera nasconde la main UI, mette in pausa la main e attiva lo scanner;
-        // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
+        // Camera button: opens the QR scanner as an OVERLAY on the state stack.
+        // StateCamera hides the main UI, pauses the main state and activates the scanner;
+        // on "Close" or a successful scan it calls PopOverlay and returns to the main state.
         void OnCameraClicked()
         {
             if (qrScannerObject == null) return;
             if (GameStateMachine.Instance == null)
             {
-                Debug.LogWarning("MainUIController: nessuna GameStateMachine in scena per aprire la camera.");
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the camera.");
                 return;
             }
 
-            // Guardia anti-spam: se c'è già uno StateCamera aperto, non pusharne altri.
+            // Anti-spam guard: if a StateCamera is already open, don't push another.
             if (GameStateMachine.Instance.HasOverlay<StateCamera>()) return;
 
-            // Passa anche QUESTA UI così lo StateCamera la nasconde mentre la camera è aperta.
+            // Pass this UI too so StateCamera hides it while the camera is open.
             var cameraState = new StateCamera(qrScannerObject, gameObject);
             cameraState.OnUrlScanned += HandleUrlScanned;
             GameStateMachine.Instance.PushState(cameraState);
         }
 
-        // L'URL letto dal QR arriva qui: lo registriamo sulle challenge attive.
+        // The URL read from the QR arrives here: we register it against the active challenges.
         void HandleUrlScanned(string url)
         {
-            Debug.Log($"[MainUI] URL dal QR: {url}");
+            Debug.Log($"[MainUI] URL from QR: {url}");
 
-            // Segna l'Info corrispondente come scansionata in ogni challenge che la contiene.
+            // Mark the matching Info as scanned in every challenge that contains it.
             bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
 
-            // Solo se il QR ha fatto progredire una challenge -> il musetto è felice.
+            // Only when the QR advanced a challenge -> musetto is happy.
             if (matched)
             {
-                TriggerHappy("QR scansionato");
+                TriggerHappy("QR scanned");
             }
         }
 
-        // Chiamabile da qualsiasi script quando si ottiene/sblocca un nuovo oggetto:
-        // fa partire l'animazione "felice" del musetto.
+        // Callable from any script when a new object is obtained/unlocked: starts the
+        // musetto's "happy" animation.
         public void CelebrateNewItem()
         {
-            TriggerHappy("nuovo oggetto");
+            TriggerHappy("new object");
         }
 
-        // Centralizza il trigger Happy + log diagnostico.
-        void TriggerHappy(string motivo)
+        // Centralizes the Happy trigger + diagnostic log.
+        void TriggerHappy(string reason)
         {
             if (musettoAnimator == null)
             {
-                Debug.LogWarning($"[Anim] musettoAnimator NON assegnato nel MainUIController ({motivo}): trascina il musetto nel campo in Inspector.");
+                Debug.LogWarning($"[Anim] musettoAnimator NOT assigned on MainUIController ({reason}): drag musetto into the field in the Inspector.");
                 return;
             }
             var st = musettoAnimator.GetCurrentAnimatorStateInfo(0);
-            Debug.Log($"[Anim] SetTrigger(Happy) [{motivo}]. Stato attuale hash={st.fullPathHash} " +
-                      $"normalizedTime={st.normalizedTime:F2}. Se non transita: togli 'Has Exit Time' alla transizione Idle->Felice.");
+            Debug.Log($"[Anim] SetTrigger(Happy) [{reason}]. Current state hash={st.fullPathHash} " +
+                      $"normalizedTime={st.normalizedTime:F2}. If it does not transition: remove 'Has Exit Time' from the Idle->Felice transition.");
             musettoAnimator.SetTrigger("Happy");
         }
 
@@ -309,48 +326,90 @@ namespace MuseGameJam.UI
             var unlockablesState = new StateUnlockablesMenu(unlockablesUiPrefab, unlockablesUiParent, gameObject);
             GameStateMachine.Instance.PushState(unlockablesState);
         }
-        // API per il gameplay: imposta il livello (0..1) di ciascun gauge.
+        // Gameplay API: sets each gauge's level (0..1).
         public void SetFoodLevel(float value) { if (foodGauge != null) foodGauge.value = value; }
         public void SetCleanLevel(float value) { if (cleanGauge != null) cleanGauge.value = value; }
         public void SetPetLevel(float value) { if (petGauge != null) petGauge.value = value; }
 
-        // Ogni categoria mappa a una CareAction: l'item spawnato la riceve, così la
-        // DropArea fa partire l'animazione giusta (food->Eat, clean->Clean, pet->Pet).
-        // Il terzo argomento è il testo dell'hint mostrato sopra la tray.
-        void OnFoodClicked() => ToggleTray("FOOD", foodItems, CareAction.Eat, FoodHint);
-        void OnCleanClicked() => ToggleTray("CLEAN", cleanItems, CareAction.Clean, CleanHint);
-        void OnPetClicked() => ToggleTray("PET", petItems, CareAction.Pet, PetHint);
+        // Each category maps to a CareAction (food->Eat, clean->Clean, pet->Pet).
+        // The buttons open/close the tray through StateInteractionMenu.
+        void OnFoodClicked() => ToggleInteraction(CareAction.Eat);
+        void OnCleanClicked() => ToggleInteraction(CareAction.Clean);
+        void OnPetClicked() => ToggleInteraction(CareAction.Pet);
 
-        void ToggleTray(string category, List<TrayItemDef> items, CareAction action, string hint)
+        // Opens the tray for the category as a StateInteractionMenu, or closes it if it is
+        // already open on the same category (toggle). Switching category closes and reopens.
+        void ToggleInteraction(CareAction action)
         {
-            if (openCategory == category)
+            if (GameStateMachine.Instance == null)
             {
-                HideTray();
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the tray.");
                 return;
             }
 
-            openCategory = category;
+            bool wasOpen = trayOpen;
+            CareAction previous = openAction;
+
+            // Close the currently open tray, if any (pop -> StateInteractionMenu.OnExit -> HideTray).
+            if (wasOpen)
+                GameStateMachine.Instance.PopOverlay();
+
+            // Same category = toggle off; different category (or none) = open the chosen one.
+            if (wasOpen && previous == action)
+                return;
+
+            GameStateMachine.Instance.PushState(new StateInteractionMenu(this, action));
+        }
+
+        // Opens the tray for the given category. Public: called by StateInteractionMenu on
+        // enter. The tray stays visible until the state is closed.
+        public void ShowTray(CareAction action)
+        {
+            trayOpen = true;
+            openAction = action;
             itemTray.style.display = DisplayStyle.Flex;
 
-            // L'hint resta visibile finché il giocatore non ha COMPLETATO almeno una volta
-            // l'azione di questa categoria; dopo non ricompare più.
+            // The hint stays visible until the player has COMPLETED the category's action at
+            // least once; afterwards it does not reappear.
             if (!careDone.Contains(action))
-                ShowHint(hint);
+                ShowHint(HintFor(action));
             else
                 HideHint();
 
-            PopulateTray(items, action);
+            PopulateTray(ItemsFor(action), action);
         }
 
-        void HideTray()
+        // Hides and clears the tray. Public: called by StateInteractionMenu on exit.
+        public void HideTray()
         {
-            openCategory = null;
+            trayOpen = false;
             itemTray.style.display = DisplayStyle.None;
             HideHint();
             trayContent.Clear();
         }
 
-        // Mostra l'hint (freccia + testo) sopra la tray con il messaggio della categoria.
+        // The unlocked items for the category (food->Foods, clean->Soaps, pet->Toys).
+        IReadOnlyList<ItemSO> ItemsFor(CareAction action)
+        {
+            if (unlockables == null) return null;
+            return action switch
+            {
+                CareAction.Eat => unlockables.Foods,
+                CareAction.Clean => unlockables.Soaps,
+                CareAction.Pet => unlockables.Toys,
+                _ => null,
+            };
+        }
+
+        static string HintFor(CareAction action) => action switch
+        {
+            CareAction.Eat => FoodHint,
+            CareAction.Clean => CleanHint,
+            CareAction.Pet => PetHint,
+            _ => string.Empty,
+        };
+
+        // Shows the hint (arrow + text) above the tray with the category's message.
         void ShowHint(string text)
         {
             if (trayHintLabel != null) trayHintLabel.text = text;
@@ -362,88 +421,151 @@ namespace MuseGameJam.UI
             if (trayHint != null) trayHint.style.display = DisplayStyle.None;
         }
 
-        // Riempie la banda clonando il template, un item per ogni TrayItemDef della lista scelta.
-        void PopulateTray(List<TrayItemDef> items, CareAction action)
+        // Fills the tray by cloning the template, one icon per UNLOCKED item in the chosen
+        // category. The selected item carries its own icon: at selection (OnItemPointerDown)
+        // it decides which sprite to display on the dragged object. No text, icons only.
+        void PopulateTray(IReadOnlyList<ItemSO> items, CareAction action)
         {
             trayContent.Clear();
 
             if (trayItemTemplate == null)
             {
-                Debug.LogWarning("MainUIController: trayItemTemplate non assegnato in Inspector.");
+                Debug.LogWarning("MainUIController: trayItemTemplate not assigned in Inspector.");
                 return;
             }
 
-            foreach (var def in items)
+            if (items == null) return;
+
+            foreach (var item in items)
             {
+                if (item == null || !IsUnlocked(item)) continue;
+
                 var instance = trayItemTemplate.Instantiate();
                 var itemRoot = instance.Q<VisualElement>("item") ?? instance;
 
-                var label = instance.Q<Label>("item-label");
-                if (label != null) label.text = def.label;
-
-                // Gli elementi interni non devono intercettare i pointer event: li gestisce il root dell'item.
+                // The icon shows the item's sprite; it must not intercept pointer events
+                // (the item's root handles them).
                 var icon = instance.Q<Button>("item-icon");
-                if (icon != null) icon.pickingMode = PickingMode.Ignore;
-                if (label != null) label.pickingMode = PickingMode.Ignore;
+                if (icon != null)
+                {
+                    icon.pickingMode = PickingMode.Ignore;
+                    if (item.Image != null)
+                        icon.style.backgroundImage = new StyleBackground(item.Image);
+                }
 
-                var prefab = def.itemPrefab;
-                itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, itemRoot, prefab, action));
-                itemRoot.RegisterCallback<PointerUpEvent>(OnItemPointerUp);
-                // Su touch l'OS può annullare il puntatore (PointerCancel) invece di rilasciarlo:
-                // senza questo, lo stato del drag resterebbe appeso e bloccherebbe ogni drag successivo.
-                itemRoot.RegisterCallback<PointerCancelEvent>(OnItemPointerCancel);
+                // Only PointerDown is on the item (it decides which icon/action to spawn).
+                // Up and Cancel are handled by the root (see OnEnable), so closing the tray
+                // at drag-start does not break release.
+                itemRoot.RegisterCallback<PointerDownEvent>(evt => OnItemPointerDown(evt, item, action));
 
                 trayContent.Add(instance);
             }
         }
 
-        void OnItemPointerDown(PointerDownEvent evt, VisualElement trayItem, GameObject prefab, CareAction action)
+        // An item counts as unlocked if it ships unlocked or was unlocked this session
+        // (ChallengeManager registry). Same logic as the unlockables UI.
+        static bool IsUnlocked(UnlockableSO unlockable)
         {
-            if (spawnedObject != null) return; // un drag alla volta
+            return ChallengeManager.Instance != null
+                ? ChallengeManager.Instance.IsUnlocked(unlockable)
+                : unlockable.Unlocked;
+        }
 
+        void OnItemPointerDown(PointerDownEvent evt, ItemSO item, CareAction action)
+        {
+            if (spawnedObject != null) return; // one drag at a time
+
+            // The base prefab is decided by the category (not serialized: loaded from Resources).
+            var prefab = PrefabFor(action);
             if (prefab == null)
             {
-                Debug.LogWarning("MainUIController: questo TrayItem non ha un itemPrefab assegnato.");
+                Debug.LogWarning($"MainUIController: base prefab for {action} not found in Resources.");
                 return;
             }
 
-            capturedTrayItem = trayItem;
+            // Capture on the ROOT: tray tiles are destroyed when the tray closes at
+            // drag-start, but the root stays and keeps receiving Up/Cancel.
+            capturedElement = rootElement;
             activePointerId = evt.pointerId;
-            trayItem.CapturePointer(evt.pointerId); // così i PointerUp arrivano qui anche fuori dall'item
+            rootElement.CapturePointer(evt.pointerId);
 
             spawnedObject = Instantiate(prefab);
+
+            // The dragged object shows the SELECTED item's icon: the same base prefab serves
+            // every item in the category; the appearance comes from the chosen item.
+            if (item != null && item.Image != null)
+            {
+                var renderer = spawnedObject.GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                {
+                    renderer.sprite = item.Image;
+                    renderer.color = Color.white; // the base prefabs carry a placeholder tint
+                    FitToWorldSize(spawnedObject.transform, renderer, draggedItemWorldSize);
+                }
+            }
+
             spawnedItem = spawnedObject.GetComponent<Item>();
             if (spawnedItem != null)
             {
-                // L'azione la decide la categoria (food/clean/pet), non il prefab:
-                // così gli stessi prefab base servono tutte le categorie.
+                // The action is decided by the category (food/clean/pet), not the prefab:
+                // that way the same base prefabs serve every category.
                 spawnedItem.SetAction(action);
-                // Mentre lo usi sul musetto, la DropArea emette CareApplied: alziamo il gauge giusto.
+                // While in use on musetto, DropArea fires CareApplied: we raise the right gauge.
                 spawnedItem.CareApplied += OnCareApplied;
                 spawnedItem.BeginDrag(targetCamera != null ? targetCamera : Camera.main, dragDepth);
             }
             else
-                Debug.LogWarning("MainUIController: il prefab spawnato non ha un componente Item.");
-
-            if (hideTrayWhileDragging) itemTray.style.display = DisplayStyle.None;
+                Debug.LogWarning("MainUIController: the spawned prefab has no Item component.");
 
             evt.StopPropagation();
+
+            // Object picked up: the tray disappears (close StateInteractionMenu). Done last,
+            // so the full drag setup completes before the tray is cleared/hidden.
+            InteractionDismissRequested?.Invoke();
         }
 
-        void OnItemPointerUp(PointerUpEvent evt)
+        // Base prefab for the category, loaded from Resources and cached.
+        // Food (Eat) -> Droppable (left on the area); Clean/Pet -> Draggable (rubbed on it).
+        GameObject PrefabFor(CareAction action)
+        {
+            if (action == CareAction.Eat)
+                return droppablePrefab != null
+                    ? droppablePrefab
+                    : (droppablePrefab = Resources.Load<GameObject>(DroppableResourcePath));
+
+            return draggablePrefab != null
+                ? draggablePrefab
+                : (draggablePrefab = Resources.Load<GameObject>(DraggableResourcePath));
+        }
+
+        // Scales the object so the sprite's largest side occupies 'targetSize' world units,
+        // regardless of the sprite's pixels/PPU.
+        static void FitToWorldSize(Transform target, SpriteRenderer renderer, float targetSize)
+        {
+            if (renderer.sprite == null || targetSize <= 0f) return;
+
+            Vector2 spriteSize = renderer.sprite.bounds.size; // world units at scale 1
+            float largest = Mathf.Max(spriteSize.x, spriteSize.y);
+            if (largest <= 0f) return;
+
+            float scale = targetSize / largest;
+            target.localScale = new Vector3(scale, scale, 1f);
+        }
+
+        void OnPointerUp(PointerUpEvent evt)
         {
             if (spawnedObject == null || evt.pointerId != activePointerId) return;
 
-            // L'Item gestisce il proprio rilascio (di base sparisce); la DropArea ha già reagito via trigger.
+            // Item handles its own release (by default it disappears); DropArea already reacted via trigger.
             if (spawnedItem != null) spawnedItem.Drop();
             else Destroy(spawnedObject);
 
             EndDrag();
         }
 
-        // Puntatore annullato dall'OS (tipico su touch): scartiamo l'item senza droparlo
-        // e ripristiniamo lo stato, così la tray resta utilizzabile.
-        void OnItemPointerCancel(PointerCancelEvent evt)
+        // Pointer cancelled by the OS (typical on touch): drop the item without releasing it
+        // and restore state so the tray stays usable.
+        void OnPointerCancel(PointerCancelEvent evt)
         {
             if (spawnedObject == null || evt.pointerId != activePointerId) return;
 
@@ -451,21 +573,44 @@ namespace MuseGameJam.UI
             EndDrag();
         }
 
-        // Ripristino comune dello stato del drag (rilascio o annullamento).
+        // Common drag-state cleanup (release or cancel). The tray stays closed: it
+        // disappeared on pickup and only reopens when the category button is pressed again.
         void EndDrag()
         {
             if (spawnedItem != null) spawnedItem.CareApplied -= OnCareApplied;
             spawnedObject = null;
             spawnedItem = null;
 
-            if (hideTrayWhileDragging && openCategory != null)
-                itemTray.style.display = DisplayStyle.Flex;
-
-            if (capturedTrayItem != null)
+            if (capturedElement != null)
             {
-                capturedTrayItem.ReleasePointer(activePointerId);
-                capturedTrayItem = null;
+                capturedElement.ReleasePointer(activePointerId);
+                capturedElement = null;
             }
+        }
+
+        // Tap outside the tray (and not on a category button) = close the tray. The
+        // food/clean/pet buttons are excluded: their toggle handles close/category switch.
+        void OnRootPointerDown(PointerDownEvent evt)
+        {
+            if (!trayOpen) return;
+
+            var target = evt.target as VisualElement;
+            if (target == null) return;
+
+            if (IsWithin(target, itemTray)) return; // inside the tray: it handles drag/hint
+            if (IsWithin(target, foodButton) || IsWithin(target, cleanButton) || IsWithin(target, petButton))
+                return; // category button: the toggle handles it
+
+            InteractionDismissRequested?.Invoke();
+        }
+
+        // True if 'node' is 'ancestor' or one of its descendants.
+        static bool IsWithin(VisualElement node, VisualElement ancestor)
+        {
+            if (ancestor == null) return false;
+            for (var e = node; e != null; e = e.parent)
+                if (e == ancestor) return true;
+            return false;
         }
     }
 }

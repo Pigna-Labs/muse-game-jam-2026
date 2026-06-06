@@ -69,10 +69,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.MainUIController
   trayItemTemplate: {fileID: 9197481963319205126, guid: 3afd7ab5b3596f549b98a5e9428a52ed, type: 3}
-  trayItems: []
+  unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
   targetCamera: {fileID: 0}
-  followDistance: 10
-  dropSpot: {fileID: 0}
   challengesUiPrefab: {fileID: 100000, guid: 011623942dca4d688521293cd5ab4ddc, type: 3}
   challengesUiParent: {fileID: 0}
   unlockablesUiPrefab: {fileID: 100000, guid: 3bec541bf7874febbb3d6b958b998ed8, type: 3}
