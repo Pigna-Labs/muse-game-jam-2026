@@ -56,6 +56,8 @@ namespace MuseGameJam.UI
         [SerializeField] GameObject unlockablesUiPrefab;
         // Parent transform to instantiate the unlockables UI under (leave empty for the scene root).
         [SerializeField] Transform unlockablesUiParent;
+        // Unlockable Manager SO holding the Info catalog: a scanned QR unlocks the matching Info.
+        [SerializeField] Unlockables unlockables;
 
         Button cameraButton;
         Button targetButton;
@@ -144,11 +146,40 @@ namespace MuseGameJam.UI
         }
 
         // L'URL letto dal QR arriva qui: per ora lo logghiamo; lo passeremo poi a un altro script.
+        // Il valore letto dal QR arriva qui: cerchiamo un Info asset con lo stesso QrValue
+        // e, se non è ancora sbloccato, lo sblocchiamo.
         void HandleUrlScanned(string url)
         {
             Debug.Log($"[MainUI] URL dal QR: {url}");
             // Nuova info scansionata -> il musetto è felice (trigger del controller).
             TriggerHappy("QR scansionato");
+            Debug.Log($"[MainUI] QR letto: {url}");
+
+            if (unlockables == null)
+            {
+                Debug.LogWarning("MainUIController: Unlockables non assegnato in Inspector: impossibile sbloccare le info.");
+                return;
+            }
+
+            InfoSO info = unlockables.FindInfoByQrValue(url);
+            if (info == null)
+            {
+                Debug.Log($"[MainUI] Nessuna info corrisponde al QR '{url}'.");
+                return;
+            }
+
+            // Unlock() ritorna true solo la prima volta (locked -> unlocked).
+            if (info.Unlock())
+            {
+                Debug.Log($"[MainUI] Info sbloccata: {info.DisplayName}");
+                // Nuova info sbloccata -> il musetto è felice.
+                TriggerHappy("info sbloccata");
+            }
+            else
+            {
+                // QR di un'info già sbloccata: nessuno sblocco, ma mostriamo comunque il fumetto.
+            }
+
         }
 
         // Chiamabile da qualsiasi script quando si ottiene/sblocca un nuovo oggetto:

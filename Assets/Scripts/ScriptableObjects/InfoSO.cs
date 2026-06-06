@@ -16,4 +16,13 @@ public class InfoSO : ScriptableObject
         public Sprite Image => image;
         public bool Unlocked => unlocked;
         public IReadOnlyList<TriviaQuestion> TriviaQuestions => triviaQuestions;
+
+        // Marks this info as unlocked. Returns true only the first time (locked -> unlocked),
+        // so callers can react to a *newly* unlocked info (animation, save, etc.).
+        public bool Unlock()
+        {
+                if (unlocked) return false;
+                unlocked = true;
+                return true;
+        }
 }
