@@ -723,6 +723,8 @@ MonoBehaviour:
     volume: 1
     pitch: 1
   masterVolume: 1
+  idleEveryMinCycles: 3
+  idleEveryMaxCycles: 6
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
