@@ -10,6 +10,12 @@ namespace MuseGameJam.StateSystem
         [SerializeField] private string entrySceneName = "00_Entry";
         [SerializeField] private string mainSceneName = "01_Main";
 
+        [Header("Splash screen (00_Entry)")]
+        [Tooltip("Seconds the muse logo fades in / stays / fades out before loading 01_Main.")]
+        [SerializeField] private float splashFadeInDuration = 0.5f;
+        [SerializeField] private float splashHoldDuration = 0.4f;
+        [SerializeField] private float splashFadeOutDuration = 0.5f;
+
         private void OnEnable()
         {
             SceneManager.sceneLoaded += HandleSceneLoaded;
@@ -46,7 +52,11 @@ namespace MuseGameJam.StateSystem
                 return;
             }
 
-            GameStateMachine.Instance.PushState(new StateSplashScreen(mainSceneName));
+            GameStateMachine.Instance.PushState(new StateSplashScreen(
+                mainSceneName,
+                splashFadeInDuration,
+                splashHoldDuration,
+                splashFadeOutDuration));
         }
 
         private void TransitionToMainGame()
