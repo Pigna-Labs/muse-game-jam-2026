@@ -34,7 +34,8 @@ namespace MuseGameJam.States
                 throw new MissingComponentException("Trivia overlay prefab needs a TriviaUIController component.");
             }
 
-            triviaUi.SetQuestion(question);
+            // Standalone single-question overlay: no owning Info, so no badge icon.
+            triviaUi.SetQuestion(question, null);
             triviaUi.AnswerSelected += HandleAnswerSelected;
         }
 
