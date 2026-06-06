@@ -15,3 +15,4 @@ MonoBehaviour:
   displayName: Scrub Sabbia
   itemType: 1
   image: {fileID: 21300000, guid: a8483b15479cff64c835e51340079363, type: 3}
+  unlocked: 1
