@@ -60,6 +60,7 @@ namespace MuseGameJam.UI
         private Action ctaCallback;
         private float hideAtTime;
         private bool visible;
+        private float activeAutoHide;
 
         // Stato dell'effetto macchina da scrivere.
         private string fullMessage = string.Empty;
@@ -117,6 +118,9 @@ namespace MuseGameJam.UI
         /// Se <paramref name="icon"/> è null l'icona resta nascosta.
         /// </summary>
         public void Show(string message, string ctaLabel, Action onCta, Sprite icon = null)
+            => Show(message, ctaLabel, onCta, icon, autoHideSeconds);
+
+        public void Show(string message, string ctaLabel, Action onCta, Sprite icon, float autoHideOverrideSeconds)
         {
             if (bubble == null)
             {
@@ -128,6 +132,7 @@ namespace MuseGameJam.UI
                 }
             }
 
+            activeAutoHide = autoHideOverrideSeconds;
             BeginTypewriter(message);
 
             ctaCallback = onCta;
@@ -208,7 +213,7 @@ namespace MuseGameJam.UI
         // Testo completo: (ri)avvia il timer di auto-hide.
         private void RevealComplete()
         {
-            hideAtTime = autoHideSeconds > 0f ? Time.unscaledTime + autoHideSeconds : -1f;
+            hideAtTime = activeAutoHide > 0f ? Time.unscaledTime + activeAutoHide : -1f;
         }
 
         /// <summary>Fumetto per una NUOVA info appena sbloccata, con la sua icona a sinistra.</summary>

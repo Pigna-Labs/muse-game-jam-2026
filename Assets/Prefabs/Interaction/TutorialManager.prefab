@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &611440325804754120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7548726088722683999}
+  - component: {fileID: 7724214765189493389}
+  m_Layer: 0
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7548726088722683999
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611440325804754120}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.16639, y: 3.20306, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7724214765189493389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611440325804754120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f515086567485ee45b263bbf01aa36ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.TutorialManager
+  speechBubble: {fileID: 0}
+  playOnStart: 1
+  nextLabel: "Avanti \u25B6"
+  lastLabel: Ho capito!
+  stepAutoHideSeconds: 999
+  steps:
+  - Ciao! Io sono Musetto!
+  - 'Il mio compito? Imparare con te. Il tuo? Prenderti cura di me '
+  - 'Vedi le tre barre in alto? Sono i miei bisogni: cibo, pulizia e coccole '
+  - "Quando una pallino non \xE8 verde, vuol dire che mi serve aiuto in quella cosa
+    l\xEC."
+  - 'Usa i tre pulsanti in basso per scegliere cosa darmi: pappa, qualcosa per lavarmi
+    o una coccola.'
+  - "Vedi il pulsante con la fotocamera? \U0001F4F7 Serve per inquadrare i QR nella
+    serra."
+  - Ogni QR che scansiono mi insegna qualcosa di nuovo sui miei amici
+  - "Tutto quello che impariamo finisce nel taccuino \U0001F4D2"
+  - "Col bersaglio \U0001F3AF trovi le sfide"
+  - "\xC8 tutto! Ora prenditi cura di me ed esplora il museo. Andiamo! \U0001F43E"
