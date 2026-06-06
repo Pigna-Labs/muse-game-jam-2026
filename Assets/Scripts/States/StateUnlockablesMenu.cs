@@ -8,8 +8,9 @@ namespace MuseGameJam.States
     /// Unlockables menu overlay, opened by the "unlockables" button of the MainUI.
     ///
     /// Pushed onto the stack by MainUIController: the GameStateMachine pauses the
-    /// main state, the OverlayState base hides the main UI, and this state
-    /// instantiates its UI above the main scene.
+    /// main state and this state instantiates its UI above the main scene. The
+    /// unlockables panel renders above the main UI (higher PanelSettings sort order),
+    /// so the main UI is kept visible behind it (hideMainUi: false) instead of hidden.
     ///
     /// It closes (PopOverlay) when:
     ///  - the user presses "Close"  -> UnlockablesMenuController.CloseRequested
@@ -26,7 +27,7 @@ namespace MuseGameJam.States
         private UnlockablesMenuController unlockablesUi;
 
         public StateUnlockablesMenu(GameObject unlockablesUiPrefab, Transform parent, GameObject mainUiObject = null)
-            : base(mainUiObject)
+            : base(mainUiObject, hideMainUi: false)
         {
             this.unlockablesUiPrefab = unlockablesUiPrefab;
             this.parent = parent;

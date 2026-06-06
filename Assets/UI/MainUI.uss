@@ -8,7 +8,7 @@
 .top-bar {
     flex-direction: column;
     align-items: flex-end;
-    padding: 16px;
+    padding: 32px;
 }
 
 .stage {
@@ -19,7 +19,7 @@
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
-    padding: 16px 16px 24px 16px;
+    padding: 32px 32px 40px 32px;
 }
 
 /* Base comune ai pulsanti-icona: nessuno sfondo, solo l'arte dell'icona. */
@@ -62,11 +62,12 @@
 }
 
 /* Riga in basso: grandi pulsanti d'azione equidistanti. */
-/* Sta DENTRO il cerchio .stat-gauge (132px): l'icona (scale-to-fit) deve rientrare nel
-   quadrato inscritto del cerchio, altrimenti gli angoli vengono ritagliati da overflow:hidden. */
+/* Sta DENTRO il cerchio .stat-gauge (192px): l'icona (scale-to-fit) deve rientrare nel
+   quadrato inscritto del cerchio, altrimenti gli angoli vengono ritagliati da overflow:hidden.
+   Dimensione allineata alle icone di navigazione in alto a destra (.nav-button, 140px). */
 .action-button {
-    width: 96px;
-    height: 96px;
+    width: 120px;
+    height: 120px;
 }
 
 .action-button--food {
@@ -135,9 +136,9 @@
 
 /* Gauge circolare con outline bianco: il bottone ci sta centrato sopra, il riempimento dietro. */
 .stat-gauge {
-    width: 132px;
-    height: 132px;
-    border-radius: 66px;
+    width: 164px;
+    height: 164px;
+    border-radius: 82px;
     border-left-width: 4px;
     border-right-width: 4px;
     border-top-width: 4px;

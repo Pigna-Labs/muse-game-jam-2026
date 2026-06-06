@@ -10,7 +10,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    padding: 24px;
+    padding: 40px;
     background-color: rgb(33, 92, 52);
 
     /* Closed state: pushed fully below the screen (100% of its own height). */
