@@ -1,6 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/MainUI.uss?fileID=7433441132597879392&amp;guid=920627a4c92126740a1ecb7f5271d639&amp;type=3#MainUI"/>
     <ui:VisualElement name="root" class="root">
+        <ui:Button name="audio-toggle-button" tooltip="Audio on/off" text="🔊" class="audio-toggle"/>
         <ui:VisualElement name="top-bar" class="top-bar">
             <ui:Button name="camera-button" tooltip="Camera" class="icon-button nav-button nav-button--camera"/>
             <ui:Button name="target-button" tooltip="Target" class="icon-button nav-button nav-button--target"/>
@@ -8,6 +9,10 @@
         </ui:VisualElement>
         <ui:VisualElement name="stage" class="stage"/>
         <ui:VisualElement name="item-tray" class="item-tray" style="justify-content: center; align-content: auto; display: none;">
+            <ui:VisualElement name="tray-hint" class="tray-hint" style="display: none;">
+                <ui:Label name="tray-hint-label" text="Dai da mangiare a Musetto!" class="tray-hint-label"/>
+                <ui:Label name="tray-hint-arrow" text="↑" class="tray-hint-arrow"/>
+            </ui:VisualElement>
             <ui:VisualElement name="tray-content" class="tray-content" style="display: flex;"/>
         </ui:VisualElement>
         <ui:VisualElement name="bottom-bar" class="bottom-bar">

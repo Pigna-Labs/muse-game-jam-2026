@@ -52,10 +52,6 @@ namespace MuseGameJam.Visuals
             if (sprite != null) image.sprite = sprite;
         }
 
-        bool IsDaytime()
-        {
-            int hour = System.DateTime.Now.Hour;
-            return hour >= sunriseHour && hour < sunsetHour;
-        }
+        bool IsDaytime() => DayNight.IsDaytime(sunriseHour, sunsetHour);
     }
 }

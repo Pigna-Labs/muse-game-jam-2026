@@ -11,6 +11,31 @@
     padding: 32px;
 }
 
+/* Toggle audio globale: in alto a sinistra, sopra tutto. Lo stato (on/off) lo
+   riflette MainUIController cambiando il testo dell'icona. */
+.audio-toggle {
+    position: absolute;
+    top: 32px;
+    left: 32px;
+    width: 88px;
+    height: 88px;
+    font-size: 40px;
+    -unity-text-align: middle-center;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    background-color: rgba(33, 92, 52, 0.92);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-left-color: rgb(168, 116, 70);
+    border-right-color: rgb(168, 116, 70);
+    border-top-color: rgb(168, 116, 70);
+    border-bottom-color: rgb(89, 53, 28);
+}
+
 .stage {
     flex-grow: 1;
 }
@@ -160,5 +185,50 @@
     right: 0;
     bottom: 0;
     height: 0;
+}
+
+/* Hint contestuale sopra la tray: testo "cosa fare" + freccia verso il musetto.
+   Posizionato in assoluto sopra la tray (la tray è flex-direction: row, l'hint ne
+   esce). Lo mostra/nasconde MainUIController all'apertura/chiusura della tray. */
+.tray-hint {
+    position: absolute;
+    top: -86px;
+    left: 0;
+    right: 0;
+    align-items: center;
+    justify-content: flex-end;
+    display: none;
+}
+
+.tray-hint-label {
+    -unity-font-style: bold;
+    font-size: 30px;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    background-color: rgba(33, 92, 52, 0.92);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    border-left-color: rgb(168, 116, 70);
+    border-right-color: rgb(168, 116, 70);
+    border-top-color: rgb(168, 116, 70);
+    border-bottom-color: rgb(89, 53, 28);
+}
+
+.tray-hint-arrow {
+    font-size: 40px;
+    -unity-font-style: bold;
+    color: rgb(255, 226, 150);
+    -unity-text-align: middle-center;
+    margin-top: -2px;
 }
 
