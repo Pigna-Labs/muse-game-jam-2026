@@ -118,10 +118,16 @@ namespace MuseGameJam.UI
         /// </summary>
         public void Show(string message, string ctaLabel, Action onCta, Sprite icon = null)
         {
+            Debug.Log($"[SpeechBubble] Show('{message}') chiamato. bubble={(bubble != null ? "ok" : "null")} anchor={(anchor != null ? anchor.name : "NULL")} cam={(worldCamera != null ? worldCamera.name : "NULL")}.");
+
             if (bubble == null)
             {
                 Bind();
-                if (bubble == null) return;
+                if (bubble == null)
+                {
+                    Debug.LogWarning("[SpeechBubble] dopo Bind() l'elemento 'speech-bubble' è ancora null: il controller NON è sulla UIDocument di MainUI.uxml (gli elementi non si trovano). Sposta SpeechBubbleController sullo stesso GameObject dell'UIDocument con Source Asset = MainUI.");
+                    return;
+                }
             }
 
             BeginTypewriter(message);
@@ -138,6 +144,7 @@ namespace MuseGameJam.UI
 
             bubble.style.display = DisplayStyle.Flex;
             visible = true;
+            Debug.Log("[SpeechBubble] display=Flex, visible=true. Ora UpdatePosition decide dove metterla.");
 
             UpdatePosition(); // posiziona subito, prima del primo frame visibile
         }

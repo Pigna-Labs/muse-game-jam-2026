@@ -71,12 +71,16 @@ namespace MuseGameJam.States
             }
         }
 
-        // QR read: forward the URL and close the overlay (back to the main state).
+        // QR read: close the overlay FIRST (so the main UI is re-enabled and its
+        // SpeechBubbleController.OnEnable -> HideImmediate has already run), THEN forward
+        // the URL. Otherwise the bubble shown by HandleUrlScanned would be hidden again
+        // when the main UI is re-enabled by PopOverlay. (With the Q test key the overlay
+        // is never opened, so this ordering bug only showed up with a real scan.)
         private void HandleQrDecoded(string url)
         {
-            Debug.Log($"[StateCamera] QR decodificato: '{url}' — invoco OnUrlScanned (subscriber count={OnUrlScanned?.GetInvocationList().Length ?? 0}).");
-            OnUrlScanned?.Invoke(url);
+            Debug.Log($"[StateCamera] QR decodificato: '{url}' — chiudo overlay poi invoco OnUrlScanned (subscriber count={OnUrlScanned?.GetInvocationList().Length ?? 0}).");
             GameStateMachine.Instance.PopOverlay();
+            OnUrlScanned?.Invoke(url);
         }
 
         // The user pressed "Close" on the scanner: close the overlay.
