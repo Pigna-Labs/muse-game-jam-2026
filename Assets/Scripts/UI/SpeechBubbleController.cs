@@ -39,6 +39,8 @@ namespace MuseGameJam.UI
         [SerializeField, TextArea] private string infoAlreadyKnownMessage = "Questo lo conosco già! 😉";
         [Tooltip("Testo quando il QR scansionato non corrisponde a nessuna info del museo.")]
         [SerializeField, TextArea] private string qrNotRecognizedMessage = "Mmh, questo non è un QR del museo! 🤔";
+        [Tooltip("Testo quando completi una sfida e sblocchi un NUOVO compagno.")]
+        [SerializeField, TextArea] private string companionUnlockedMessage = "Ho sbloccato un nuovo amico, premi sull'icona del taccuino per trovarlo!";
         [Tooltip("Etichetta della call-to-action che (in futuro) aprirà la UI dell'info.")]
         [SerializeField] private string ctaLabel = "Scopri";
 
@@ -224,6 +226,9 @@ namespace MuseGameJam.UI
 
         /// <summary>Fumetto quando il QR scansionato non corrisponde a nessuna info (nessuna icona, nessuna CTA).</summary>
         public void ShowQrNotRecognized() => Show(qrNotRecognizedMessage);
+
+        /// <summary>Fumetto quando una sfida completata sblocca un nuovo compagno (rimanda al taccuino).</summary>
+        public void ShowCompanionUnlocked() => Show(companionUnlockedMessage);
 
         /// <summary>Chiude la bolla.</summary>
         public void Hide() => HideImmediate();

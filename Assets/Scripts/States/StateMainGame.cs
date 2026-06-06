@@ -45,6 +45,18 @@ namespace MuseGameJam.States
             OpenTriviaQuestion(startingTriviaQuestion);
         }
 
+        // Back on the main screen after an overlay closed: let the main UI show any
+        // notification it deferred while it was covered (e.g. the "new friend" bubble for a
+        // companion unlocked through the challenges/trivia overlays).
+        public override void Resume()
+        {
+            var ui = Object.FindFirstObjectByType<MainUIController>();
+            if (ui != null)
+            {
+                ui.OnMainGameResumed();
+            }
+        }
+
         // All'ingresso nel gioco le tre barre (food/clean/pet) partono a valori casuali.
         // Una volta sola: lo stato non viene ri-entrato quando un overlay viene chiuso.
         private void RandomizeCreatureStats()

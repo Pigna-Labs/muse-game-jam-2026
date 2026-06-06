@@ -43,6 +43,9 @@ namespace MuseGameJam.Gameplay
         private readonly HashSet<ChallengeSO> completed = new();
         // Entries unlocked this session (fallback to UnlockableSO.Unlocked).
         private readonly HashSet<UnlockableSO> unlockRegistry = new();
+        // Set when a completed challenge newly unlocks a companion; the main UI consumes it
+        // (ConsumeCompanionUnlockedNotice) to show a speech bubble once back on the main screen.
+        private bool companionUnlockedPending;
 
         // Raised whenever scan progress changes, so an open Challenges screen can refresh.
         public event Action ProgressChanged;
@@ -131,7 +134,8 @@ namespace MuseGameJam.Gameplay
         }
 
         // A QR was decoded: mark the matching Info as scanned in every challenge that
-        // contains it. Returns true if at least one challenge progressed.
+        // contains it, and unlock that Info's encyclopedia entry. Returns true if at
+        // least one challenge progressed.
         public bool RegisterScan(string qrValue)
         {
             if (string.IsNullOrEmpty(qrValue))
@@ -153,6 +157,8 @@ namespace MuseGameJam.Gameplay
                 {
                     if (info != null && info.QrValue == qrValue && infos.Add(info))
                     {
+                        // Scanning an Info's QR also unlocks its encyclopedia entry.
+                        info.Unlock();
                         matched = true;
                     }
                 }
@@ -174,6 +180,9 @@ namespace MuseGameJam.Gameplay
             {
                 return;
             }
+
+            // Same effect as scanning the QR: unlock the Info's encyclopedia entry.
+            info.Unlock();
 
             bool matched = false;
 
@@ -233,12 +242,32 @@ namespace MuseGameJam.Gameplay
 
             if (challenge.Reward != null)
             {
-                unlockRegistry.Add(challenge.Reward);
+                // A companion that was not already unlocked (shipped or earlier this session)
+                // is a *new* friend: flag it so the main UI greets it with a speech bubble.
+                bool addedToRegistry = unlockRegistry.Add(challenge.Reward);
+                if (addedToRegistry && !challenge.Reward.Unlocked && challenge.Reward is CompanionSO)
+                {
+                    companionUnlockedPending = true;
+                }
             }
 
             // Only ChallengeCompleted (not ProgressChanged): the screen plays a removal
             // animation for the finished card instead of rebuilding the list immediately.
             ChallengeCompleted?.Invoke(challenge);
+        }
+
+        // Returns true once if a challenge has newly unlocked a companion since the last
+        // call, clearing the flag. The main UI polls this when it regains the screen so the
+        // "new friend" bubble appears on the main view, not behind the challenges overlay.
+        public bool ConsumeCompanionUnlockedNotice()
+        {
+            if (!companionUnlockedPending)
+            {
+                return false;
+            }
+
+            companionUnlockedPending = false;
+            return true;
         }
 
         // An entry counts as unlocked if it ships unlocked or was unlocked this session.

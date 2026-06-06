@@ -325,7 +325,13 @@ namespace MuseGameJam.UI
                 return;
             }
 
+            // Remember the unlock state BEFORE registering the scan: RegisterScan now
+            // unlocks the matching Info itself, so we capture this first to tell a *newly*
+            // unlocked info from one that was already known.
+            bool wasUnlocked = info.Unlocked;
+
             // Mark the matching Info as scanned in every challenge that contains it.
+            // This also unlocks the Info's encyclopedia entry.
             bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
 
             // Only when the QR advanced a challenge -> musetto is happy.
@@ -334,8 +340,11 @@ namespace MuseGameJam.UI
                 TriggerHappy("QR scanned");
             }
 
-            // Unlock() returns true only the first time (locked -> unlocked).
-            if (info.Unlock())
+            // Fallback for an Info that belongs to no challenge (RegisterScan won't have
+            // touched it): unlock it here. Idempotent if it was already unlocked above.
+            info.Unlock();
+
+            if (!wasUnlocked)
             {
                 Debug.Log($"[MainUI] Info sbloccata: {info.DisplayName}");
                 // New info unlocked -> musetto is happy.
@@ -396,6 +405,19 @@ namespace MuseGameJam.UI
         public void CelebrateNewItem()
         {
             TriggerHappy("new object");
+        }
+
+        // Called by StateMainGame.Resume when the player returns to the main screen after an
+        // overlay closes. A companion is unlocked deep in the challenges/trivia overlays, where
+        // the main UI (and its speech bubble) is hidden behind those panels; we defer the
+        // "new friend" bubble until here so it shows on the main view.
+        public void OnMainGameResumed()
+        {
+            if (ChallengeManager.Instance != null && ChallengeManager.Instance.ConsumeCompanionUnlockedNotice())
+            {
+                TriggerHappy("companion unlocked");
+                if (speechBubble != null) speechBubble.ShowCompanionUnlocked();
+            }
         }
 
         // Centralizes the Happy trigger + diagnostic log.
