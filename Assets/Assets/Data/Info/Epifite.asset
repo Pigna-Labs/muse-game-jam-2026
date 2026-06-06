@@ -14,6 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnlockablesScriptableObject
   displayName: Epifite
   qrValue: https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/epifite/
+  description: "# Epifite\n\nLe **epifite** — come *orchidee*, *bromelie*, *muschi*
+    e *licheni* — vivono ancorate ad altre piante senza danneggiarle.\n\nNegli
+    ambienti tropicali sfruttano i rami pi\xF9 alti per raggiungere la luce, assorbendo
+    acqua e nutrienti direttamente dall'umidit\xE0 atmosferica.\n\nSono protagoniste
+    di complessi ecosistemi \"aerei\", ricchi di biodiversit\xE0.\n\n## Esempi di
+    epifite\n- Orchidee\n- Bromelie\n- Muschi\n- Licheni"
   triviaQuestions:
   - {fileID: 11400000, guid: f3daac492679999508496c6a57ebf001, type: 2}
   - {fileID: 11400000, guid: 679e24645563806abbebad4a87deb9f8, type: 2}
