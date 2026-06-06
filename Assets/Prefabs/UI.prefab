@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4432104783548188663}
   - component: {fileID: 4971623926751398587}
   - component: {fileID: 4100566868407823554}
+  - component: {fileID: 2501794699592492708}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -107,3 +108,19 @@ MonoBehaviour:
   typewriterSpeed: 18
   floatAmplitude: 0
   floatSpeed: 2
+--- !u!114 &2501794699592492708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7233829962644540952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f79337f281c67074e8f031c2d0b998b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.UISoundManager
+  positive: {fileID: 8300000, guid: e82ac6bf17fce584e96a016b338b8758, type: 3}
+  neutral: {fileID: 8300000, guid: 8e51eb1276355d44d82836161124d712, type: 3}
+  negative: {fileID: 8300000, guid: 12e2d476a90172844b75f72b1e4dcec2, type: 3}
+  volume: 1
