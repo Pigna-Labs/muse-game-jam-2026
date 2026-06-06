@@ -1,0 +1,103 @@
+/* Info detail menu: full-screen bottom sheet that slides up from the bottom.
+   Same slide animation and palette as the other menus; content is a single Info
+   shown large (framed icon, name, markdown description). */
+.info-detail-root {
+    flex-grow: 1;
+}
+
+.info-detail-panel {
+    /* Fill the whole screen. */
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 40px;
+    background-color: rgb(33, 92, 52);
+
+    /* Closed state: pushed fully below the screen (100% of its own height). */
+    translate: 0 100%;
+    transition-property: translate;
+    transition-duration: 0.32s;
+    transition-timing-function: ease-out;
+}
+
+/* Open state: slid up into place. The controller adds this class once laid out. */
+.info-detail-panel--open {
+    translate: 0 0;
+}
+
+.info-detail-header {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.info-detail-close {
+    min-width: 0;
+    padding: 12px 28px;
+    border-width: 0;
+    border-bottom-width: 4px;
+    border-radius: 16px;
+    border-bottom-color: rgb(99, 62, 33);
+    background-color: rgb(138, 90, 51);
+    color: rgb(255, 255, 255);
+    font-size: 36px;
+    -unity-font-style: bold;
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.info-detail-close:hover {
+    scale: 1.06 1.06;
+}
+
+.info-detail-close:active {
+    scale: 0.94 0.94;
+}
+
+.info-detail-scroll {
+    flex-grow: 1;
+}
+
+/* The Info icon, shown large and centered with a chunky cartoony frame (same look
+   as the trivia question badge). */
+.info-detail-image {
+    align-self: center;
+    flex-shrink: 0;
+    width: 360px;
+    height: 360px;
+    margin-bottom: 36px;
+    border-radius: 48px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 16px;
+    border-bottom-width: 20px;
+    border-left-color: rgb(54, 35, 18);
+    border-right-color: rgb(54, 35, 18);
+    border-top-color: rgb(54, 35, 18);
+    border-bottom-color: rgb(54, 35, 18);
+    background-color: rgb(255, 252, 242);
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.info-detail-title {
+    margin-bottom: 28px;
+    color: rgb(255, 255, 255);
+    font-size: 60px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+/* Description card: cream panel holding the (markdown) rich text. */
+.info-detail-description {
+    padding: 36px;
+    border-radius: 22px;
+    background-color: rgb(227, 194, 134);
+    color: rgb(54, 37, 22);
+    font-size: 46px;
+    -unity-text-align: upper-left;
+    white-space: normal;
+}

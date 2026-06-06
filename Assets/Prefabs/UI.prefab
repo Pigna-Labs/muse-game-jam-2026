@@ -69,11 +69,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.MainUIController
   trayItemTemplate: {fileID: 9197481963319205126, guid: 3afd7ab5b3596f549b98a5e9428a52ed, type: 3}
-  trayItems: []
+  foodItems: []
+  cleanItems: []
+  petItems: []
   targetCamera: {fileID: 0}
-  followDistance: 10
-  dropSpot: {fileID: 0}
+  dragDepth: 10
+  hideTrayWhileDragging: 0
+  qrScannerObject: {fileID: 0}
+  musettoAnimator: {fileID: 0}
   challengesUiPrefab: {fileID: 100000, guid: 011623942dca4d688521293cd5ab4ddc, type: 3}
   challengesUiParent: {fileID: 0}
   unlockablesUiPrefab: {fileID: 100000, guid: 3bec541bf7874febbb3d6b958b998ed8, type: 3}
   unlockablesUiParent: {fileID: 0}
+  unlockables: {fileID: 0}
+  infoMenuUiPrefab: {fileID: 3652397862582289752, guid: d02e0563b01f5ca08b78b9a28f9ec363, type: 3}
+  infoDetailUiPrefab: {fileID: 307311796127626622, guid: b4f4cc69947a28effb452d528810df16, type: 3}
+  infoUiParent: {fileID: 0}
+  speechBubble: {fileID: 0}

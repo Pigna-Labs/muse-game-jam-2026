@@ -1,0 +1,122 @@
+/* Info collection menu: full-screen bottom sheet that slides up from the bottom.
+   Mirrors Unlockables.uss so the two menus look and animate identically. */
+.info-menu-root {
+    flex-grow: 1;
+}
+
+.info-menu-panel {
+    /* Fill the whole screen. */
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 40px;
+    background-color: rgb(33, 92, 52);
+
+    /* Closed state: pushed fully below the screen (100% of its own height). */
+    translate: 0 100%;
+    transition-property: translate;
+    transition-duration: 0.32s;
+    transition-timing-function: ease-out;
+}
+
+/* Open state: slid up into place. The controller adds this class once laid out. */
+.info-menu-panel--open {
+    translate: 0 0;
+}
+
+.info-menu-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.info-menu-title {
+    color: rgb(255, 255, 255);
+    font-size: 60px;
+    -unity-font-style: bold;
+}
+
+.info-menu-close {
+    min-width: 0;
+    padding: 12px 28px;
+    border-width: 0;
+    border-bottom-width: 4px;
+    border-radius: 16px;
+    border-bottom-color: rgb(99, 62, 33);
+    background-color: rgb(138, 90, 51);
+    color: rgb(255, 255, 255);
+    font-size: 36px;
+    -unity-font-style: bold;
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.info-menu-close:hover {
+    scale: 1.06 1.06;
+}
+
+.info-menu-close:active {
+    scale: 0.94 0.94;
+}
+
+.info-menu-list {
+    flex-grow: 1;
+}
+
+/* Wrapping grid of tiles. */
+.info-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+/* A single Info: icon on top, caption below. Width is a percentage so exactly 3 tiles
+   fit per row on any device (same sizing rationale as Unlockables.uss). */
+.info-tile {
+    width: 31%;
+    margin-right: 2%;
+    margin-bottom: 20px;
+    padding: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 18px;
+    background-color: rgb(26, 73, 41);
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+/* Unlocked tiles are tappable: give them a press/hover affordance. */
+.info-tile--clickable:hover {
+    scale: 1.04 1.04;
+    background-color: rgb(32, 88, 50);
+}
+
+.info-tile--clickable:active {
+    scale: 0.96 0.96;
+}
+
+.info-tile__image {
+    width: 100%;
+    height: 220px;
+    background-color: rgba(0, 0, 0, 0);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Locked: tint the sprite fully black so only its silhouette shows. */
+.info-tile__image--locked {
+    -unity-background-image-tint-color: rgb(0, 0, 0);
+}
+
+.info-tile__label {
+    margin-top: 18px;
+    color: rgb(255, 255, 255);
+    font-size: 28px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}
+
+.info-tile__label--locked {
+    color: rgb(150, 178, 159);
+}

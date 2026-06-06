@@ -1,0 +1,14 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="InfoMenu.uss"/>
+    <ui:VisualElement name="info-menu-root" class="info-menu-root">
+        <ui:VisualElement name="info-menu-panel" class="info-menu-panel">
+            <ui:VisualElement name="info-menu-header" class="info-menu-header">
+                <ui:Label name="info-menu-title" text="Info" class="info-menu-title"/>
+                <ui:Button name="info-menu-close" text="Close" class="info-menu-close"/>
+            </ui:VisualElement>
+            <ui:ScrollView name="info-menu-list" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="info-menu-list">
+                <ui:VisualElement name="info-grid" class="info-grid"/>
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
