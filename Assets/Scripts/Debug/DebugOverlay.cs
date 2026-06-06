@@ -89,15 +89,28 @@ namespace MuseGameJam.DevTools
             GUI.DrawTexture(new Rect(0, 0, sw, panH), Texture2D.whiteTexture);
             GUI.color = Color.white;
 
-            float lineH     = FontSize + 4;
-            float contentH  = Mathf.Max(_messages.Count * lineH, panH);
+            // Larghezza disponibile per il testo (lasciamo spazio alla scrollbar).
+            float textWidth = sw - 28;
+
+            // Altezza reale di ogni riga col word-wrap attivo: gli URL lunghi vanno a capo
+            // invece di essere tagliati a destra. CalcHeight tiene conto del wrap.
+            float contentH = 0f;
+            for (int i = 0; i < _messages.Count; i++)
+                contentH += _labelStyle.CalcHeight(new GUIContent(_messages[i]), textWidth) + 2f;
+            contentH = Mathf.Max(contentH, panH);
+
             _scroll = GUI.BeginScrollView(
                 new Rect(0, 0, sw, panH),
                 _scroll,
                 new Rect(0, 0, sw - 20, contentH));
 
+            float y = 0f;
             for (int i = 0; i < _messages.Count; i++)
-                GUI.Label(new Rect(4, i * lineH, sw - 24, lineH), _messages[i], _labelStyle);
+            {
+                float h = _labelStyle.CalcHeight(new GUIContent(_messages[i]), textWidth);
+                GUI.Label(new Rect(4, y, textWidth, h), _messages[i], _labelStyle);
+                y += h + 2f;
+            }
 
             GUI.EndScrollView();
         }
