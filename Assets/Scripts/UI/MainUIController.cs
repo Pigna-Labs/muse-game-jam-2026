@@ -112,6 +112,32 @@ namespace MuseGameJam.UI
                 targetCamera = Camera.main;
         }
 
+        // Le tre barre partono a un valore casuale (evito gli estremi 0/1 per leggibilità).
+        // Chiamato da StateMainGame all'ingresso nel gioco, così avviene una volta sola e non
+        // si ri-randomizza ogni volta che la UI si riabilita tornando da un overlay.
+        public void RandomizeStats()
+        {
+            if (foodGauge != null) foodGauge.value = Random.Range(0.2f, 0.8f);
+            if (cleanGauge != null) cleanGauge.value = Random.Range(0.2f, 0.8f);
+            if (petGauge != null) petGauge.value = Random.Range(0.2f, 0.8f);
+        }
+
+        // Un item ha contribuito alla cura: alza la barra dell'azione corrispondente.
+        void OnCareApplied(CareAction action, float amount)
+        {
+            switch (action)
+            {
+                case CareAction.Eat:   AddToGauge(foodGauge, amount);  break;
+                case CareAction.Clean: AddToGauge(cleanGauge, amount); break;
+                case CareAction.Pet:   AddToGauge(petGauge, amount);   break;
+            }
+        }
+
+        static void AddToGauge(StatGauge gauge, float amount)
+        {
+            if (gauge != null) gauge.value += amount; // il setter di StatGauge fa il Clamp01
+        }
+
         void OnDisable()
         {
             if (foodButton != null) foodButton.clicked -= OnFoodClicked;
@@ -306,6 +332,8 @@ namespace MuseGameJam.UI
                 // L'azione la decide la categoria (food/clean/pet), non il prefab:
                 // così gli stessi prefab base servono tutte le categorie.
                 spawnedItem.SetAction(action);
+                // Mentre lo usi sul musetto, la DropArea emette CareApplied: alziamo il gauge giusto.
+                spawnedItem.CareApplied += OnCareApplied;
                 spawnedItem.BeginDrag(targetCamera != null ? targetCamera : Camera.main, dragDepth);
             }
             else
@@ -340,6 +368,7 @@ namespace MuseGameJam.UI
         // Ripristino comune dello stato del drag (rilascio o annullamento).
         void EndDrag()
         {
+            if (spawnedItem != null) spawnedItem.CareApplied -= OnCareApplied;
             spawnedObject = null;
             spawnedItem = null;
 
