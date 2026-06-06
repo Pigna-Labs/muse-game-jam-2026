@@ -41,6 +41,13 @@ namespace MuseGameJam.Gameplay
         [Range(0f, 1f)] [SerializeField] private float nightVolume = 1f;
         [Tooltip("Moltiplicatore globale su tutta la musica.")]
         [Range(0f, 1f)] [SerializeField] private float masterVolume = 1f;
+        [Tooltip("Guadagno in dB applicato a TUTTA la musica (0 = invariato, +3 = un filo più forte, " +
+                 "valori negativi = più piano). Configurabile da Inspector. NB: AudioSource.volume è " +
+                 "clampato a 1.0, quindi per sentire un boost reale i volumi base sopra vanno tenuti < 1.0.")]
+        [Range(-24f, 12f)] [SerializeField] private float gainDb = 3f;
+
+        // Fattore lineare equivalente a gainDb (dB -> ampiezza). +3 dB ≈ 1.41, 0 dB = 1.0.
+        private float GainLinear => Mathf.Pow(10f, gainDb / 20f);
 
         [Header("Giorno/Notte")]
         [SerializeField, Range(0, 23)] private int sunriseHour = DayNight.DefaultSunriseHour;
@@ -84,9 +91,10 @@ namespace MuseGameJam.Gameplay
             PlaySynced();
 
             // Imposta subito i volumi day/night senza fade (stato iniziale).
-            _day.volume   = (_isDay ? dayVolume : 0f) * masterVolume * _overlayMul;
-            _night.volume = (_isDay ? 0f : nightVolume) * masterVolume * _overlayMul;
-            _main.volume  = mainVolume * masterVolume * _overlayMul;
+            float gain = GainLinear;
+            _day.volume   = (_isDay ? dayVolume : 0f) * masterVolume * _overlayMul * gain;
+            _night.volume = (_isDay ? 0f : nightVolume) * masterVolume * _overlayMul * gain;
+            _main.volume  = mainVolume * masterVolume * _overlayMul * gain;
 
             _dnTimer = 0f;
         }
@@ -126,17 +134,18 @@ namespace MuseGameJam.Gameplay
             float curDay   = Mathf.MoveTowards(NormalizedVol(_day, dayVolume), dayTarget, dnStep);
             float curNight = Mathf.MoveTowards(NormalizedVol(_night, nightVolume), nightTarget, dnStep);
 
-            // applica con master + overlay
-            _main.volume  = mainVolume * masterVolume * _overlayMul;
-            _day.volume   = curDay     * masterVolume * _overlayMul;
-            _night.volume = curNight   * masterVolume * _overlayMul;
+            // applica con master + overlay + gain (dB)
+            float gain = GainLinear;
+            _main.volume  = mainVolume * masterVolume * _overlayMul * gain;
+            _day.volume   = curDay     * masterVolume * _overlayMul * gain;
+            _night.volume = curNight   * masterVolume * _overlayMul * gain;
         }
 
-        // Riporta il volume corrente di un source alla scala "0..volumeBase" (toglie master+overlay),
+        // Riporta il volume corrente di un source alla scala "0..volumeBase" (toglie master+overlay+gain),
         // così il MoveTowards lavora sullo stesso spazio dei target.
         private float NormalizedVol(AudioSource src, float baseVol)
         {
-            float denom = masterVolume * _overlayMul;
+            float denom = masterVolume * _overlayMul * GainLinear;
             if (denom <= 0.0001f) return baseVol == 0f ? 0f : src.volume; // evita /0 mentre è in fade
             return src.volume / denom;
         }
