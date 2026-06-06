@@ -19,5 +19,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: babd8bd1bbd38ff14805400f3e9f87e8, type: 2}
   - {fileID: 11400000, guid: 33166e6a996a43d9ca0f625b4d46ad65, type: 2}
   - {fileID: 11400000, guid: 6c6758d1ff250c7dbbf412fea396fd46, type: 2}
-  modelPrefab: {fileID: 0}
-  unlocked: 0
+  image: {fileID: 21300000, guid: 63f8aad911ee9b970bf1ef0d24038ece, type: 3}
+  unlocked: 1
