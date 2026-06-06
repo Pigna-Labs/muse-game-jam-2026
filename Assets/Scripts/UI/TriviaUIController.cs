@@ -153,6 +153,12 @@ namespace MuseGameJam.UI
 
             hasAnswered = true;
             ShowAnswerFeedback(answerIndex, question.correctAnswerIndex);
+
+            if (answerIndex == question.correctAnswerIndex)
+                UISoundManager.Instance?.PlayPositive();
+            else
+                UISoundManager.Instance?.PlayNegative();
+
             AnswerSelected?.Invoke(answerIndex);
         }
 

@@ -186,7 +186,7 @@ namespace MuseGameJam.UI
             {
                 objectives.AddToClassList(ObjectivesFadedClass);
 
-                Button begin = new Button(() => TriviaRequested?.Invoke(challenge)) { text = "Begin trivia" };
+                Button begin = new Button(() => { UISoundManager.Instance?.PlayNeutral(); TriviaRequested?.Invoke(challenge); }) { text = "Begin trivia" };
                 begin.AddToClassList(BeginClass);
                 body.Add(begin);
             }
@@ -245,6 +245,7 @@ namespace MuseGameJam.UI
                 return;
             }
 
+            UISoundManager.Instance?.PlayNeutral();
             closing = true;
             panel.RemoveFromClassList(OpenClass);
             panel.schedule.Execute(() => CloseRequested?.Invoke()).StartingIn(SlideMilliseconds);
