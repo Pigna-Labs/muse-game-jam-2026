@@ -235,14 +235,6 @@ namespace MuseGameJam.UI
                 HideHint();
         }
 
-        static string CategoryOf(CareAction action) => action switch
-        {
-            CareAction.Eat => "FOOD",
-            CareAction.Clean => "CLEAN",
-            CareAction.Pet => "PET",
-            _ => null,
-        };
-
 #if UNITY_EDITOR
         // TEST (editor only): press Q to simulate scanning the "Funghi Tropicali" info QR.
         // Goes through the same HandleUrlScanned as a real scan (lookup -> unlock -> bubble).
@@ -430,9 +422,9 @@ namespace MuseGameJam.UI
 
         // Each category maps to a CareAction (food->Eat, clean->Clean, pet->Pet).
         // The buttons open/close the tray through StateInteractionMenu.
-        void OnFoodClicked()  { UISoundManager.Instance?.PlayNeutral(); ToggleTray("FOOD",  foodItems,  CareAction.Eat,   FoodHint);  }
-        void OnCleanClicked() { UISoundManager.Instance?.PlayNeutral(); ToggleTray("CLEAN", cleanItems, CareAction.Clean, CleanHint); }
-        void OnPetClicked()   { UISoundManager.Instance?.PlayNeutral(); ToggleTray("PET",   petItems,   CareAction.Pet,   PetHint);   }
+        void OnFoodClicked()  { UISoundManager.Instance?.PlayNeutral(); ToggleInteraction(CareAction.Eat);   }
+        void OnCleanClicked() { UISoundManager.Instance?.PlayNeutral(); ToggleInteraction(CareAction.Clean); }
+        void OnPetClicked()   { UISoundManager.Instance?.PlayNeutral(); ToggleInteraction(CareAction.Pet);   }
 
         // Opens the tray for the category as a StateInteractionMenu, or closes it if it is
         // already open on the same category (toggle). Switching category closes and reopens.
