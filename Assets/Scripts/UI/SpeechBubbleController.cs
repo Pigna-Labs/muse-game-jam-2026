@@ -37,6 +37,8 @@ namespace MuseGameJam.UI
         [SerializeField, TextArea] private string infoUnlockedMessage = "Ho imparato qualcosa di nuovo! 🎉";
         [Tooltip("Testo quando scansioni un QR di un'info GIÀ sbloccata.")]
         [SerializeField, TextArea] private string infoAlreadyKnownMessage = "Questo lo conosco già! 😉";
+        [Tooltip("Testo quando il QR scansionato non corrisponde a nessuna info del museo.")]
+        [SerializeField, TextArea] private string qrNotRecognizedMessage = "Mmh, questo non è un QR del museo! 🤔";
         [Tooltip("Etichetta della call-to-action che (in futuro) aprirà la UI dell'info.")]
         [SerializeField] private string ctaLabel = "Scopri";
 
@@ -210,6 +212,9 @@ namespace MuseGameJam.UI
 
         /// <summary>Fumetto per un'info già sbloccata (ri-scansione del QR), con la sua icona a sinistra.</summary>
         public void ShowInfoAlreadyKnown(Sprite icon, Action onCta) => Show(infoAlreadyKnownMessage, ctaLabel, onCta, icon);
+
+        /// <summary>Fumetto quando il QR scansionato non corrisponde a nessuna info (nessuna icona, nessuna CTA).</summary>
+        public void ShowQrNotRecognized() => Show(qrNotRecognizedMessage);
 
         /// <summary>Chiude la bolla.</summary>
         public void Hide() => HideImmediate();
