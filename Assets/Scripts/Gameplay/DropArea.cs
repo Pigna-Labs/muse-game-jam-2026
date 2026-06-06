@@ -15,6 +15,8 @@ namespace MuseGameJam.Gameplay
         [SerializeField] float movePerUnit = 0.05f;
         // Quanto progresso (su 1) aggiunge ogni secondo passato dentro l'area. Tienilo piccolo.
         [SerializeField] float fillPerSecond = 0.02f;
+        // Quanto sale (su 1) la barra Food quando un cibo viene rilasciato dentro l'area.
+        [SerializeField] float foodGainPerDrop = 0.25f;
 
         [Header("Animazioni musetto")]
         // Animator del musetto (CharacterAnimController). Quando un cibo (Droppable)
@@ -61,9 +63,14 @@ namespace MuseGameJam.Gameplay
                 moved = Vector3.Distance(prev, item.transform.position);
             lastPos[item] = item.transform.position;
 
-            // Progresso normalizzato che riempie da 0 a 1 e si ferma a 1.
-            progress[item] = Mathf.Clamp01(progress[item] + moved * movePerUnit + Time.deltaTime * fillPerSecond);
-            Debug.Log($"{CleanName(item)}: {progress[item]:F3}");
+            // Incremento di questo frame: dipende da quanto muovi e da quanto resti dentro.
+            float delta = moved * movePerUnit + Time.deltaTime * fillPerSecond;
+
+            // Progresso normalizzato che riempie da 0 a 1 e si ferma a 1 (minigioco locale).
+            progress[item] = Mathf.Clamp01(progress[item] + delta);
+
+            // Pulizia/coccole riempiono la barra corrispondente in tempo reale, mentre interagisci.
+            item.ApplyCare(delta);
         }
 
         void OnTriggerExit2D(Collider2D other)
@@ -77,9 +84,13 @@ namespace MuseGameJam.Gameplay
         {
             Debug.Log($"Droppato dentro l'area: {CleanName(item)} (azione={item.Action})");
 
-            // Azione "istantanea" (trigger): il cibo fa partire l'anim "mangia" al rilascio.
+            // Azione "istantanea" (trigger): il cibo fa partire l'anim "mangia" al rilascio
+            // e alza la barra Food.
             if (item.Action == CareAction.Eat)
+            {
                 SetAnimTrigger("Eating");
+                item.ApplyCare(foodGainPerDrop);
+            }
 
             Forget(item); // Forget azzera anche gli eventuali bool continui (vedi sotto)
         }

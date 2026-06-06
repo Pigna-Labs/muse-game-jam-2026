@@ -1,5 +1,6 @@
 using MuseGameJam.StateSystem;
 using MuseGameJam.Trivia;
+using MuseGameJam.UI;
 using UnityEngine;
 
 namespace MuseGameJam.States
@@ -11,6 +12,7 @@ namespace MuseGameJam.States
         private readonly Transform overlayRoot;
         private readonly bool openTriviaOnEnter;
         private bool openedStartingTrivia;
+        private bool randomizedStats;
 
         public StateMainGame()
             : this(null, null, null, false)
@@ -32,6 +34,8 @@ namespace MuseGameJam.States
         // Starts the main game mode and optionally opens the first trivia overlay.
         public override void Enter()
         {
+            RandomizeCreatureStats();
+
             if (!openTriviaOnEnter || openedStartingTrivia)
             {
                 return;
@@ -39,6 +43,28 @@ namespace MuseGameJam.States
 
             openedStartingTrivia = true;
             OpenTriviaQuestion(startingTriviaQuestion);
+        }
+
+        // All'ingresso nel gioco le tre barre (food/clean/pet) partono a valori casuali.
+        // Una volta sola: lo stato non viene ri-entrato quando un overlay viene chiuso.
+        private void RandomizeCreatureStats()
+        {
+            if (randomizedStats)
+            {
+                return;
+            }
+
+            randomizedStats = true;
+
+            var ui = Object.FindFirstObjectByType<MainUIController>();
+            if (ui != null)
+            {
+                ui.RandomizeStats();
+            }
+            else
+            {
+                Debug.LogWarning("StateMainGame: nessun MainUIController in scena per randomizzare le barre.");
+            }
         }
 
         // Opens a trivia question above the main game without replacing the main game state.
