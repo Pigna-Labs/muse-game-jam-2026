@@ -40,8 +40,8 @@ namespace MuseGameJam.XR
         [SerializeField] private float decodeInterval = 0.4f;
 
         [Header("Audio")]
-        [Tooltip("Suono di sottofondo riprodotto in loop mentre la modalità camera è attiva. " +
-                 "Trascina qui Camera_Background_Test01.wav (in Assets/Assets/Audio/).")]
+        [Tooltip("Musica di sottofondo riprodotta in loop mentre la modalità camera è attiva. " +
+                 "Trascina qui Camera_Music_Loop.wav (in Assets/Assets/Audio/).")]
         [SerializeField] private AudioClip cameraBackgroundClip;
         [Range(0f, 1f)]
         [SerializeField] private float cameraBackgroundVolume = 1f;
