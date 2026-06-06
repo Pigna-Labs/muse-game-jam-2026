@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MuseGameJam.Debug
+namespace MuseGameJam.DevTools
 {
     /// <summary>
     /// On-screen log viewer — si crea da solo a runtime, nessun GameObject da aggiungere.
