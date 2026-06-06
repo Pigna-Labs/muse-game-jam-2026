@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnlockablesScriptableObject
   displayName: Funghi Tropicali
   qrValue: https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/funghi-tropicali/
-  description: "# Funghi Tropicali\n\nLe foreste della **Tanzania** ospitano una grande
-    variet\xE0 di funghi, organismi cruciali per il funzionamento degli ecosistemi.\n\nOltre
+  description: "# Funghi Tropicali\n\nLe foreste della **Tanzania** ospitano una
+    grande variet\xE0 di funghi, organismi cruciali per il funzionamento degli ecosistemi.\n\nOltre
     **60 specie commestibili** offrono cibo, medicinali e reddito alle comunit\xE0
     locali.\n\nAlcune specie, abbondanti nelle foreste nebulose montane, sono rare
     e preziose come *indicatori di ecosistemi antichi e ben conservati*."
@@ -25,4 +25,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 33166e6a996a43d9ca0f625b4d46ad65, type: 2}
   - {fileID: 11400000, guid: 6c6758d1ff250c7dbbf412fea396fd46, type: 2}
   image: {fileID: 21300000, guid: 63f8aad911ee9b970bf1ef0d24038ece, type: 3}
-  unlocked: 1
+  unlocked: 0
