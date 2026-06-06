@@ -121,7 +121,11 @@ namespace MuseGameJam.UI
             if (bubble == null)
             {
                 Bind();
-                if (bubble == null) return;
+                if (bubble == null)
+                {
+                    Debug.LogWarning("[SpeechBubble] elemento 'speech-bubble' non trovato: il controller deve stare sulla UIDocument con Source Asset = MainUI.uxml.");
+                    return;
+                }
             }
 
             BeginTypewriter(message);

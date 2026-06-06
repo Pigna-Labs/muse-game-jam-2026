@@ -189,6 +189,7 @@ namespace MuseGameJam.UI
                 return;
             }
 
+            UISoundManager.Instance?.PlayNeutral();
             closing = true;
             panel.RemoveFromClassList(OpenClass);
             panel.schedule.Execute(() => CloseRequested?.Invoke()).StartingIn(SlideMilliseconds);

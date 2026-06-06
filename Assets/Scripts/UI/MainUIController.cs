@@ -165,7 +165,9 @@ namespace MuseGameJam.UI
             // so no descendant can swallow the event before we evaluate it.
             rootElement.RegisterCallback<PointerDownEvent>(OnRootPointerDown, TrickleDown.TrickleDown);
 
-            // Reflect the current audio state on the icon immediately.
+            // Re-apply and reflect the current audio state (the main UI is re-enabled when
+            // overlays close, so keep the mute state consistent across those toggles).
+            ApplyAudioMute();
             UpdateAudioToggleIcon();
 
             // When a care action is performed, the hint for that category disappears.
@@ -226,18 +228,34 @@ namespace MuseGameJam.UI
         }
 
         // Global audio toggle: mute/unmute ALL audio (music, musetto, camera).
-        // AudioListener.pause halts the entire audio scene in one shot.
+        // We drive AudioListener.volume (master volume 0/1): it reliably silences every
+        // source, including the music started with PlayScheduled and any future PlayOneShot,
+        // which AudioListener.pause alone did not consistently stop. We also keep .pause in
+        // sync so paused one-shots don't keep advancing.
+        bool audioMuted;
+
         void OnAudioToggleClicked()
         {
-            AudioListener.pause = !AudioListener.pause;
-            UpdateAudioToggleIcon();
+            audioMuted = !audioMuted;
+
+            // Play the click feedback BEFORE muting (so unmuting/muting still gives a tap),
+            // then apply the new state — otherwise muting would swallow its own click sound.
             UISoundManager.Instance?.PlayNeutral();
+
+            ApplyAudioMute();
+            UpdateAudioToggleIcon();
+        }
+
+        void ApplyAudioMute()
+        {
+            AudioListener.volume = audioMuted ? 0f : 1f;
+            AudioListener.pause  = audioMuted;
         }
 
         void UpdateAudioToggleIcon()
         {
             if (audioToggleButton != null)
-                audioToggleButton.text = AudioListener.pause ? "🔇" : "🔊";
+                audioToggleButton.text = audioMuted ? "🔇" : "🔊";
         }
 
         // A care action was performed at least once: that category's hint is no longer
@@ -299,21 +317,14 @@ namespace MuseGameJam.UI
                 return;
             }
 
-            Debug.Log($"[MainUI] Cerco info per QR '{url}' — {unlockables.Infos?.Count ?? 0} info nel catalogo.");
-            if (unlockables.Infos != null)
-                foreach (var i in unlockables.Infos)
-                    Debug.Log($"[MainUI]   candidata: displayName='{i?.DisplayName}' qrValue='{i?.QrValue}'");
-
             InfoSO info = unlockables.FindInfoByQrValue(url);
             if (info == null)
             {
-                Debug.Log($"[MainUI] Nessuna info corrisponde al QR '{url}': controlla che qrValue nell'asset Info corrisponda esattamente all'URL del QR.");
                 // Feedback al giocatore: questo QR non è del museo.
                 if (speechBubble != null) speechBubble.ShowQrNotRecognized();
                 return;
             }
-            Debug.Log($"[MainUI] Info trovata: '{info.DisplayName}'.");
-            
+
             // Mark the matching Info as scanned in every challenge that contains it.
             bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
 
