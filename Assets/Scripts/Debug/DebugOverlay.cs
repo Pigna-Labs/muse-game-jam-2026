@@ -4,39 +4,35 @@ using UnityEngine;
 namespace MuseGameJam.Debug
 {
     /// <summary>
-    /// On-screen log viewer for Android builds: shows the last N log messages
-    /// in a scrollable list so you can see Debug.Log output without ADB/logcat.
-    ///
-    /// SETUP:
-    ///   1. Attach this script to any persistent GameObject in the scene.
-    ///   2. In the Inspector, set Enabled = true while debugging, false for release.
-    ///
-    /// Tap the panel to hide/show it temporarily. The panel stays on top of everything
-    /// (OnGUI draws after UI Toolkit, so it is always visible).
+    /// On-screen log viewer — si crea da solo a runtime, nessun GameObject da aggiungere.
+    /// Mostra tutti i Debug.Log/Warning/Error in un pannello scrollabile.
+    /// Il pulsante "LOG ▼" in alto a destra lo nasconde/mostra.
+    /// Per disabilitare nel build di release: commenta [RuntimeInitializeOnLoadMethod] oppure
+    /// usa un #if DEVELOPMENT_BUILD / #if UNITY_EDITOR guard.
     /// </summary>
     public class DebugOverlay : MonoBehaviour
     {
-        [Tooltip("Disabilita per il build di release.")]
-        [SerializeField] private bool enabled = true;
-
-        [Tooltip("Numero massimo di messaggi mostrati.")]
-        [SerializeField] private int maxMessages = 50;
-
-        [Tooltip("Dimensione del font a schermo (adattata a DPI mobili, ~14 va bene).")]
-        [SerializeField] private int fontSize = 28;
-
-        [Tooltip("Altezza del pannello come % dello schermo (0..1).")]
-        [SerializeField, Range(0.2f, 1f)] private float panelHeight = 0.45f;
+        private const int MaxMessages = 50;
+        private const int FontSize    = 28;
+        private const float PanelHeightFraction = 0.45f;
 
         private readonly List<string> _messages = new List<string>();
         private Vector2 _scroll;
         private bool _visible = true;
-        private GUIStyle _style;
-        private GUIStyle _toggleStyle;
+        private GUIStyle _labelStyle;
+        private GUIStyle _btnStyle;
+
+        // Crea il GameObject e ci attacca questo script automaticamente all'avvio di ogni scena.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void AutoCreate()
+        {
+            var go = new GameObject("[DebugOverlay]");
+            DontDestroyOnLoad(go);
+            go.AddComponent<DebugOverlay>();
+        }
 
         private void OnEnable()
         {
-            if (!enabled) return;
             Application.logMessageReceived += OnLog;
         }
 
@@ -54,58 +50,54 @@ namespace MuseGameJam.Debug
                 _               => "[I] ",
             };
             _messages.Add(prefix + logString);
-            if (_messages.Count > maxMessages)
+            if (_messages.Count > MaxMessages)
                 _messages.RemoveAt(0);
-
-            // Auto-scroll to bottom on new message.
             _scroll.y = float.MaxValue;
         }
 
         private void OnGUI()
         {
-            if (!enabled) return;
-
-            // Build styles once (can't do it in Awake/Start — no GUI context yet).
-            if (_style == null)
+            if (_labelStyle == null)
             {
-                _style = new GUIStyle(GUI.skin.label)
+                _labelStyle = new GUIStyle(GUI.skin.label)
                 {
-                    fontSize = fontSize,
-                    wordWrap = true,
-                    richText = true,
-                    normal = { textColor = Color.white },
+                    fontSize  = FontSize,
+                    wordWrap  = true,
+                    richText  = true,
+                    normal    = { textColor = Color.white },
                 };
-                _toggleStyle = new GUIStyle(GUI.skin.button)
+                _btnStyle = new GUIStyle(GUI.skin.button)
                 {
-                    fontSize = fontSize,
-                    normal = { textColor = Color.white },
+                    fontSize = FontSize,
+                    normal   = { textColor = Color.white },
                 };
             }
 
-            float sw = Screen.width;
-            float sh = Screen.height;
-            float panH = sh * panelHeight;
+            float sw   = Screen.width;
+            float sh   = Screen.height;
+            float panH = sh * PanelHeightFraction;
 
-            // Toggle button in top-right corner.
-            Rect toggleRect = new Rect(sw - 160, 0, 160, fontSize + 16);
-            if (GUI.Button(toggleRect, _visible ? "LOG ▲" : "LOG ▼", _toggleStyle))
+            // Toggle button — top-right so it doesn't cover the gameplay area.
+            Rect toggleRect = new Rect(sw - 200, 0, 200, FontSize + 20);
+            if (GUI.Button(toggleRect, _visible ? "LOG ▲" : "LOG ▼", _btnStyle))
                 _visible = !_visible;
 
             if (!_visible) return;
 
-            // Semi-transparent dark panel.
-            GUI.color = new Color(0f, 0f, 0f, 0.75f);
+            // Dark background.
+            GUI.color = new Color(0f, 0f, 0f, 0.80f);
             GUI.DrawTexture(new Rect(0, 0, sw, panH), Texture2D.whiteTexture);
             GUI.color = Color.white;
 
-            // Scrollable text area.
-            Rect scrollArea = new Rect(0, 0, sw, panH);
-            float lineH = fontSize + 4;
-            float contentH = Mathf.Max(_messages.Count * lineH, panH);
-            _scroll = GUI.BeginScrollView(scrollArea, _scroll, new Rect(0, 0, sw - 20, contentH));
+            float lineH     = FontSize + 4;
+            float contentH  = Mathf.Max(_messages.Count * lineH, panH);
+            _scroll = GUI.BeginScrollView(
+                new Rect(0, 0, sw, panH),
+                _scroll,
+                new Rect(0, 0, sw - 20, contentH));
 
             for (int i = 0; i < _messages.Count; i++)
-                GUI.Label(new Rect(4, i * lineH, sw - 24, lineH), _messages[i], _style);
+                GUI.Label(new Rect(4, i * lineH, sw - 24, lineH), _messages[i], _labelStyle);
 
             GUI.EndScrollView();
         }
