@@ -626,6 +626,8 @@ MonoBehaviour:
 '
   infoAlreadyKnownMessage: "Questo lo conosco gi\xE0!"
   qrNotRecognizedMessage: "Mmh, questo non \xE8 un QR del museo! \U0001F914"
+  companionUnlockedMessage: Ho sbloccato un nuovo amico, premi sull'icona del taccuino
+    per trovarlo!
   ctaLabel: Scopri
   typewriterSpeed: 12
   floatAmplitude: 12
@@ -862,6 +864,7 @@ MonoBehaviour:
   dayVolume: 1
   nightVolume: 1
   masterVolume: 1
+  gainDb: 12
   sunriseHour: 7
   sunsetHour: 19
   dayNightFade: 2
