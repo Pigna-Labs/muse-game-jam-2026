@@ -20,6 +20,7 @@ namespace MuseGameJam.UI
         private readonly Button[] answerButtons = new Button[AnswerCount];
         private UIDocument document;
         private Label questionLabel;
+        private VisualElement questionIcon;
         private bool hasAnswered;
 
         public event Action<int> AnswerSelected;
@@ -34,7 +35,7 @@ namespace MuseGameJam.UI
         private void OnEnable()
         {
             BindElements();
-            SetQuestion(question);
+            SetQuestion(question, null);
         }
 
         // Removes button callbacks so re-enabling the object does not double-register taps.
@@ -43,12 +44,14 @@ namespace MuseGameJam.UI
             UnbindAnswerButtons();
         }
 
-        // Updates the visible question and answers from trivia gameplay code.
-        public void SetQuestion(TriviaQuestion nextQuestion)
+        // Updates the visible question, answers, and the badge icon of the Info this
+        // question belongs to (pass null to hide the badge).
+        public void SetQuestion(TriviaQuestion nextQuestion, Sprite icon)
         {
             question = RequireReference(nextQuestion, "TriviaUIController needs a TriviaQuestion asset assigned.");
 
             SetQuestionText(question.question);
+            SetIcon(icon);
 
             for (int i = 0; i < AnswerCount; i++)
             {
@@ -58,6 +61,26 @@ namespace MuseGameJam.UI
             ClearAnswerFeedback();
             hasAnswered = false;
             SetInteractable(true);
+        }
+
+        // Shows the icon of the Info this question belongs to, or hides it when none.
+        private void SetIcon(Sprite sprite)
+        {
+            if (questionIcon == null)
+            {
+                return;
+            }
+
+            if (sprite != null)
+            {
+                questionIcon.style.backgroundImage = new StyleBackground(sprite);
+                questionIcon.style.display = DisplayStyle.Flex;
+            }
+            else
+            {
+                questionIcon.style.backgroundImage = StyleKeyword.None;
+                questionIcon.style.display = DisplayStyle.None;
+            }
         }
 
         // Updates one answer button when only a single option changes.
@@ -132,6 +155,7 @@ namespace MuseGameJam.UI
 
             VisualElement root = RequireReference(document.rootVisualElement, "Trivia UIDocument has no root visual element. Check that its Visual Tree Asset is assigned.");
             questionLabel = RequireElement<Label>(root, "trivia-question");
+            questionIcon = RequireElement<VisualElement>(root, "trivia-question-icon");
 
             for (int i = 0; i < AnswerCount; i++)
             {
