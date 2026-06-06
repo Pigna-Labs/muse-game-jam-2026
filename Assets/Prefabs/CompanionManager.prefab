@@ -111,7 +111,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.Gameplay.CompanionManager
   unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
   companionPrefab: {fileID: 4950193987395487042, guid: 326e1ad8abdf0d24f846c2912434276e, type: 3}
-  spawnAnchors:
+  companionScale: 0.1
+  placeholders:
   - {fileID: 5356391802303499508}
   - {fileID: 4173515007990090413}
   - {fileID: 3654523433287064298}
