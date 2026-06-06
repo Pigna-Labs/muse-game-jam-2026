@@ -430,9 +430,9 @@ namespace MuseGameJam.UI
 
         // Each category maps to a CareAction (food->Eat, clean->Clean, pet->Pet).
         // The buttons open/close the tray through StateInteractionMenu.
-        void OnFoodClicked()  { UISoundManager.Instance?.PlayNeutral(); ToggleTray("FOOD",  foodItems,  CareAction.Eat,   FoodHint);  }
-        void OnCleanClicked() { UISoundManager.Instance?.PlayNeutral(); ToggleTray("CLEAN", cleanItems, CareAction.Clean, CleanHint); }
-        void OnPetClicked()   { UISoundManager.Instance?.PlayNeutral(); ToggleTray("PET",   petItems,   CareAction.Pet,   PetHint);   }
+        void OnFoodClicked()  { UISoundManager.Instance?.PlayNeutral(); ToggleInteraction(CareAction.Eat);   }
+        void OnCleanClicked() { UISoundManager.Instance?.PlayNeutral(); ToggleInteraction(CareAction.Clean); }
+        void OnPetClicked()   { UISoundManager.Instance?.PlayNeutral(); ToggleInteraction(CareAction.Pet);   }
 
         // Opens the tray for the category as a StateInteractionMenu, or closes it if it is
         // already open on the same category (toggle). Switching category closes and reopens.
