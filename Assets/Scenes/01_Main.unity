@@ -843,7 +843,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.Gameplay.MusicManager
   mainLoop: {fileID: 8300000, guid: e6ba5569b5204b2409957831bda5c285, type: 3}
   dayLayer: {fileID: 8300000, guid: b79bfe93cb436ef448af6300e4c25130, type: 3}
-  nightLayer: {fileID: 0}
+  nightLayer: {fileID: 8300000, guid: 7bd0e8df0dbb0e24985cc0c088588310, type: 3}
   mainVolume: 1
   dayVolume: 1
   nightVolume: 1
@@ -852,7 +852,7 @@ MonoBehaviour:
   sunsetHour: 19
   dayNightFade: 2
   dayNightCheckInterval: 30
-  overlayFade: 1
+  overlayFade: 3
 --- !u!1 &1321196883
 GameObject:
   m_ObjectHideFlags: 0
