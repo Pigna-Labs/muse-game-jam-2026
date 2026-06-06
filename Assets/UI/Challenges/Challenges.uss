@@ -29,12 +29,12 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .challenges-title {
     color: rgb(255, 255, 255);
-    font-size: 44px;
+    font-size: 60px;
     -unity-font-style: bold;
 }
 
@@ -47,7 +47,7 @@
     border-bottom-color: rgb(99, 62, 33);
     background-color: rgb(138, 90, 51);
     color: rgb(255, 255, 255);
-    font-size: 28px;
+    font-size: 36px;
     -unity-font-style: bold;
     transition-property: scale;
     transition-duration: 0.12s;
@@ -63,4 +63,115 @@
 
 .challenges-list {
     flex-grow: 1;
+}
+
+/* One challenge card in the vertical list. */
+.challenge-card {
+    background-color: rgb(27, 74, 42);
+    border-radius: 24px;
+    border-bottom-width: 6px;
+    border-bottom-color: rgb(18, 52, 29);
+    padding: 28px;
+    margin-bottom: 28px;
+
+    /* Completion animation: background-color first (turn green), then opacity (fade out).
+       Durations must match CardGreenHold/CardFade in ChallengesMenuController. */
+    transition-property: background-color, opacity;
+    transition-duration: 0.45s, 0.45s;
+    transition-timing-function: ease-out;
+}
+
+/* Completed: the card flashes green before fading. */
+.challenge-card--completed {
+    background-color: rgb(46, 160, 67);
+    border-bottom-color: rgb(33, 116, 49);
+}
+
+/* Then it fades fully out, after which the controller detaches it. */
+.challenge-card--fading {
+    opacity: 0;
+}
+
+.challenge-card__name {
+    color: rgb(255, 255, 255);
+    font-size: 48px;
+    -unity-font-style: bold;
+    margin-bottom: 20px;
+}
+
+/* Holds the objectives and the (absolutely-placed) Begin button on top of them. */
+.challenge-card__body {
+    position: relative;
+}
+
+.challenge-card__objectives {
+    flex-direction: column;
+}
+
+/* When the challenge is ready for trivia the objectives fade behind the button. */
+.challenge-card__objectives--faded {
+    opacity: 0.25;
+}
+
+.challenge-objective {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+/* Empty check box; tinted in once the matching QR has been scanned. */
+.challenge-objective__check {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border-width: 3px;
+    border-color: rgb(138, 90, 51);
+    background-color: rgba(0, 0, 0, 0.2);
+    margin-right: 20px;
+}
+
+.challenge-objective__check--done {
+    background-color: rgb(138, 90, 51);
+    border-color: rgb(99, 62, 33);
+}
+
+/* Debug tap-to-complete: a yellow outline hints the box can be tapped. */
+.challenge-objective__check--debug {
+    border-color: rgb(240, 200, 60);
+}
+
+.challenge-objective__label {
+    color: rgb(255, 255, 255);
+    font-size: 36px;
+    flex-shrink: 1;
+}
+
+/* "Begin trivia": centered over the faded objectives. */
+.challenge-card__begin {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    align-self: center;
+    -unity-text-align: middle-center;
+    padding: 16px 32px;
+    border-width: 0;
+    border-bottom-width: 4px;
+    border-radius: 16px;
+    border-bottom-color: rgb(99, 62, 33);
+    background-color: rgb(138, 90, 51);
+    color: rgb(255, 255, 255);
+    font-size: 40px;
+    -unity-font-style: bold;
+    transition-property: scale;
+    transition-duration: 0.12s;
+}
+
+.challenge-card__begin:hover {
+    scale: 1.06 1.06;
+}
+
+.challenge-card__begin:active {
+    scale: 0.94 0.94;
 }

@@ -1,3 +1,4 @@
+using MuseGameJam.Gameplay;
 using MuseGameJam.StateSystem;
 using MuseGameJam.UI;
 using UnityEngine;
@@ -45,6 +46,7 @@ namespace MuseGameJam.States
             }
 
             challengesUi.CloseRequested += HandleCloseRequested;
+            challengesUi.TriviaRequested += HandleTriviaRequested;
         }
 
         // Mobile back: slide the sheet down (same as the Close button) instead of closing instantly.
@@ -65,9 +67,21 @@ namespace MuseGameJam.States
             if (challengesUi != null)
             {
                 challengesUi.CloseRequested -= HandleCloseRequested;
+                challengesUi.TriviaRequested -= HandleTriviaRequested;
             }
 
             Object.Destroy(challengesUiInstance);
+        }
+
+        // "Begin trivia": open the trivia session as an overlay ON TOP of this sheet (the
+        // trivia panel has a higher sort order, so it renders above). The sheet stays open
+        // underneath; when trivia finishes it pops back and animates the completed card out.
+        private void HandleTriviaRequested(ChallengeSO challenge)
+        {
+            if (ChallengeManager.Instance != null)
+            {
+                ChallengeManager.Instance.StartTrivia(challenge);
+            }
         }
 
         // The user pressed "Close": close the overlay (back to the main state).
