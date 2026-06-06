@@ -788,7 +788,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.Gameplay.MusicManager
   mainLoop: {fileID: 8300000, guid: e6ba5569b5204b2409957831bda5c285, type: 3}
-  dayLayer: {fileID: 0}
+  dayLayer: {fileID: 8300000, guid: b79bfe93cb436ef448af6300e4c25130, type: 3}
   nightLayer: {fileID: 0}
   mainVolume: 1
   dayVolume: 1
