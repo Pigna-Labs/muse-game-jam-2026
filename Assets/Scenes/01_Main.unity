@@ -246,6 +246,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7233829962644540952, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
       insertIndex: -1
       addedObject: {fileID: 555673188}
+    - targetCorrespondingSourceObject: {fileID: 7233829962644540952, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 555673189}
   m_SourcePrefab: {fileID: 100100000, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
 --- !u!1 &96746551
 GameObject:
@@ -284,6 +287,7 @@ MonoBehaviour:
   decodeInterval: 0.4
   cameraBackgroundClip: {fileID: 8300000, guid: 3c246c3db49adee419868b0651553d55, type: 3}
   cameraBackgroundVolume: 1
+  debugLogEveryAttempts: 25
 --- !u!114 &96746553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,10 +616,23 @@ MonoBehaviour:
 
 '
   infoAlreadyKnownMessage: "Questo lo conosco gi\xE0!"
+  qrNotRecognizedMessage: "Mmh, questo non \xE8 un QR del museo! \U0001F914"
   ctaLabel: Scopri
   typewriterSpeed: 12
   floatAmplitude: 12
   floatSpeed: 2
+--- !u!114 &555673189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 555673184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d49f419fbb7e73c4fadad3dba4a3d174, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.DevTools.DebugOverlay
 --- !u!1 &571566819 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 661282114294521074, guid: bee2a4d69d5324547bcd22d957943650, type: 3}
@@ -853,6 +870,7 @@ MonoBehaviour:
   dayNightFade: 2
   dayNightCheckInterval: 30
   overlayFade: 3
+  menuDuck: 0.5
 --- !u!1 &1321196883
 GameObject:
   m_ObjectHideFlags: 0
