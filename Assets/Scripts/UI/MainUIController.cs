@@ -61,16 +61,14 @@ namespace MuseGameJam.UI
         [SerializeField] GameObject unlockablesUiPrefab;
         // Parent transform to instantiate the unlockables UI under (leave empty for the scene root).
         [SerializeField] Transform unlockablesUiParent;
-        // Unlockable Manager SO holding the Info catalog: a scanned QR unlocks the matching Info.
-        [SerializeField] Unlockables unlockables;
 
         [Header("Speech bubble")]
-        // Fumetto sopra il musetto (sta sulla stessa UIDocument della MainUI).
-        // I testi e l'etichetta della CTA sono configurati sullo SpeechBubbleController.
+        // Speech bubble above musetto (lives on the same UIDocument as the MainUI).
+        // Texts and the CTA label are configured on the SpeechBubbleController.
         [SerializeField] SpeechBubbleController speechBubble;
 
-        // Sollevato quando l'utente preme la CTA del fumetto: collegare qui l'apertura
-        // della UI dell'info quando sarà implementata.
+        // Raised when the user presses the speech bubble's CTA: hook the info UI here
+        // when it gets implemented.
         public event System.Action<InfoSO> InfoUiRequested;
 
         Button cameraButton;
@@ -245,9 +243,9 @@ namespace MuseGameJam.UI
         };
 
 #if UNITY_EDITOR
-        // TEST (solo editor): premi Q per simulare la scansione del QR dell'info "Funghi Tropicali".
-        // Passa per lo stesso HandleUrlScanned di uno scan vero (lookup -> unlock -> fumetto).
-        // TODO: rimuovere quando i test sono finiti.
+        // TEST (editor only): press Q to simulate scanning the "Funghi Tropicali" info QR.
+        // Goes through the same HandleUrlScanned as a real scan (lookup -> unlock -> bubble).
+        // TODO: remove when testing is done.
         const string FunghiTestQr = "https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/funghi-tropicali/";
 
         void Update()
@@ -260,9 +258,9 @@ namespace MuseGameJam.UI
         }
 #endif
 
-        // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
-        // StateCamera nasconde la main UI, mette in pausa la main e attiva lo scanner;
-        // su "Chiudi" o scan riuscito fa PopOverlay e si torna alla main.
+        // Camera button: opens the QR scanner as an OVERLAY on the state stack.
+        // StateCamera hides the main UI, pauses the main state and activates the scanner;
+        // on "Close" or a successful scan it calls PopOverlay and returns to the main state.
         void OnCameraClicked()
         {
             if (qrScannerObject == null) return;
@@ -281,8 +279,8 @@ namespace MuseGameJam.UI
             GameStateMachine.Instance.PushState(cameraState);
         }
 
-        // Il valore letto dal QR arriva qui: cerchiamo un Info asset con lo stesso QrValue
-        // e, se non è ancora sbloccato, lo sblocchiamo.
+        // The value read from the QR arrives here: we look for an Info asset with the same
+        // QrValue and, if it is not yet unlocked, unlock it.
         void HandleUrlScanned(string url)
         {
             Debug.Log($"[MainUI] QR letto: {url}");
@@ -300,7 +298,7 @@ namespace MuseGameJam.UI
                 return;
             }
             
-            // Segna l'Info corrispondente come scansionata in ogni challenge che la contiene.
+            // Mark the matching Info as scanned in every challenge that contains it.
             bool matched = ChallengeManager.Instance != null && ChallengeManager.Instance.RegisterScan(url);
 
             // Only when the QR advanced a challenge -> musetto is happy.
@@ -309,23 +307,23 @@ namespace MuseGameJam.UI
                 TriggerHappy("QR scanned");
             }
 
-            // Unlock() ritorna true solo la prima volta (locked -> unlocked).
+            // Unlock() returns true only the first time (locked -> unlocked).
             if (info.Unlock())
             {
                 Debug.Log($"[MainUI] Info sbloccata: {info.DisplayName}");
-                // Nuova info sbloccata -> il musetto è felice.
-                TriggerHappy("info sbloccata");
+                // New info unlocked -> musetto is happy.
+                TriggerHappy("info unlocked");
                 ShowInfoBubble(info, unlocked: true);
             }
             else
             {
-                // QR di un'info già sbloccata: nessuno sblocco, ma mostriamo comunque il fumetto.
+                // QR for an already-unlocked info: no unlock, but we still show the bubble.
                 ShowInfoBubble(info, unlocked: false);
             }
         }
 
-        // Mostra il fumetto sopra il musetto. Testo e CTA vivono sullo SpeechBubbleController;
-        // qui scegliamo solo QUALE evento è (sblocco vs già nota) e cosa fa la CTA (aprire la UI).
+        // Shows the speech bubble above musetto. Text and CTA live on SpeechBubbleController;
+        // here we only choose WHICH event it is (unlock vs already known) and what the CTA does (open the UI).
         void ShowInfoBubble(InfoSO info, bool unlocked)
         {
             if (speechBubble == null)
@@ -338,7 +336,7 @@ namespace MuseGameJam.UI
             else          speechBubble.ShowInfoAlreadyKnown(info.Image, () => OpenInfoUi(info));
         }
 
-        // CTA del fumetto: per ora log + evento. La UI dell'info verrà implementata più avanti.
+        // Speech bubble CTA: for now log + event. The info UI will be implemented later.
         void OpenInfoUi(InfoSO info)
         {
             Debug.Log($"[MainUI] CTA fumetto: apri UI per '{info?.DisplayName}' (UI non ancora implementata).");

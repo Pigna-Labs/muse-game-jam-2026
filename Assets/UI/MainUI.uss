@@ -188,12 +188,12 @@
     height: 0;
 }
 
-/* Fumetto sopra il musetto: posizione (left/top) la imposta SpeechBubbleController da codice.
-   picking-mode Ignore sul contenitore (vedi UXML) così la bolla non ruba i tap allo stage;
-   il pulsante CTA resta comunque cliccabile. */
-/* Fumetto = immagine Baloon.PNG come background. Niente bordi/codina disegnati: la
-   grafica (codina inclusa) sta nell'immagine. Il padding tiene testo e CTA dentro la
-   pancia della nuvoletta; quello in basso lascia spazio alla codina. */
+/* Speech bubble above musetto: position (left/top) is set by SpeechBubbleController from code.
+   picking-mode Ignore on the container (see UXML) so the bubble does not steal taps from
+   the stage; the CTA button stays clickable. */
+/* Speech bubble = Baloon.PNG image as background. No drawn borders/tail: the artwork
+   (tail included) is in the image. Padding keeps text and CTA inside the cloud's belly;
+   the bottom padding leaves room for the tail. */
 .speech-bubble {
     position: absolute;
     width: 980px;
@@ -203,8 +203,8 @@
     padding: 140px 150px 320px 150px;
 }
 
-/* Outline: stessa immagine, tinta di nero e leggermente più grande su ogni lato.
-   Sta sotto il fill, così il nero spunta come bordino lungo la sagoma (codina inclusa). */
+/* Outline: same image, tinted black and slightly larger on every side. Sits below the
+   fill so the black peeks through as an outline along the silhouette (tail included). */
 .speech-bubble__outline {
     position: absolute;
     left: -24px;
@@ -216,8 +216,8 @@
     -unity-background-image-tint-color: rgb(0, 0, 0);
 }
 
-/* Icona dell'Info: figlia del fumetto (quindi galleggia con esso), appoggiata sul
-   lato sinistro. Bordo spesso scuro; lo sprite lo imposta SpeechBubbleController. */
+/* Info icon: child of the speech bubble (so it floats with it), anchored on the left
+   side. Thick dark border; sprite is set by SpeechBubbleController. */
 .speech-bubble__icon {
     position: absolute;
     left: 250px;
@@ -237,7 +237,7 @@
     -unity-background-scale-mode: scale-and-crop;
 }
 
-/* Fill: l'immagine normale, esattamente sul box, sopra l'outline. */
+/* Fill: the normal image, exactly on the box, above the outline. */
 .speech-bubble__fill {
     position: absolute;
     left: 0;
@@ -279,9 +279,9 @@
     scale: 0.94 0.94;
 }
 
-/* Hint contestuale sopra la tray: testo "cosa fare" + freccia verso il musetto.
-   Posizionato in assoluto sopra la tray (la tray è flex-direction: row, l'hint ne
-   esce). Lo mostra/nasconde MainUIController all'apertura/chiusura della tray. */
+/* Contextual hint above the tray: "what to do" text + arrow toward musetto.
+   Absolutely positioned above the tray (the tray is flex-direction: row, the hint
+   sits outside it). Shown/hidden by MainUIController when the tray opens/closes. */
 .tray-hint {
     position: absolute;
     top: -86px;
