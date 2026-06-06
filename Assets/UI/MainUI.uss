@@ -32,6 +32,18 @@
     border-bottom-color: rgb(89, 53, 28);
 }
 
+.audio-toggle__slash {
+    position: absolute;
+    width: 8px;
+    height: 100%;
+    background-color: rgb(220, 40, 40);
+    border-radius: 4px;
+    rotate: -45deg;
+    top: 0;
+    left: 50%;
+    translate: -50% 0;
+}
+
 .stage {
     flex-grow: 1;
 }
