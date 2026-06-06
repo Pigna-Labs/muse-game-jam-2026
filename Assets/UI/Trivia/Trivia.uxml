@@ -10,6 +10,7 @@
                     <ui:Button name="trivia-answer-3" class="trivia-answer" text="Tropical greenhouse" />
                     <ui:Button name="trivia-answer-4" class="trivia-answer trivia-answer-last" text="Museum cafe" />
                 </ui:VisualElement>
+                <ui:VisualElement name="trivia-question-icon" class="trivia-question-icon" picking-mode="Ignore" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

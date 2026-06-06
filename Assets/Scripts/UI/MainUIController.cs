@@ -62,6 +62,16 @@ namespace MuseGameJam.UI
         // Parent transform to instantiate the unlockables UI under (leave empty for the scene root).
         [SerializeField] Transform unlockablesUiParent;
 
+        [Header("Info")]
+        // Prefab for the Info collection menu UI (UIDocument + InfoMenuController).
+        // Instantiated by StateInfoMenu when the "info" button is pressed.
+        [SerializeField] GameObject infoMenuUiPrefab;
+        // Prefab for the Info detail menu UI (UIDocument + InfoDetailController).
+        // Instantiated by StateInfoDetail from the list menu or the speech-bubble CTA.
+        [SerializeField] GameObject infoDetailUiPrefab;
+        // Parent transform to instantiate the info menus under (leave empty for the scene root).
+        [SerializeField] Transform infoUiParent;
+
         [Header("Speech bubble")]
         // Speech bubble above musetto (lives on the same UIDocument as the MainUI).
         // Texts and the CTA label are configured on the SpeechBubbleController.
@@ -74,6 +84,7 @@ namespace MuseGameJam.UI
         Button cameraButton;
         Button targetButton;
         Button unlockablesButton;
+        Button infoButton;
         Button foodButton;
         Button cleanButton;
         Button petButton;
@@ -122,6 +133,7 @@ namespace MuseGameJam.UI
             cameraButton = rootElement.Q<Button>("camera-button");
             targetButton = rootElement.Q<Button>("target-button");
             unlockablesButton = rootElement.Q<Button>("unlockables-button");
+            infoButton = rootElement.Q<Button>("info-button");
             foodButton = rootElement.Q<Button>("food-button");
             cleanButton = rootElement.Q<Button>("clean-button");
             petButton = rootElement.Q<Button>("pet-button");
@@ -142,6 +154,7 @@ namespace MuseGameJam.UI
             if (cameraButton != null) cameraButton.clicked += OnCameraClicked;
             if (targetButton != null) targetButton.clicked += OnTargetClicked;
             if (unlockablesButton != null) unlockablesButton.clicked += OnUnlockablesClicked;
+            if (infoButton != null) infoButton.clicked += OnInfoClicked;
             if (audioToggleButton != null) audioToggleButton.clicked += OnAudioToggleClicked;
 
             // The drag captures the pointer on the ROOT (not on the tray item): that way
@@ -201,6 +214,7 @@ namespace MuseGameJam.UI
             if (cameraButton != null) cameraButton.clicked -= OnCameraClicked;
             if (targetButton != null) targetButton.clicked -= OnTargetClicked;
             if (unlockablesButton != null) unlockablesButton.clicked -= OnUnlockablesClicked;
+            if (infoButton != null) infoButton.clicked -= OnInfoClicked;
             if (audioToggleButton != null) audioToggleButton.clicked -= OnAudioToggleClicked;
 
             if (rootElement != null)
@@ -350,10 +364,31 @@ namespace MuseGameJam.UI
         }
 
         // Speech bubble CTA: for now log + event. The info UI will be implemented later.
+        // CTA del fumetto: apre direttamente la pagina di dettaglio dell'info appena sbloccata,
+        // come OVERLAY sopra la main UI (StateInfoDetail). Mantiene anche l'evento per
+        // eventuali listener esterni.
         void OpenInfoUi(InfoSO info)
         {
             Debug.Log($"[MainUI] CTA fumetto: apri UI per '{info?.DisplayName}' (UI non ancora implementata).");
             InfoUiRequested?.Invoke(info);
+
+            if (info == null) return;
+            if (infoDetailUiPrefab == null)
+            {
+                Debug.LogWarning("MainUIController: infoDetailUiPrefab not assigned in Inspector.");
+                return;
+            }
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the info detail menu.");
+                return;
+            }
+
+            // Anti-spam guard: if an info detail menu is already open, don't push another.
+            if (GameStateMachine.Instance.HasOverlay<StateInfoDetail>()) return;
+
+            GameStateMachine.Instance.PushState(
+                new StateInfoDetail(infoDetailUiPrefab, infoUiParent, info, gameObject));
         }
 
         // Callable from any script when a new object is obtained/unlocked: starts the
@@ -427,6 +462,31 @@ namespace MuseGameJam.UI
             GameStateMachine.Instance.PushState(unlockablesState);
         }
         // Gameplay API: sets each gauge's level (0..1).
+
+        // Info button: opens the Info collection menu as an OVERLAY on the state stack.
+        // StateInfoMenu instantiates the info list UI and pauses the main state; tapping an
+        // unlocked entry opens its detail page, and "Close"/back returns to the main state.
+        void OnInfoClicked()
+        {
+            if (infoMenuUiPrefab == null)
+            {
+                Debug.LogWarning("MainUIController: infoMenuUiPrefab not assigned in Inspector.");
+                return;
+            }
+            if (GameStateMachine.Instance == null)
+            {
+                Debug.LogWarning("MainUIController: no GameStateMachine in scene to open the info menu.");
+                return;
+            }
+
+            // Anti-spam guard: if an info menu is already open, don't push another.
+            if (GameStateMachine.Instance.HasOverlay<StateInfoMenu>()) return;
+
+            // Pass this UI so the overlay hides it while open (it lives on its own UIDocument).
+            var infoState = new StateInfoMenu(infoMenuUiPrefab, infoDetailUiPrefab, infoUiParent, gameObject);
+            GameStateMachine.Instance.PushState(infoState);
+        }
+        // API per il gameplay: imposta il livello (0..1) di ciascun gauge.
         public void SetFoodLevel(float value) { if (foodGauge != null) foodGauge.value = value; }
         public void SetCleanLevel(float value) { if (cleanGauge != null) cleanGauge.value = value; }
         public void SetPetLevel(float value) { if (petGauge != null) petGauge.value = value; }

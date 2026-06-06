@@ -1,6 +1,8 @@
 .root {
     flex-grow: 1;
     justify-content: space-between;
+    /* No background: the panel stays transparent so the stage shows the world
+       (background sprite + DropArea + creature) rendered by the camera. */
 }
 
 .top-bar {
@@ -9,6 +11,8 @@
     padding: 32px;
 }
 
+/* Global audio toggle: top-left, above everything. State (on/off) is reflected by
+   MainUIController by changing the icon's text. */
 .audio-toggle {
     position: absolute;
     top: 32px;
@@ -43,6 +47,7 @@
     padding: 32px 32px 40px 32px;
 }
 
+/* Shared base for icon buttons: no background, only the icon art. */
 .icon-button {
     min-width: 0;
     max-width: none;
@@ -62,6 +67,7 @@
     scale: 0.94 0.94;
 }
 
+/* Top-right column: navigation (camera, target, unlockables). */
 .nav-button {
     width: 140px;
     height: 140px;
@@ -80,6 +86,22 @@
     background-image: url("project://database/Assets/Assets/Art/Icons/notebook.png?fileID=2800000&guid=3ac1f283106858f4d9eef6b45514bd76&type=3#notebook");
 }
 
+/* Info collection button. Placeholder glyph for now — swap to a real icon by setting
+   background-image (like the buttons above) and removing the text="📖" in MainUI.uxml. */
+.nav-button--info {
+    font-size: 90px;
+    -unity-text-align: middle-center;
+    color: rgb(255, 255, 255);
+}
+
+/* Riga in basso: grandi pulsanti d'azione equidistanti. */
+/* Sta DENTRO il cerchio .stat-gauge (192px): l'icona (scale-to-fit) deve rientrare nel
+   quadrato inscritto del cerchio, altrimenti gli angoli vengono ritagliati da overflow:hidden.
+   Dimensione allineata alle icone di navigazione in alto a destra (.nav-button, 140px). */
+/* Bottom row: large evenly-spaced action buttons. */
+/* Sits INSIDE the .stat-gauge circle (192px): the icon (scale-to-fit) must fit within
+   the circle's inscribed square, otherwise the corners get clipped by overflow:hidden.
+   Size aligned with the top-right navigation icons (.nav-button, 140px). */
 .action-button {
     width: 120px;
     height: 120px;
@@ -112,6 +134,9 @@
     display: flex;
 }
 
+/* Row of items, centered when they fit. Plain container (not a ScrollView):
+   a ScrollView on touch uses finger drag to scroll and would steal the drag
+   from the items (works with the mouse in the editor but not on a phone). */
 .tray-content {
     flex-grow: 1;
     flex-direction: row;
@@ -147,24 +172,26 @@
     -unity-text-align: middle-center;
 }
 
+/* Circular gauge with a white outline: the button sits centered over it, the fill behind. */
 .stat-gauge {
-    width: 200px;
-    height: 200px;
+    width: 164px;
+    height: 164px;
     border-radius: 82px;
-    border-left-width: 12px;
-    border-right-width: 12px;
-    border-top-width: 12px;
-    border-bottom-width: 12px;
-    border-left-color: rgb(255, 202, 156);
-    border-right-color: rgb(255, 202, 156);
-    border-top-color: rgb(255, 202, 156);
-    border-bottom-color: rgb(255, 202, 156);
+    border-left-width: 4px;
+    border-right-width: 4px;
+    border-top-width: 4px;
+    border-bottom-width: 4px;
+    border-left-color: rgb(255, 255, 255);
+    border-right-color: rgb(255, 255, 255);
+    border-top-color: rgb(255, 255, 255);
+    border-bottom-color: rgb(255, 255, 255);
     overflow: hidden;
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.25);
 }
 
+/* Fill: anchored to the bottom; height (= value) and color are set by StatGauge from code. */
 .stat-gauge__fill {
     position: absolute;
     left: 0;
@@ -173,6 +200,12 @@
     height: 0;
 }
 
+/* Speech bubble above musetto: position (left/top) is set by SpeechBubbleController from code.
+   picking-mode Ignore on the container (see UXML) so the bubble does not steal taps from
+   the stage; the CTA button stays clickable. */
+/* Speech bubble = Baloon.PNG image as background. No drawn borders/tail: the artwork
+   (tail included) is in the image. Padding keeps text and CTA inside the cloud's belly;
+   the bottom padding leaves room for the tail. */
 .speech-bubble {
     position: absolute;
     width: 980px;
@@ -182,6 +215,8 @@
     padding: 140px 150px 320px 150px;
 }
 
+/* Outline: same image, tinted black and slightly larger on every side. Sits below the
+   fill so the black peeks through as an outline along the silhouette (tail included). */
 .speech-bubble__outline {
     position: absolute;
     left: -24px;
@@ -193,6 +228,8 @@
     -unity-background-image-tint-color: rgb(0, 0, 0);
 }
 
+/* Info icon: child of the speech bubble (so it floats with it), anchored on the left
+   side. Thick dark border; sprite is set by SpeechBubbleController. */
 .speech-bubble__icon {
     position: absolute;
     left: 250px;
@@ -212,6 +249,7 @@
     -unity-background-scale-mode: scale-and-crop;
 }
 
+/* Fill: the normal image, exactly on the box, above the outline. */
 .speech-bubble__fill {
     position: absolute;
     left: 0;
@@ -253,6 +291,9 @@
     scale: 0.94 0.94;
 }
 
+/* Contextual hint above the tray: "what to do" text + arrow toward musetto.
+   Absolutely positioned above the tray (the tray is flex-direction: row, the hint
+   sits outside it). Shown/hidden by MainUIController when the tray opens/closes. */
 .tray-hint {
     position: absolute;
     top: -86px;
@@ -294,3 +335,4 @@
     -unity-text-align: middle-center;
     margin-top: -2px;
 }
+

@@ -3,17 +3,18 @@
     <ui:VisualElement name="root" class="root">
         <ui:Button name="audio-toggle-button" tooltip="Audio on/off" text="🔊" class="audio-toggle"/>
         <ui:VisualElement name="top-bar" class="top-bar">
-            <ui:Button name="camera-button" tooltip="Camera" class="icon-button nav-button nav-button--camera" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_foto.PNG?fileID=2800000&amp;guid=fa6c1273ace18dc41b2c282b553b698d&amp;type=3#Icona_foto&quot;); height: 200px; width: 200px; margin-bottom: 12px;"/>
-            <ui:Button name="target-button" tooltip="Target" class="icon-button nav-button nav-button--target" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_obiettivi.PNG?fileID=2800000&amp;guid=5ceacd3ba5c3e8f4a990eb8e80aaf660&amp;type=3#Icona_obiettivi&quot;); width: 200px; height: 200px; margin-bottom: 50px;"/>
-            <ui:Button name="unlockables-button" tooltip="Unlockables" class="icon-button nav-button nav-button--unlockables" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_challeng.PNG?fileID=2800000&amp;guid=65bbb14edf86f7b479b1215f47686b14&amp;type=3#Icona_challeng&quot;); width: 200px; height: 200px;"/>
+            <ui:Button name="camera-button" tooltip="Camera" class="icon-button nav-button nav-button--camera"/>
+            <ui:Button name="target-button" tooltip="Target" class="icon-button nav-button nav-button--target"/>
+            <ui:Button name="unlockables-button" tooltip="Unlockables" class="icon-button nav-button nav-button--unlockables"/>
+            <ui:Button name="info-button" tooltip="Info" text="📖" class="icon-button nav-button nav-button--info"/>
         </ui:VisualElement>
         <ui:VisualElement name="stage" class="stage"/>
-        <ui:VisualElement name="speech-bubble" picking-mode="Ignore" class="speech-bubble" style="display: none;">
-            <ui:VisualElement name="speech-bubble-outline" picking-mode="Ignore" class="speech-bubble__outline"/>
-            <ui:VisualElement name="speech-bubble-fill" picking-mode="Ignore" class="speech-bubble__fill"/>
-            <ui:VisualElement name="speech-bubble-icon" picking-mode="Ignore" class="speech-bubble__icon"/>
-            <ui:Label name="speech-bubble-text" text="..." class="speech-bubble__text"/>
-            <ui:Button name="speech-bubble-cta" text="Scopri" class="speech-bubble__cta" style="display: none;"/>
+        <ui:VisualElement name="speech-bubble" class="speech-bubble" picking-mode="Ignore" style="display: none;">
+            <ui:VisualElement name="speech-bubble-outline" class="speech-bubble__outline" picking-mode="Ignore"/>
+            <ui:VisualElement name="speech-bubble-fill" class="speech-bubble__fill" picking-mode="Ignore"/>
+            <ui:VisualElement name="speech-bubble-icon" class="speech-bubble__icon" picking-mode="Ignore"/>
+            <ui:Label name="speech-bubble-text" class="speech-bubble__text" text="..."/>
+            <ui:Button name="speech-bubble-cta" class="speech-bubble__cta" text="Scopri" style="display: none;"/>
         </ui:VisualElement>
         <ui:VisualElement name="item-tray" class="item-tray" style="justify-content: center; align-content: auto; display: none;">
             <ui:VisualElement name="tray-hint" class="tray-hint" style="display: none;">
@@ -24,13 +25,13 @@
         </ui:VisualElement>
         <ui:VisualElement name="bottom-bar" class="bottom-bar">
             <MuseGameJam.UI.StatGauge name="food-gauge" value="1">
-                <ui:Button name="food-button" tooltip="Food" class="icon-button action-button action-button--food" style="width: 150px; height: 150px; margin-top: 28px; background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_cibo.PNG?fileID=2800000&amp;guid=03f6cc8c608eddc48a6a67cd7b73be44&amp;type=3#Icona_cibo&quot;);"/>
+                <ui:Button name="food-button" tooltip="Food" class="icon-button action-button action-button--food"/>
             </MuseGameJam.UI.StatGauge>
             <MuseGameJam.UI.StatGauge name="clean-gauge" value="1">
-                <ui:Button name="clean-button" tooltip="Clean" class="icon-button action-button action-button--clean" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_sapone.PNG?fileID=2800000&amp;guid=df7905f6cbe67944b8a12bf6bd6a1f2c&amp;type=3#Icona_sapone&quot;); width: 150px; height: 150px; margin-top: 12px;"/>
+                <ui:Button name="clean-button" tooltip="Clean" class="icon-button action-button action-button--clean"/>
             </MuseGameJam.UI.StatGauge>
             <MuseGameJam.UI.StatGauge name="pet-gauge" value="1">
-                <ui:Button name="pet-button" tooltip="Pet" text="" class="icon-button action-button action-button--pet" style="background-image: url(&quot;project://database/Assets/Assets/Art/Icons/Icona_coccole.PNG?fileID=2800000&amp;guid=4bebf02ca10b603429b6e4ced25afa64&amp;type=3#Icona_coccole&quot;); background-position-x: center; background-position-y: center; width: 150px; height: 150px; margin-top: 16px;"/>
+                <ui:Button name="pet-button" tooltip="Pet" class="icon-button action-button action-button--pet"/>
             </MuseGameJam.UI.StatGauge>
         </ui:VisualElement>
     </ui:VisualElement>

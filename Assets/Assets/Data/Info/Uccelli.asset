@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnlockableScriptableObject
   displayName: Uccelli
   qrValue: https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/gli-uccelli-della-serra/
+  description: "# Uccelli della serra\n\nCome una vera foresta tropicale montana, la
+    serra tropicale del **MUSE** \xE8 abitata da diverse specie di uccelli.\n\nAmbasciatori
+    viventi della straordinaria biodiversit\xE0 di questi ecosistemi, appartengono
+    tutti a *specie africane* distribuite nelle foreste della **Tanzania**.\n\n*Nessuno
+    di questi esemplari \xE8 stato prelevato in natura.*"
   triviaQuestions:
   - {fileID: 11400000, guid: 31bfd2974083634efb964b51a8751714, type: 2}
   - {fileID: 11400000, guid: e43baedfa346e7a02864c72af740068f, type: 2}
