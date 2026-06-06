@@ -235,14 +235,6 @@ namespace MuseGameJam.UI
                 HideHint();
         }
 
-        static string CategoryOf(CareAction action) => action switch
-        {
-            CareAction.Eat => "FOOD",
-            CareAction.Clean => "CLEAN",
-            CareAction.Pet => "PET",
-            _ => null,
-        };
-
 #if UNITY_EDITOR
         // TEST (editor only): press Q to simulate scanning the "Funghi Tropicali" info QR.
         // Goes through the same HandleUrlScanned as a real scan (lookup -> unlock -> bubble).
