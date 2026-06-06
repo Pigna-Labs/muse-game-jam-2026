@@ -30,6 +30,11 @@ namespace MuseGameJam.Gameplay
         // serve collegare riferimenti in Inspector.
         public static event System.Action<CareAction> CareActionPerformed;
 
+        [Header("VFX pulizia")]
+        // VFX di bolle di sapone (sul child "Particle System"). Emette mentre pulisci
+        // e si spegne al rilascio. Se vuoto, nessun effetto (resta solo l'animazione).
+        [SerializeField] CleaningBubblesVfx cleaningVfx;
+
         readonly HashSet<Item> tracked = new HashSet<Item>();
         readonly Dictionary<Item, Vector3> lastPos = new Dictionary<Item, Vector3>();
         readonly Dictionary<Item, float> progress = new Dictionary<Item, float>();
@@ -55,7 +60,7 @@ namespace MuseGameJam.Gameplay
             switch (item.Action)
             {
                 case CareAction.Pet:   SetAnimBool("IsPetting", true);  break;
-                case CareAction.Clean: SetAnimBool("IsCleaning", true); break;
+                case CareAction.Clean: SetAnimBool("IsCleaning", true); cleaningVfx?.Play(); break;
             }
 
             // Pet/Clean contano come "eseguite" appena l'item entra nell'area (primo contatto).
@@ -117,7 +122,7 @@ namespace MuseGameJam.Gameplay
             switch (item.Action)
             {
                 case CareAction.Pet:   SetAnimBool("IsPetting", false);  break;
-                case CareAction.Clean: SetAnimBool("IsCleaning", false); break;
+                case CareAction.Clean: SetAnimBool("IsCleaning", false); cleaningVfx?.Stop(); break;
             }
         }
 

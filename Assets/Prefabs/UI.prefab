@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2540934543591591636}
   - component: {fileID: 4432104783548188663}
   - component: {fileID: 4971623926751398587}
+  - component: {fileID: 4100566868407823554}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -45,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
-  m_PanelSettings: {fileID: 11400000, guid: 02d19b87a20445b41af642dd689ede5f, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: 413bc1fc3ad42f346b6c4f808c1e6e74, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 9197481963319205126, guid: 9175273f00d555841a457857b0a18f40, type: 3}
   m_SortingOrder: 0
@@ -69,11 +70,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.MainUIController
   trayItemTemplate: {fileID: 9197481963319205126, guid: 3afd7ab5b3596f549b98a5e9428a52ed, type: 3}
-  trayItems: []
+  foodItems:
+  - label: FoodItem
+    itemPrefab: {fileID: 4984254596860307585, guid: 2107efcbd431c8f47a1f2ac5722381a6, type: 3}
+  cleanItems:
+  - label: SoapItem
+    itemPrefab: {fileID: 4984254596860307585, guid: 140e9d2f788b41a4198bf28f366671c7, type: 3}
+  petItems:
+  - label: PetItem
+    itemPrefab: {fileID: 4984254596860307585, guid: 140e9d2f788b41a4198bf28f366671c7, type: 3}
   targetCamera: {fileID: 0}
-  followDistance: 10
-  dropSpot: {fileID: 0}
+  dragDepth: 10
+  hideTrayWhileDragging: 0
+  qrScannerObject: {fileID: 0}
+  musettoAnimator: {fileID: 0}
   challengesUiPrefab: {fileID: 100000, guid: 011623942dca4d688521293cd5ab4ddc, type: 3}
   challengesUiParent: {fileID: 0}
   unlockablesUiPrefab: {fileID: 100000, guid: 3bec541bf7874febbb3d6b958b998ed8, type: 3}
   unlockablesUiParent: {fileID: 0}
+  unlockables: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
+  speechBubble: {fileID: 4100566868407823554}
+--- !u!114 &4100566868407823554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7233829962644540952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 134178414f78253a4a1bff588085fb2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MuseGameJam.UI.SpeechBubbleController
+  anchor: {fileID: 0}
+  worldCamera: {fileID: 0}
+  worldOffset: {x: 0, y: 1, z: 0}
+  panelOffset: {x: 0, y: 0}
+  autoHideSeconds: 4
+  infoUnlockedMessage: 'Ho imparato qualcosa di nuovo!
+
+'
+  infoAlreadyKnownMessage: "Questo lo conosco gi\xE0!"
+  ctaLabel: Scopri
+  typewriterSpeed: 18
+  floatAmplitude: 0
+  floatSpeed: 2
