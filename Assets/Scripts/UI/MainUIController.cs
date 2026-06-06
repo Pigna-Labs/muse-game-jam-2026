@@ -4,6 +4,9 @@ using MuseGameJam.States;
 using MuseGameJam.StateSystem;
 using UnityEngine;
 using UnityEngine.UIElements;
+#if UNITY_EDITOR
+using UnityEngine.InputSystem;
+#endif
 
 namespace MuseGameJam.UI
 {
@@ -123,6 +126,22 @@ namespace MuseGameJam.UI
             if (targetButton != null) targetButton.clicked -= OnTargetClicked;
             if (unlockablesButton != null) unlockablesButton.clicked -= OnUnlockablesClicked;
         }
+
+#if UNITY_EDITOR
+        // TEST (solo editor): premi Q per simulare la scansione del QR dell'info "Funghi Tropicali".
+        // Passa per lo stesso HandleUrlScanned di uno scan vero (lookup -> unlock -> fumetto).
+        // TODO: rimuovere quando i test sono finiti.
+        const string FunghiTestQr = "https://www.muse.it/home/scopri-il-museo/percorso-espositivo/piano-meno1/foresta-tropicale-montana/funghi-tropicali/";
+
+        void Update()
+        {
+            if (Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame)
+            {
+                Debug.Log("[MainUI] TEST: scan Funghi via tasto Q");
+                HandleUrlScanned(FunghiTestQr);
+            }
+        }
+#endif
 
         // Pulsante camera: apre il QR scanner come OVERLAY sullo stack di stati.
         // StateCamera nasconde la main UI, mette in pausa la main e attiva lo scanner;
