@@ -176,6 +176,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 12e7b77f0acc4c53bb89dc91672f64ff, type: 2}
     - target: {fileID: 4971623926751398587, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
+      propertyPath: infoUiParent
+      value: 
+      objectReference: {fileID: 100001, guid: 3bec541bf7874febbb3d6b958b998ed8, type: 3}
+    - target: {fileID: 4971623926751398587, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
       propertyPath: speechBubble
       value: 
       objectReference: {fileID: 555673188}
@@ -187,6 +191,14 @@ PrefabInstance:
       propertyPath: qrScannerObject
       value: 
       objectReference: {fileID: 96746551}
+    - target: {fileID: 4971623926751398587, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
+      propertyPath: infoMenuUiPrefab
+      value: 
+      objectReference: {fileID: 3652397862582289752, guid: d02e0563b01f5ca08b78b9a28f9ec363, type: 3}
+    - target: {fileID: 4971623926751398587, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
+      propertyPath: infoDetailUiPrefab
+      value: 
+      objectReference: {fileID: 307311796127626622, guid: b4f4cc69947a28effb452d528810df16, type: 3}
     - target: {fileID: 4971623926751398587, guid: 12dc15b152f60fc43a27942994d404ee, type: 3}
       propertyPath: petItems.Array.size
       value: 1

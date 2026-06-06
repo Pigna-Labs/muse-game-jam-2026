@@ -114,7 +114,7 @@ namespace MuseGameJam.States
             InfoSO info = sequence[currentInfoIndex];
             currentQuestion = PickQuestion(info.TriviaQuestions, lastAsked);
             lastAsked = currentQuestion;
-            triviaUi.SetQuestion(currentQuestion);
+            triviaUi.SetQuestion(currentQuestion, info.Image);
         }
 
         // Picks a random question from the pool, avoiding 'exclude' when an alternative exists.

@@ -6,6 +6,7 @@
             <ui:Button name="camera-button" tooltip="Camera" class="icon-button nav-button nav-button--camera"/>
             <ui:Button name="target-button" tooltip="Target" class="icon-button nav-button nav-button--target"/>
             <ui:Button name="unlockables-button" tooltip="Unlockables" class="icon-button nav-button nav-button--unlockables"/>
+            <ui:Button name="info-button" tooltip="Info" text="📖" class="icon-button nav-button nav-button--info"/>
         </ui:VisualElement>
         <ui:VisualElement name="stage" class="stage"/>
         <ui:VisualElement name="speech-bubble" class="speech-bubble" picking-mode="Ignore" style="display: none;">

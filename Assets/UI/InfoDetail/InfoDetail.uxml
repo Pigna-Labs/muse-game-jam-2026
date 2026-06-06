@@ -1,0 +1,15 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="InfoDetail.uss"/>
+    <ui:VisualElement name="info-detail-root" class="info-detail-root">
+        <ui:VisualElement name="info-detail-panel" class="info-detail-panel">
+            <ui:VisualElement name="info-detail-header" class="info-detail-header">
+                <ui:Button name="info-detail-close" text="Close" class="info-detail-close"/>
+            </ui:VisualElement>
+            <ui:ScrollView name="info-detail-scroll" mode="Vertical" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto" touch-scroll-type="Elastic" class="info-detail-scroll">
+                <ui:VisualElement name="info-detail-image" class="info-detail-image"/>
+                <ui:Label name="info-detail-title" text="Title" class="info-detail-title"/>
+                <ui:Label name="info-detail-description" text="Description" class="info-detail-description"/>
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
