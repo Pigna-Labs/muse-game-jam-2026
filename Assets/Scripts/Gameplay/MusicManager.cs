@@ -41,13 +41,27 @@ namespace MuseGameJam.Gameplay
         [Range(0f, 1f)] [SerializeField] private float nightVolume = 1f;
         [Tooltip("Moltiplicatore globale su tutta la musica.")]
         [Range(0f, 1f)] [SerializeField] private float masterVolume = 1f;
-        [Tooltip("Guadagno in dB applicato a TUTTA la musica (0 = invariato, +3 = un filo più forte, " +
-                 "valori negativi = più piano). Configurabile da Inspector. NB: AudioSource.volume è " +
-                 "clampato a 1.0, quindi per sentire un boost reale i volumi base sopra vanno tenuti < 1.0.")]
+
+        [Header("Gain (boost reale)")]
+        [Tooltip("Guadagno in dB applicato a TUTTA la musica. 0 = invariato, valori positivi = più forte.\n\n" +
+                 "BOOST REALE (oltre il tetto di AudioSource.volume) solo se è assegnato 'Music Mixer Group' " +
+                 "qui sotto: il gain viene applicato al parametro esposto del mixer (non clampato a 1.0).\n" +
+                 "Se il mixer NON è assegnato, il gain agisce sul volume del source ed è quindi limitato a 1.0.")]
         [Range(-80f, 100f)] [SerializeField] private float gainDb = 3f;
+        [Tooltip("Gruppo dell'AudioMixer su cui instradare la musica. Assegnandolo, il gainDb pilota il " +
+                 "parametro esposto del mixer (vedi exposedGainParam) per un boost reale oltre 1.0.")]
+        [SerializeField] private UnityEngine.Audio.AudioMixerGroup musicMixerGroup;
+        [Tooltip("Nome del parametro ESPOSTO sul mixer che controlla il volume del gruppo Music (in dB). " +
+                 "Deve coincidere col nome che hai esposto in Unity (tasto destro sul Volume del gruppo -> Expose).")]
+        [SerializeField] private string exposedGainParam = "MusicGain";
 
         // Fattore lineare equivalente a gainDb (dB -> ampiezza). +3 dB ≈ 1.41, 0 dB = 1.0.
+        // Usato come fallback sul volume del source quando NON c'è un mixer (resta clampato a 1.0).
         private float GainLinear => Mathf.Pow(10f, gainDb / 20f);
+
+        // Quando c'è un mixer, il boost lo fa il mixer (gainDb sul parametro esposto): il volume del
+        // source NON deve includere GainLinear, altrimenti il gain verrebbe applicato due volte.
+        private float SourceGain => musicMixerGroup != null ? 1f : GainLinear;
 
         [Header("Giorno/Notte")]
         [SerializeField, Range(0, 23)] private int sunriseHour = DayNight.DefaultSunriseHour;
@@ -90,13 +104,24 @@ namespace MuseGameJam.Gameplay
             // Avvia i 3 layer insieme: restano sincronizzati perché partono allo stesso istante.
             PlaySynced();
 
+            // Boost reale via mixer (se assegnato): scrive gainDb sul parametro esposto.
+            ApplyMixerGain();
+
             // Imposta subito i volumi day/night senza fade (stato iniziale).
-            float gain = GainLinear;
+            float gain = SourceGain;
             _day.volume   = (_isDay ? dayVolume : 0f) * masterVolume * _overlayMul * gain;
             _night.volume = (_isDay ? 0f : nightVolume) * masterVolume * _overlayMul * gain;
             _main.volume  = mainVolume * masterVolume * _overlayMul * gain;
 
             _dnTimer = 0f;
+        }
+
+        // Quando c'è un mixer, applica gainDb (in dB) al parametro esposto: è qui che avviene
+        // il boost REALE oltre 1.0. Senza mixer non fa nulla (il gain agisce sul source).
+        private void ApplyMixerGain()
+        {
+            if (musicMixerGroup == null || string.IsNullOrEmpty(exposedGainParam)) return;
+            musicMixerGroup.audioMixer.SetFloat(exposedGainParam, gainDb);
         }
 
         private void Update()
@@ -119,7 +144,10 @@ namespace MuseGameJam.Gameplay
                 if (nowDay != _isDay) _isDay = nowDay; // il crossfade lo fa il blocco volumi sotto
             }
 
-            // 3) Applica i volumi target con smoothing (crossfade day/night + overlay).
+            // 3) Mantieni il gain del mixer allineato a gainDb (così si può regolare a runtime).
+            ApplyMixerGain();
+
+            // 4) Applica i volumi target con smoothing (crossfade day/night + overlay).
             ApplyVolumes();
         }
 
@@ -134,8 +162,8 @@ namespace MuseGameJam.Gameplay
             float curDay   = Mathf.MoveTowards(NormalizedVol(_day, dayVolume), dayTarget, dnStep);
             float curNight = Mathf.MoveTowards(NormalizedVol(_night, nightVolume), nightTarget, dnStep);
 
-            // applica con master + overlay + gain (dB)
-            float gain = GainLinear;
+            // applica con master + overlay + gain (sul source solo se NON c'è il mixer)
+            float gain = SourceGain;
             _main.volume  = mainVolume * masterVolume * _overlayMul * gain;
             _day.volume   = curDay     * masterVolume * _overlayMul * gain;
             _night.volume = curNight   * masterVolume * _overlayMul * gain;
@@ -145,7 +173,7 @@ namespace MuseGameJam.Gameplay
         // così il MoveTowards lavora sullo stesso spazio dei target.
         private float NormalizedVol(AudioSource src, float baseVol)
         {
-            float denom = masterVolume * _overlayMul * GainLinear;
+            float denom = masterVolume * _overlayMul * SourceGain;
             if (denom <= 0.0001f) return baseVol == 0f ? 0f : src.volume; // evita /0 mentre è in fade
             return src.volume / denom;
         }
@@ -173,6 +201,8 @@ namespace MuseGameJam.Gameplay
             src.playOnAwake = false;
             src.spatialBlend = 0f; // 2D
             src.volume = 0f;
+            // Instrada al gruppo del mixer (se assegnato): è lì che il gainDb amplifica davvero.
+            if (musicMixerGroup != null) src.outputAudioMixerGroup = musicMixerGroup;
             return src;
         }
 
