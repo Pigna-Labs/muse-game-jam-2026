@@ -294,7 +294,7 @@ MonoBehaviour:
   requestedHeight: 480
   requestedFps: 30
   decodeInterval: 0.4
-  cameraBackgroundClip: {fileID: 8300000, guid: 3c246c3db49adee419868b0651553d55, type: 3}
+  cameraBackgroundClip: {fileID: 8300000, guid: 25533a975e312784da94cf3528622f1b, type: 3}
   cameraBackgroundVolume: 1
   debugLogEveryAttempts: 25
 --- !u!114 &96746553
@@ -931,6 +931,8 @@ MonoBehaviour:
   nightVolume: 1
   masterVolume: 1
   gainDb: 12
+  musicMixerGroup: {fileID: -4233232546134041623, guid: 3aaaed22523e36846b7516e22b08124a, type: 2}
+  exposedGainParam: MusicGain
   sunriseHour: 7
   sunsetHour: 19
   dayNightFade: 2
