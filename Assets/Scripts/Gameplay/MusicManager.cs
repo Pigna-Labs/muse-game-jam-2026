@@ -44,7 +44,7 @@ namespace MuseGameJam.Gameplay
         [Tooltip("Guadagno in dB applicato a TUTTA la musica (0 = invariato, +3 = un filo più forte, " +
                  "valori negativi = più piano). Configurabile da Inspector. NB: AudioSource.volume è " +
                  "clampato a 1.0, quindi per sentire un boost reale i volumi base sopra vanno tenuti < 1.0.")]
-        [Range(-24f, 12f)] [SerializeField] private float gainDb = 3f;
+        [Range(-80f, 100f)] [SerializeField] private float gainDb = 3f;
 
         // Fattore lineare equivalente a gainDb (dB -> ampiezza). +3 dB ≈ 1.41, 0 dB = 1.0.
         private float GainLinear => Mathf.Pow(10f, gainDb / 20f);
